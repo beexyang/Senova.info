@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>For Providers — List Your Facility on Senova | Free</title>
+<meta name="description" content="List your home health agency, adult day care, hospice, or rehab facility on Senova for free. Get found by families actively searching for care in your area."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;color:#202124;background:#fff}
+a{text-decoration:none;color:inherit}
+
+:root{
+  --teal:#0D9488;--teal-dark:#0B7A6E;--teal-light:#F0FDFA;
+  --orange:#F97316;--orange-dark:#EA6C0A;
+  --navy:#202124;--gray:#5F6368;--light-gray:#9AA0A6;
+  --border:#E5E7EB;--border-light:#F3F4F6;
+  --green:#16A34A;--gold:#F59E0B;
+  --shadow:0 1px 6px rgba(32,33,36,.12);
+  --shadow-lg:0 4px 24px rgba(32,33,36,.14);
+}
+
+/* ── NAV ── */
+.nav{
+  background:#fff;border-bottom:1px solid var(--border);
+  padding:14px 24px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+.nav-logo{font-family:'Poppins',sans-serif;font-weight:800;font-size:28px;color:var(--teal);cursor:pointer}
+.nav-logo em{color:var(--orange);font-style:normal}
+.nav-links{display:flex;align-items:center;gap:6px}
+.nl{font-size:13px;font-weight:500;color:var(--gray);padding:8px 14px;border-radius:6px;cursor:pointer}
+.nl:hover{background:rgba(0,0,0,.04)}
+.nl-btn{
+  font-size:13px;font-weight:700;color:#fff;background:var(--teal);
+  padding:8px 20px;border-radius:6px;border:none;cursor:pointer;font-family:'Inter',sans-serif;
+}
+
+/* ── HERO ── */
+.hero{
+  background:linear-gradient(135deg,#0D9488 0%,#065F46 100%);
+  padding:80px 24px;text-align:center;position:relative;overflow:hidden;
+}
+.hero::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:80px;
+  background:linear-gradient(transparent,#fff);
+}
+.hero-label{
+  font-size:13px;font-weight:700;color:rgba(255,255,255,.6);
+  text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;
+}
+.hero h1{
+  font-family:'Poppins',sans-serif;font-size:44px;font-weight:800;
+  color:#fff;max-width:700px;margin:0 auto 16px;line-height:1.15;
+}
+.hero p{font-size:18px;color:rgba(255,255,255,.8);max-width:560px;margin:0 auto 32px;line-height:1.6}
+.hero-btn{
+  padding:16px 36px;background:var(--orange);color:#fff;border:none;
+  border-radius:12px;font-size:17px;font-weight:700;cursor:pointer;
+  font-family:'Inter',sans-serif;transition:all .15s;display:inline-block;
+}
+.hero-btn:hover{background:var(--orange-dark);transform:translateY(-2px);box-shadow:0 8px 30px rgba(249,115,22,.3)}
+.hero-note{font-size:14px;color:rgba(255,255,255,.5);margin-top:12px}
+.hero-stats{
+  display:flex;justify-content:center;gap:48px;margin-top:40px;position:relative;z-index:1;
+}
+.hs{text-align:center;color:#fff}
+.hs-num{font-family:'Poppins',sans-serif;font-size:32px;font-weight:800}
+.hs-label{font-size:13px;opacity:.7;margin-top:2px}
+
+/* ── CONTAINER ── */
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+
+/* ── SOCIAL PROOF ── */
+.social{padding:60px 0;text-align:center;background:var(--border-light)}
+.social-label{font-size:13px;font-weight:700;color:var(--light-gray);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px}
+.social-stat{font-family:'Poppins',sans-serif;font-size:28px;font-weight:800;color:var(--navy)}
+
+/* ── HOW IT WORKS ── */
+.hiw{padding:80px 0}
+.sec-label{font-size:13px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;text-align:center}
+.sec-title{font-family:'Poppins',sans-serif;font-size:32px;font-weight:800;color:var(--navy);text-align:center;margin-bottom:12px}
+.sec-sub{font-size:16px;color:var(--gray);text-align:center;max-width:600px;margin:0 auto 48px}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.step{
+  background:#fff;border:1px solid var(--border);border-radius:16px;
+  padding:28px;text-align:center;transition:all .15s;
+}
+.step:hover{border-color:var(--teal);box-shadow:var(--shadow-lg)}
+.step-num{
+  width:40px;height:40px;border-radius:50%;background:var(--teal);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Poppins',sans-serif;font-weight:700;font-size:16px;
+  margin:0 auto 14px;
+}
+.step-icon{font-size:32px;margin-bottom:12px}
+.step h3{font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.step p{font-size:14px;color:var(--gray);line-height:1.55}
+
+/* ── BENEFITS ── */
+.benefits{padding:80px 0;background:var(--teal-light)}
+.ben-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.ben{
+  display:flex;align-items:flex-start;gap:16px;padding:24px;
+  background:#fff;border-radius:14px;border:1px solid var(--border);
+}
+.ben-icon{
+  width:48px;height:48px;border-radius:12px;background:var(--teal-light);
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;
+}
+.ben h4{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.ben p{font-size:14px;color:var(--gray);line-height:1.55}
+
+/* ── PLANS ── */
+.plans-sec{padding:80px 0}
+.plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:32px}
+.plan{
+  background:#fff;border:2px solid var(--border);border-radius:16px;
+  padding:28px;position:relative;transition:all .15s;
+}
+.plan:hover{border-color:var(--teal);box-shadow:var(--shadow-lg)}
+.plan.pop{border-color:var(--orange)}
+.plan.dark{background:linear-gradient(180deg,#1a1a2e,#16213e);border-color:#2d3561}
+.plan-pop-badge{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:var(--orange);color:#fff;font-size:11px;font-weight:700;
+  padding:4px 16px;border-radius:100px;
+}
+.plan-icon{font-size:28px;margin-bottom:8px}
+.plan-name{font-family:'Poppins',sans-serif;font-size:18px;font-weight:700;color:var(--navy)}
+.plan .dark-text{color:#fff}
+.plan-price{margin:10px 0 14px}
+.plan-amt{font-family:'Poppins',sans-serif;font-size:36px;font-weight:800;color:var(--navy)}
+.plan-per{font-size:14px;color:var(--light-gray)}
+.plan-desc{font-size:13px;color:var(--gray);margin-bottom:16px;line-height:1.5}
+.plan-list{list-style:none;margin-bottom:20px}
+.plan-list li{font-size:13px;color:var(--gray);padding:5px 0;display:flex;gap:6px;align-items:flex-start}
+.plan-list .ck{color:var(--teal);flex-shrink:0}
+.plan-btn{
+  width:100%;padding:12px;border-radius:10px;font-size:14px;font-weight:700;
+  cursor:pointer;font-family:'Inter',sans-serif;text-align:center;border:none;transition:all .15s;
+}
+.plan-btn.free{background:var(--teal-light);color:var(--teal)}
+.plan-btn.free:hover{background:var(--teal);color:#fff}
+.plan-btn.pop-btn{background:var(--orange);color:#fff}
+.plan-btn.pop-btn:hover{background:var(--orange-dark)}
+.plan-btn.dark-btn{background:#FCD34D;color:#1a1a2e}
+.plan-btn.dark-btn:hover{background:#FBBF24}
+
+/* ── TESTIMONIALS ── */
+.test{padding:80px 0;background:var(--border-light)}
+.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.test-card{background:#fff;border-radius:14px;padding:24px;border:1px solid var(--border)}
+.test-stars{color:var(--gold);font-size:14px;margin-bottom:8px}
+.test-text{font-size:14px;color:var(--gray);line-height:1.6;margin-bottom:12px;font-style:italic}
+.test-author{font-size:13px;font-weight:600;color:var(--navy)}
+.test-role{font-size:12px;color:var(--light-gray)}
+
+/* ── CTA ── */
+.cta{padding:80px 0;text-align:center;background:linear-gradient(135deg,var(--teal),#065F46)}
+.cta h2{font-family:'Poppins',sans-serif;font-size:32px;font-weight:800;color:#fff;margin-bottom:12px}
+.cta p{font-size:16px;color:rgba(255,255,255,.7);margin-bottom:28px;max-width:500px;margin-left:auto;margin-right:auto}
+.cta-btn{
+  padding:16px 40px;background:var(--orange);color:#fff;border:none;
+  border-radius:12px;font-size:17px;font-weight:700;cursor:pointer;
+  font-family:'Inter',sans-serif;transition:all .15s;
+}
+.cta-btn:hover{background:var(--orange-dark);transform:translateY(-2px)}
+.cta-sub{font-size:13px;color:rgba(255,255,255,.4);margin-top:10px}
+
+/* ── FOOTER ── */
+footer{padding:24px;text-align:center;font-size:13px;color:var(--light-gray);border-top:1px solid var(--border)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .hero h1{font-size:32px}
+  .steps,.ben-grid,.plans-grid,.test-grid{grid-template-columns:1fr}
+  .hero-stats{gap:24px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<div class="nav">
+  <div class="nav-logo" onclick="window.location='/'">Seno<em>va</em></div>
+  <div class="nav-links">
+    <a class="nl" href="/">For Families</a>
+    <a class="nl" href="/signup">Provider Login</a>
+    <button class="nl-btn" onclick="window.location='/signup'">List Your Facility — Free</button>
+  </div>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-label">For Care Providers</div>
+  <h1>Fill Your Beds. Grow Your Census. Zero Effort.</h1>
+  <p>Senova connects your facility with families actively searching for care right now — in your area, on your terms.</p>
+  <button class="hero-btn" onclick="window.location='/signup'">List Your Facility — It's Free →</button>
+  <div class="hero-note">No credit card required. Live in under 5 minutes.</div>
+  <div class="hero-stats">
+    <div class="hs"><div class="hs-num">47,000+</div><div class="hs-label">Families Searching Monthly</div></div>
+    <div class="hs"><div class="hs-num">50</div><div class="hs-label">States Covered</div></div>
+    <div class="hs"><div class="hs-num">14,000+</div><div class="hs-label">Providers Listed</div></div>
+  </div>
+</div>
+
+<!-- ═══ HOW IT WORKS ═══ -->
+<section class="hiw">
+  <div class="container">
+    <div class="sec-label">How It Works</div>
+    <div class="sec-title">3 Steps to More Families</div>
+    <div class="sec-sub">Get found by families who need your services — and are ready to start care now.</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-icon">📝</div>
+        <h3>Create Your Listing</h3>
+        <p>Sign up in under 5 minutes. Add your services, languages, hours, photos, and what makes your facility unique.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-icon">🔍</div>
+        <h3>Families Find You</h3>
+        <p>When families search for care in your area, your facility appears in results — filtered by language, meals, insurance, and more.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-icon">📞</div>
+        <h3>Connect & Grow</h3>
+        <p>Receive qualified inquiries directly. Track every lead in your CRM dashboard. Fill beds faster with families who are ready.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ BENEFITS ═══ -->
+<section class="benefits">
+  <div class="container">
+    <div class="sec-label">Why Senova</div>
+    <div class="sec-title">Built for Providers, Not Against Them</div>
+    <div class="sec-sub">We give you the tools that the big referral companies charge a fortune for — and we start you free.</div>
+    <div class="ben-grid">
+      <div class="ben">
+        <div class="ben-icon">📊</div>
+        <div><h4>Full CRM Dashboard</h4><p>Track every lead, view call transcripts, see lead summaries, and manage your entire pipeline in one place. No spreadsheets needed.</p></div>
+      </div>
+      <div class="ben">
+        <div class="ben-icon">✅</div>
+        <div><h4>Senova Verified Badge</h4><p>Stand out from unverified listings. Families trust verified providers 4x more. The badge appears on your profile and in search results.</p></div>
+      </div>
+      <div class="ben">
+        <div class="ben-icon">🌐</div>
+        <div><h4>Cultural Matching</h4><p>Families filter by language and cuisine. If you serve Hmong meals or have Spanish-speaking staff, the right families find you automatically.</p></div>
+      </div>
+      <div class="ben">
+        <div class="ben-icon">📞</div>
+        <div><h4>Qualified Leads Only</h4><p>No junk calls. Our system pre-qualifies every inquiry before it reaches you. You only interact with families who are ready for care.</p></div>
+      </div>
+      <div class="ben">
+        <div class="ben-icon">📄</div>
+        <div><h4>Call Transcripts & Proof</h4><p>Every qualified call comes with a full transcript and lead summary. You always know exactly what the family needs before you talk to them.</p></div>
+      </div>
+      <div class="ben">
+        <div class="ben-icon">📈</div>
+        <div><h4>Analytics & Reporting</h4><p>See your profile views, call volume, lead conversion rates, and ROI. Know exactly what's working and where to improve.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PLANS ═══ -->
+<section class="plans-sec">
+  <div class="container">
+    <div class="sec-label">Simple Pricing</div>
+    <div class="sec-title">Start Free. Scale When You're Ready.</div>
+    <div class="sec-sub">No contracts. No hidden fees. Cancel anytime.</div>
+
+    <div class="plans-grid">
+      <!-- Basic -->
+      <div class="plan">
+        <div class="plan-icon">🆓</div>
+        <div class="plan-name">Basic</div>
+        <div class="plan-price"><span class="plan-amt">Free</span></div>
+        <div class="plan-desc">Get listed and start receiving inquiries at no cost.</div>
+        <ul class="plan-list">
+          <li><span class="ck">✓</span> Listed in search results</li>
+          <li><span class="ck">✓</span> Basic contact info displayed</li>
+          <li><span class="ck">✓</span> Accept inquiry requests</li>
+          <li><span class="ck">✓</span> Reviews from families</li>
+        </ul>
+        <button class="plan-btn free" onclick="window.location='/signup'">Get Started Free</button>
+      </div>
+
+      <!-- Verified -->
+      <div class="plan pop">
+        <div class="plan-pop-badge">Most Popular</div>
+        <div class="plan-icon">✅</div>
+        <div class="plan-name">Verified</div>
+        <div class="plan-price"><span class="plan-amt">$199</span><span class="plan-per"> /month</span></div>
+        <div class="plan-desc">The trust upgrade. Verified badge, full CRM, priority ranking, and analytics.</div>
+        <ul class="plan-list">
+          <li><span class="ck">✓</span> Everything in Basic</li>
+          <li><span class="ck">✓</span> <strong>Senova Verified badge</strong></li>
+          <li><span class="ck">✓</span> Enhanced profile with photos</li>
+          <li><span class="ck">✓</span> Priority search ranking</li>
+          <li><span class="ck">✓</span> <strong>Full CRM dashboard</strong></li>
+          <li><span class="ck">✓</span> Call transcripts & lead tracking</li>
+          <li><span class="ck">✓</span> Analytics & ROI reporting</li>
+        </ul>
+        <button class="plan-btn pop-btn" onclick="window.location='/signup'">Start Verified — $199/mo</button>
+      </div>
+
+      <!-- Elite -->
+      <div class="plan dark">
+        <div class="plan-icon">🏆</div>
+        <div class="plan-name dark-text" style="color:#fff">Elite</div>
+        <div class="plan-price"><span class="plan-amt" style="color:#FCD34D;font-size:24px">Custom Pricing</span></div>
+        <div class="plan-desc" style="color:rgba(255,255,255,.6)">For serious operators. Top 3 placement, live lead transfers, and a dedicated account manager.</div>
+        <ul class="plan-list" style="color:rgba(255,255,255,.6)">
+          <li><span class="ck" style="color:#FCD34D">✓</span> Everything in Verified</li>
+          <li style="color:#FCD34D"><span class="ck" style="color:#FCD34D">✓</span> <strong>Top 3 guaranteed placement</strong></li>
+          <li style="color:#FCD34D"><span class="ck" style="color:#FCD34D">✓</span> <strong>Live qualified lead transfers</strong></li>
+          <li><span class="ck" style="color:#FCD34D">✓</span> Dedicated account manager</li>
+          <li><span class="ck" style="color:#FCD34D">✓</span> Advanced ROI reporting</li>
+        </ul>
+        <button class="plan-btn dark-btn" onclick="window.location='/signup'">Check Availability →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TESTIMONIALS ═══ -->
+<section class="test">
+  <div class="container">
+    <div class="sec-label">Trusted by Providers</div>
+    <div class="sec-title">What Our Providers Say</div>
+    <div class="sec-sub">Hear from agencies who are growing their census with Senova.</div>
+    <div class="test-grid">
+      <div class="test-card">
+        <div class="test-stars">★★★★★</div>
+        <div class="test-text">We went from 3 new intakes a month to 12 after getting Verified on Senova. The CRM alone is worth the $199. We can track every lead and know exactly where our patients come from.</div>
+        <div class="test-author">Sarah M., RN</div>
+        <div class="test-role">Director, Caring Hearts Home Health — Houston, TX</div>
+      </div>
+      <div class="test-card">
+        <div class="test-stars">★★★★★</div>
+        <div class="test-text">The language and meal filters are a game changer for us. We serve the Hmong community and families can actually find us now. Before Senova, we relied 100% on word of mouth.</div>
+        <div class="test-author">Tou V.</div>
+        <div class="test-role">Owner, Golden Bridge Adult Day — St. Paul, MN</div>
+      </div>
+      <div class="test-card">
+        <div class="test-stars">★★★★★</div>
+        <div class="test-text">The qualified leads are incredible. Every call we get from Senova is a family that's ready. No tire-kickers. The transcripts let us prepare before we even call them back.</div>
+        <div class="test-author">David R.</div>
+        <div class="test-role">Admissions Director, Sunrise Assisted Living — Miami, FL</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CTA ═══ -->
+<section class="cta">
+  <div class="container">
+    <h2>Your Next Patient Is Searching Right Now</h2>
+    <p>Join 14,000+ providers on Senova. Get listed in under 5 minutes.</p>
+    <button class="cta-btn" onclick="window.location='/signup'">List Your Facility — Free →</button>
+    <div class="cta-sub">No credit card required · Cancel anytime · Live in 5 minutes</div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>© 2026 Senova™ Inc. All rights reserved. · <a href="#" style="color:var(--teal)">Privacy</a> · <a href="#" style="color:var(--teal)">Terms</a> · <a href="/" style="color:var(--teal)">For Families</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
