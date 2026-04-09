@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunshine Home Health Services - Senova</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --teal: #0D9488;
+            --teal-dark: #0B7A6E;
+            --teal-light: #F0FDFA;
+            --orange: #F97316;
+            --orange-dark: #EA6C0A;
+            --navy: #202124;
+            --gray: #5F6368;
+            --light-gray: #9AA0A6;
+            --bg: #F8FAFB;
+            --border: #E5E7EB;
+            --green: #16A34A;
+            --gold: #F59E0B;
+        }
+
+        html, body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--navy);
+            line-height: 1.6;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 6px rgba(32,33,36,.12);
+            padding: 12px 24px;
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .logo {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 22px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-sen {
+            color: var(--teal);
+        }
+
+        .logo-ova {
+            color: var(--orange);
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            background: var(--bg);
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--teal);
+            box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.1);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .nav-link {
+            color: var(--navy);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--teal);
+        }
+
+        .sign-in-btn {
+            padding: 8px 16px;
+            background: var(--teal);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .sign-in-btn:hover {
+            background: var(--teal-dark);
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--orange);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .avatar:hover {
+            background: var(--orange-dark);
+        }
+
+        /* MAIN CONTAINER */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* BREADCRUMB */
+        .breadcrumb {
+            font-size: 13px;
+            color: var(--gray);
+            margin-bottom: 24px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb a {
+            color: var(--teal);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* PHOTO GALLERY */
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 12px;
+            margin-bottom: 32px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .main-photo {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--light-gray);
+            font-size: 14px;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .main-photo:hover {
+            transform: scale(1.02);
+            transition: transform 0.3s;
+        }
+
+        .main-photo svg {
+            width: 48px;
+            height: 48px;
+            margin-right: 12px;
+            opacity: 0.6;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .photo-thumbnail {
+            width: 100%;
+            height: 190px;
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--light-gray);
+            font-size: 12px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .photo-thumbnail:hover {
+            transform: scale(1.05);
+        }
+
+        .photo-thumbnail svg {
+            width: 24px;
+            height: 24px;
+            margin-right: 6px;
+            opacity: 0.6;
+        }
+
+        .photo-thumbnail.last-photo {
+            position: relative;
+        }
+
+        .view-all-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .view-all-overlay:hover {
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        /* FACILITY HEADER */
+        .facility-header {
+            margin-bottom: 32px;
+        }
+
+        .facility-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 12px;
+        }
+
+        .badges-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .badge.medicaid {
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--green);
+        }
+
+        .badge.verified {
+            background: rgba(13, 148, 136, 0.1);
+            color: var(--teal);
+        }
+
+        .badge.elite {
+            background: rgba(249, 115, 22, 0.1);
+            color: var(--orange);
+        }
+
+        .facility-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 12px;
+        }
+
+        .facility-address {
+            color: var(--navy);
+            font-weight: 500;
+        }
+
+        .facility-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .stars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .star {
+            color: var(--gold);
+            font-size: 16px;
+        }
+
+        .review-count {
+            color: var(--teal);
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .review-count:hover {
+            text-decoration: underline;
+        }
+
+        /* TWO COLUMN LAYOUT */
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 1.85fr 1fr;
+            gap: 32px;
+            margin-bottom: 48px;
+        }
+
+        .left-column {}
+
+        .right-column {}
+
+        /* SECTION STYLES */
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 6px rgba(32,33,36,.12);
+        }
+
+        .section-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: var(--gray);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        /* SERVICES GRID */
+        .services-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .service-card {
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .service-card:hover {
+            border-color: var(--teal);
+            box-shadow: 0 2px 8px rgba(13, 148, 136, 0.1);
+        }
+
+        .service-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--teal-light);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            color: var(--teal);
+            font-size: 16px;
+        }
+
+        .service-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--navy);
+            margin-bottom: 6px;
+        }
+
+        .service-desc {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        /* INSURANCE COVERAGE */
+        .coverage-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .coverage-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--teal-light);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--teal);
+        }
+
+        .coverage-item .checkmark {
+            font-size: 18px;
+        }
+
+        /* AMENITIES */
+        .amenities-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .amenity-pill {
+            padding: 12px 16px;
+            background: var(--teal-light);
+            color: var(--teal);
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            border: 1px solid rgba(13, 148, 136, 0.3);
+        }
+
+        /* REVIEWS */
+        .reviews-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .review-item {
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: 14px;
+        }
+
+        .review-date {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .review-stars {
+            display: flex;
+            gap: 2px;
+            margin-bottom: 8px;
+        }
+
+        .review-text {
+            font-size: 14px;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        /* RIGHT SIDEBAR */
+        .cta-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 6px rgba(32,33,36,.12);
+            margin-bottom: 24px;
+            position: sticky;
+            top: 80px;
+        }
+
+        .cta-button {
+            width: 100%;
+            padding: 14px;
+            background: var(--teal);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 16px;
+        }
+
+        .cta-button:hover {
+            background: var(--teal-dark);
+        }
+
+        .cta-call {
+            text-align: center;
+            padding: 16px;
+            background: var(--teal-light);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .cta-phone {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 4px;
+        }
+
+        .cta-phone-number {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--teal);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .cta-subtext {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        /* INFO CARD */
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        /* MAP */
+        .map-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 14px;
+            margin-top: 16px;
+            cursor: pointer;
+        }
+
+        /* SIMILAR FACILITIES */
+        .similar-section {
+            margin-bottom: 48px;
+        }
+
+        .similar-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 20px;
+        }
+
+        .similar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .facility-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 6px rgba(32,33,36,.12);
+            transition: box-shadow 0.2s;
+        }
+
+        .facility-card:hover {
+            box-shadow: 0 4px 24px rgba(32,33,36,.14);
+        }
+
+        .facility-card-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #C7D2FE 0%, #E0E7FF 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--light-gray);
+            font-size: 13px;
+        }
+
+        .facility-card-content {
+            padding: 16px;
+        }
+
+        .facility-card-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .facility-card-rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .facility-card-city {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        /* FOOTER */
+        .footer {
+            background: var(--navy);
+            color: white;
+            padding: 48px 24px;
+            margin-top: 64px;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 32px;
+        }
+
+        .footer-section h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-logo {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 18px;
+            color: white;
+        }
+
+        .footer-logo-sen {
+            color: #0D9488;
+        }
+
+        .footer-logo-ova {
+            color: var(--orange);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .navbar-container {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .search-bar {
+                max-width: none;
+                order: 3;
+                flex-basis: 100%;
+            }
+
+            .nav-right {
+                order: 2;
+            }
+
+            .photo-gallery {
+                grid-template-columns: 1fr;
+            }
+
+            .main-photo {
+                height: 300px;
+            }
+
+            .photo-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .photo-thumbnail {
+                height: 100px;
+            }
+
+            .content-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-card {
+                position: static;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .amenities-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .facility-name {
+                font-size: 22px;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px;
+            }
+
+            .navbar-container {
+                padding: 8px 12px;
+            }
+
+            .navbar-container {
+                flex-direction: column;
+            }
+
+            .logo {
+                order: 1;
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 8px;
+            }
+
+            .search-bar {
+                order: 2;
+                width: 100%;
+            }
+
+            .nav-right {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+                gap: 12px;
+            }
+
+            .photo-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .facility-name {
+                font-size: 18px;
+            }
+
+            .badges-row {
+                gap: 8px;
+            }
+
+            .badge {
+                font-size: 11px;
+                padding: 4px 8px;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .similar-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="logo">
+                <span class="logo-sen">Sen</span><span class="logo-ova">ova</span>
+            </a>
+            <div class="search-bar">
+                <input type="text" placeholder="Search vendors, services...">
+            </div>
+            <div class="nav-right">
+                <a href="#" class="nav-link">For Providers</a>
+                <button class="sign-in-btn">Sign In</button>
+                <div class="avatar">JD</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <!-- BREADCRUMB -->
+        <div class="breadcrumb">
+            <a href="#">Home</a>
+            <span>/</span>
+            <a href="#">Houston, TX</a>
+            <span>/</span>
+            <a href="#">Home Health Care</a>
+            <span>/</span>
+            <span>Sunshine Home Health Services</span>
+        </div>
+
+        <!-- PHOTO GALLERY -->
+        <div class="photo-gallery">
+            <div class="main-photo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <path d="M21 15l-5-5L5 21"/>
+                </svg>
+                <span>Main Photo</span>
+            </div>
+            <div class="photo-grid">
+                <div class="photo-thumbnail">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <path d="M21 15l-5-5L5 21"/>
+                    </svg>
+                    <span>Photo 1</span>
+                </div>
+                <div class="photo-thumbnail">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <path d="M21 15l-5-5L5 21"/>
+                    </svg>
+                    <span>Photo 2</span>
+                </div>
+                <div class="photo-thumbnail">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <path d="M21 15l-5-5L5 21"/>
+                    </svg>
+                    <span>Photo 3</span>
+                </div>
+                <div class="photo-thumbnail last-photo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <path d="M21 15l-5-5L5 21"/>
+                    </svg>
+                    <span>Photo 4</span>
+                    <div class="view-all-overlay" onclick="alert('Gallery coming soon!')">
+                        📸 View all 12 photos
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FACILITY HEADER -->
+        <div class="facility-header">
+            <h1 class="facility-name">Sunshine Home Health Services</h1>
+
+            <div class="badges-row">
+                <div class="badge medicaid">✓ Medicaid Accepted</div>
+                <div class="badge verified">★ Verified Provider</div>
+                <div class="badge elite">Elite Partner</div>
+            </div>
+
+            <div class="facility-meta">
+                <span class="facility-address">📍 4521 Main Street, Houston, TX 77002</span>
+            </div>
+
+            <div class="facility-rating">
+                <div class="stars">
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                </div>
+                <span style="color: var(--gray); font-size: 14px;">4.8</span>
+                <a class="review-count">(127 reviews)</a>
+            </div>
+
+            <div style="font-size: 14px; color: var(--gray); margin-top: 12px;">
+                <span style="color: var(--green); font-weight: 600;">● Open Now</span>
+                <span style="margin-left: 16px;">Hours: Mon-Fri 8AM-6PM, Sat 9AM-1PM</span>
+            </div>
+        </div>
+
+        <!-- TWO COLUMN LAYOUT -->
+        <div class="content-wrapper">
+            <!-- LEFT COLUMN -->
+            <div class="left-column">
+                <!-- ABOUT SECTION -->
+                <div class="section">
+                    <h2 class="section-title">About</h2>
+                    <p class="section-subtitle">
+                        Sunshine Home Health Services has been providing compassionate home health care to the Houston community since 2008. We specialize in Medicaid-covered personal care, skilled nursing, and therapy services. Our team of licensed nurses and certified home health aides are dedicated to helping seniors and individuals with disabilities maintain their independence at home.
+                    </p>
+                </div>
+
+                <!-- SERVICES SECTION -->
+                <div class="section">
+                    <h2 class="section-title">Services Offered</h2>
+                    <div class="services-grid">
+                        <div class="service-card">
+                            <div class="service-icon">👤</div>
+                            <div class="service-name">Personal Care Assistance</div>
+                            <div class="service-desc">ADL support and companionship</div>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">⚕️</div>
+                            <div class="service-name">Skilled Nursing</div>
+                            <div class="service-desc">Medical care & wound management</div>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">💪</div>
+                            <div class="service-name">Physical Therapy</div>
+                            <div class="service-desc">Mobility & strength training</div>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">🤚</div>
+                            <div class="service-name">Occupational Therapy</div>
+                            <div class="service-desc">Daily living skills training</div>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">🗣️</div>
+                            <div class="service-name">Speech Therapy</div>
+                            <div class="service-desc">Communication & swallowing</div>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">💊</div>
+                            <div class="service-name">Medication Management</div>
+                            <div class="service-desc">Prescription coordination</div>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">🤝</div>
+                            <div class="service-name">Companion Care</div>
+                            <div class="service-desc">Social engagement & support</div>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">😌</div>
+                            <div class="service-name">Respite Care</div>
+                            <div class="service-desc">Relief for family caregivers</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INSURANCE & COVERAGE -->
+                <div class="section">
+                    <h2 class="section-title">Insurance & Coverage</h2>
+                    <div class="coverage-list">
+                        <div class="coverage-item">
+                            <span class="checkmark">✓</span>
+                            <span>Medicaid / Title 19</span>
+                        </div>
+                        <div class="coverage-item">
+                            <span class="checkmark">✓</span>
+                            <span>HCBS Waiver</span>
+                        </div>
+                        <div class="coverage-item">
+                            <span class="checkmark">✓</span>
+                            <span>Medicare</span>
+                        </div>
+                        <div class="coverage-item">
+                            <span class="checkmark">✓</span>
+                            <span>Private Insurance</span>
+                        </div>
+                        <div class="coverage-item">
+                            <span class="checkmark">✓</span>
+                            <span>Private Pay</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AMENITIES -->
+                <div class="section">
+                    <h2 class="section-title">Features & Amenities</h2>
+                    <div class="amenities-grid">
+                        <div class="amenity-pill">24/7 Emergency Line</div>
+                        <div class="amenity-pill">Bilingual Staff</div>
+                        <div class="amenity-pill">Background Checked</div>
+                        <div class="amenity-pill">Licensed & Bonded</div>
+                        <div class="amenity-pill">Free Consultation</div>
+                        <div class="amenity-pill">Flexible Scheduling</div>
+                        <div class="amenity-pill">Weekend Availability</div>
+                        <div class="amenity-pill">Holiday Coverage</div>
+                    </div>
+                </div>
+
+                <!-- REVIEWS -->
+                <div class="section">
+                    <h2 class="section-title">Guest Reviews</h2>
+                    <div class="reviews-list">
+                        <div class="review-item">
+                            <div class="review-header">
+                                <span class="reviewer-name">Margaret Chen</span>
+                                <span class="review-date">March 15, 2026</span>
+                            </div>
+                            <div class="review-stars">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                            </div>
+                            <div class="review-text">
+                                "Exceptional care and professionalism. The nurses are knowledgeable and compassionate. They've made my mother feel comfortable and well-cared-for. Highly recommend!"
+                            </div>
+                        </div>
+                        <div class="review-item">
+                            <div class="review-header">
+                                <span class="reviewer-name">Robert Martinez</span>
+                                <span class="review-date">February 28, 2026</span>
+                            </div>
+                            <div class="review-stars">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                            </div>
+                            <div class="review-text">
+                                "Sunshine has been wonderful for my father's recovery. The physical therapists are professional and encouraging. The entire team genuinely cares about their patients."
+                            </div>
+                        </div>
+                        <div class="review-item">
+                            <div class="review-header">
+                                <span class="reviewer-name">Diana Thompson</span>
+                                <span class="review-date">February 12, 2026</span>
+                            </div>
+                            <div class="review-stars">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">☆</span>
+                            </div>
+                            <div class="review-text">
+                                "Great services overall. The staff is friendly and responsive. Only minor scheduling conflicts early on, but they resolved them quickly. Very satisfied with the care."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN (SIDEBAR) -->
+            <div class="right-column">
+                <!-- CTA CARD -->
+                <div class="cta-card">
+                    <button class="cta-button" onclick="handleCallRequest()">Request a Call Back</button>
+
+                    <div class="cta-call">
+                        <div class="cta-phone">Or call directly:</div>
+                        <a class="cta-phone-number" href="tel:+17135550147">(713) 555-0147</a>
+                    </div>
+
+                    <div class="cta-subtext">
+                        Free consultation · No obligation
+                    </div>
+                </div>
+
+                <!-- FACILITY INFO CARD -->
+                <div class="section">
+                    <h2 class="section-title">Facility Info</h2>
+                    <div class="info-row">
+                        <span class="info-label">License #</span>
+                        <span class="info-value">HH-2847591</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Years in Business</span>
+                        <span class="info-value">18</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Staff Size</span>
+                        <span class="info-value">45+</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Languages</span>
+                        <span class="info-value">English, Spanish, Vietnamese</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Service Area</span>
+                        <span class="info-value">Greater Houston (50 mi)</span>
+                    </div>
+                </div>
+
+                <!-- MAP -->
+                <div class="section">
+                    <div class="map-placeholder" onclick="alert('Map integration coming soon!')">
+                        🗺️ View on Map
+                    </div>
+                    <div style="font-size: 12px; color: var(--gray); margin-top: 12px; text-align: center;">
+                        4521 Main Street, Houston, TX 77002
+                    </div>
+                </div>
+
+                <!-- HOURS CARD -->
+                <div class="section">
+                    <h2 class="section-title">Hours</h2>
+                    <div class="info-row">
+                        <span class="info-label">Monday - Friday</span>
+                        <span class="info-value">8:00 AM - 6:00 PM</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Saturday</span>
+                        <span class="info-value">9:00 AM - 1:00 PM</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Sunday</span>
+                        <span class="info-value" style="color: var(--orange);">Closed</span>
+                    </div>
+                    <div style="margin-top: 12px; padding: 12px; background: var(--teal-light); border-radius: 8px; font-size: 12px; color: var(--teal); text-align: center;">
+                        24/7 emergency support available
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIMILAR FACILITIES SECTION -->
+        <div class="similar-section">
+            <h2 class="similar-title">Similar Facilities in Houston</h2>
+            <div class="similar-grid">
+                <div class="facility-card">
+                    <div class="facility-card-image">
+                        📸 Facility Photo
+                    </div>
+                    <div class="facility-card-content">
+                        <div class="facility-card-name">Caring Hearts Home Health</div>
+                        <div class="facility-card-rating">
+                            <div class="stars" style="gap: 1px;">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                            </div>
+                            <span style="color: var(--gray); font-size: 12px;">4.7 (94 reviews)</span>
+                        </div>
+                        <div class="facility-card-city">Houston, TX</div>
+                    </div>
+                </div>
+
+                <div class="facility-card">
+                    <div class="facility-card-image">
+                        📸 Facility Photo
+                    </div>
+                    <div class="facility-card-content">
+                        <div class="facility-card-name">Elite In-Home Care Services</div>
+                        <div class="facility-card-rating">
+                            <div class="stars" style="gap: 1px;">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                            </div>
+                            <span style="color: var(--gray); font-size: 12px;">4.9 (156 reviews)</span>
+                        </div>
+                        <div class="facility-card-city">Houston, TX</div>
+                    </div>
+                </div>
+
+                <div class="facility-card">
+                    <div class="facility-card-image">
+                        📸 Facility Photo
+                    </div>
+                    <div class="facility-card-content">
+                        <div class="facility-card-name">Wellness Home Care Specialists</div>
+                        <div class="facility-card-rating">
+                            <div class="stars" style="gap: 1px;">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">☆</span>
+                            </div>
+                            <span style="color: var(--gray); font-size: 12px;">4.6 (112 reviews)</span>
+                        </div>
+                        <div class="facility-card-city">Houston, TX</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>For Customers</h3>
+                <ul>
+                    <li><a href="#">Search Vendors</a></li>
+                    <li><a href="#">How It Works</a></li>
+                    <li><a href="#">Browse Reviews</a></li>
+                    <li><a href="#">Pricing</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>For Providers</h3>
+                <ul>
+                    <li><a href="#">Join Senova</a></li>
+                    <li><a href="#">Provider Dashboard</a></li>
+                    <li><a href="#">Resources</a></li>
+                    <li><a href="#">Support</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Press</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Accessibility</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-logo">
+                <span class="footer-logo-sen">Sen</span><span class="footer-logo-ova">ova</span>
+            </div>
+            <span>Copyright 2026 Senova. All rights reserved.</span>
+        </div>
+    </footer>
+
+    <script>
+        function handleCallRequest() {
+            alert("Your request has been sent to Sunshine Home Health Services! They will call you within 24 hours.");
+        }
+
+        // Smooth scroll for review link
+        document.querySelector('.review-count').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector('.reviews-list').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Phone link handler
+        document.querySelector('.cta-phone-number').addEventListener('click', function(e) {
+            // Allow default tel: link behavior
+        });
+    </script>
+</body>
+</html>
