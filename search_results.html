@@ -22,3 +22,984 @@ a{text-decoration:none;color:inherit}
   --shadow:0 1px 6px rgba(32,33,36,.12);
   --shadow-lg:0 4px 24px rgba(32,33,36,.14);
 }
+
+/* ── TOP NAV (Google-style search page nav) ── */
+.nav{
+  background:#fff;border-bottom:1px solid var(--border);
+  padding:12px 24px;display:flex;align-items:center;gap:20px;
+  position:sticky;top:0;z-index:100;
+}
+.nav-logo{
+  font-family:'Poppins',sans-serif;font-weight:800;font-size:28px;
+  color:var(--teal);letter-spacing:-0.5px;flex-shrink:0;cursor:pointer;
+}
+.nav-logo em{color:var(--orange);font-style:normal}
+.nav-search{
+  flex:1;max-width:620px;position:relative;
+}
+.nav-search input{
+  width:100%;height:44px;border:1px solid var(--border);border-radius:22px;
+  padding:0 44px 0 44px;font-size:15px;font-family:'Inter',sans-serif;
+  color:var(--navy);outline:none;box-shadow:var(--shadow);
+}
+.nav-search input:focus{box-shadow:var(--shadow-lg);border-color:rgba(0,0,0,0)}
+.nav-search .icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--light-gray)}
+.nav-search .clear-btn{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--light-gray);cursor:pointer;font-size:18px;
+}
+.nav-right{display:flex;align-items:center;gap:12px;margin-left:auto}
+.nav-link{font-size:13px;font-weight:500;color:var(--gray);padding:6px 10px;border-radius:4px;cursor:pointer}
+.nav-link:hover{background:rgba(0,0,0,.04)}
+.nav-btn{
+  font-size:13px;font-weight:700;color:#fff;background:var(--teal);
+  border:none;border-radius:4px;padding:8px 16px;cursor:pointer;font-family:'Inter',sans-serif;
+}
+.nav-avatar{
+  width:32px;height:32px;border-radius:50%;background:var(--orange);
+  color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;font-family:'Poppins',sans-serif;
+}
+
+/* ── FILTER TABS (Google-style category tabs) ── */
+.filter-bar{
+  background:#fff;border-bottom:1px solid var(--border);
+  padding:0 24px;display:flex;align-items:center;gap:0;overflow-x:auto;
+}
+.tab{
+  padding:12px 16px;font-size:13px;font-weight:500;color:var(--gray);
+  border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;
+  transition:all .15s;
+}
+.tab:hover{color:var(--navy)}
+.tab.active{color:var(--teal);border-bottom-color:var(--teal);font-weight:600}
+.filter-sep{width:1px;height:24px;background:var(--border);margin:0 8px}
+.filter-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 14px;border:1.5px solid var(--border);border-radius:100px;
+  font-size:12px;font-weight:600;color:var(--navy);cursor:pointer;
+  white-space:nowrap;background:#fff;transition:all .15s;
+}
+.filter-pill:hover{border-color:var(--teal);color:var(--teal)}
+.filter-pill.active{background:var(--teal-light);border-color:var(--teal);color:var(--teal)}
+.filter-pill svg{width:14px;height:14px}
+
+/* ── LAYOUT ── */
+.page{display:flex;min-height:calc(100vh - 110px)}
+
+/* Sidebar */
+.sidebar{
+  width:280px;flex-shrink:0;background:#fff;border-right:1px solid var(--border);
+  padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:20px;
+}
+.sb-section h4{
+  font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;
+  letter-spacing:1px;margin-bottom:12px;
+}
+.sb-option{
+  display:flex;align-items:center;gap:10px;padding:6px 0;cursor:pointer;font-size:14px;
+}
+.sb-option input[type=checkbox]{
+  width:18px;height:18px;accent-color:var(--teal);cursor:pointer;
+}
+.sb-option label{cursor:pointer;flex:1}
+.sb-count{font-size:12px;color:var(--light-gray);font-weight:500}
+.sb-range{
+  width:100%;margin-top:8px;accent-color:var(--teal);
+}
+
+/* Main content */
+.main{flex:1;background:var(--bg);padding:20px 28px}
+
+/* Results header */
+.results-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;flex-wrap:wrap;gap:12px;
+}
+.results-count{font-size:14px;color:var(--gray)}
+.results-count strong{color:var(--navy)}
+.sort-select{
+  padding:7px 12px;border:1px solid var(--border);border-radius:8px;
+  font-size:13px;font-family:'Inter',sans-serif;color:var(--navy);
+  background:#fff;cursor:pointer;outline:none;
+}
+
+/* Medicaid info banner */
+.medicaid-banner{
+  background:var(--teal-light);border:1px solid #99F6E4;border-radius:12px;
+  padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;
+  font-size:14px;color:var(--navy);
+}
+.medicaid-banner strong{color:var(--teal)}
+
+/* ── LISTING CARDS ── */
+.listing{
+  background:#fff;border:1px solid var(--border);border-radius:14px;
+  padding:0;margin-bottom:14px;transition:box-shadow .15s,border-color .15s;
+  overflow:hidden;
+}
+.listing:hover{box-shadow:var(--shadow-lg);border-color:#c5dae8}
+/* reserved */
+
+.listing-inner{display:flex;padding:20px;gap:16px}
+
+/* Avatar */
+.l-av{
+  width:52px;height:52px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Poppins',sans-serif;font-weight:700;font-size:16px;color:#fff;
+}
+
+/* Body */
+.l-body{flex:1;min-width:0}
+.l-name{font-size:16px;font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.l-name a{color:var(--teal)}
+.l-name a:hover{text-decoration:underline}
+
+.l-badges{display:flex;gap:6px;flex-wrap:wrap}
+.badge{
+  font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;
+  display:inline-flex;align-items:center;gap:3px;
+}
+/* reserved */
+.badge-med{background:#D1FAE5;color:#065F46}
+.badge-vf{background:var(--teal-light);color:var(--teal)}
+
+.l-loc{font-size:13px;color:var(--gray);margin:6px 0}
+.l-loc strong{color:var(--navy);font-weight:600}
+
+.l-desc{font-size:14px;color:var(--gray);line-height:1.55;margin-bottom:10px}
+
+.l-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.l-tag{
+  font-size:12px;padding:3px 10px;border-radius:100px;
+  background:var(--border-light);color:var(--gray);
+}
+
+.l-footer{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.l-stars{color:var(--gold);font-size:13px}
+.l-reviews{font-size:13px;color:var(--gray)}
+.l-status{font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px}
+.l-status.open{color:var(--green)}
+.l-status.closed{color:#DC2626}
+
+/* Right actions */
+.l-actions{
+  display:flex;flex-direction:column;gap:8px;flex-shrink:0;
+  align-items:flex-end;justify-content:center;padding-left:8px;
+}
+.btn-cta{
+  padding:10px 22px;background:var(--orange);color:#fff;border:none;
+  border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;
+  font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap;
+}
+.btn-cta:hover{background:var(--orange-dark);transform:translateY(-1px)}
+.btn-sec{
+  padding:9px 20px;background:#fff;color:var(--teal);border:1.5px solid var(--teal);
+  border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;
+  font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap;
+}
+.btn-sec:hover{background:var(--teal);color:#fff}
+.l-phone{font-size:13px;color:var(--teal);font-weight:600;margin-top:2px}
+
+/* reserved */
+
+/* ── PAGINATION ── */
+.pagination{
+  display:flex;align-items:center;justify-content:center;
+  gap:6px;margin:32px 0 20px;
+}
+.pg{
+  width:36px;height:36px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:14px;font-weight:600;cursor:pointer;
+  border:none;background:#fff;color:var(--navy);transition:all .15s;
+}
+.pg:hover{background:var(--teal-light)}
+.pg.active{background:var(--teal);color:#fff}
+.pg.arrow{font-size:18px;color:var(--gray)}
+
+/* ── AI CHAT CTA ── */
+.chat-cta{
+  background:linear-gradient(135deg,var(--teal),#0B7A6E);
+  border-radius:14px;padding:20px;margin-top:20px;
+  display:flex;align-items:center;gap:16px;
+}
+.chat-cta-av{
+  width:48px;height:48px;border-radius:50%;
+  background:rgba(255,255,255,.2);display:flex;align-items:center;
+  justify-content:center;font-size:22px;flex-shrink:0;
+}
+.chat-cta-text{flex:1}
+.chat-cta-text h4{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px}
+.chat-cta-text p{font-size:13px;color:rgba(255,255,255,.75)}
+.chat-cta-btn{
+  padding:10px 20px;background:#fff;color:var(--teal);border:none;
+  border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;
+  font-family:'Inter',sans-serif;white-space:nowrap;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .sidebar{display:none}
+  .l-actions{flex-direction:row;padding-left:0;padding-top:12px}
+}
+@media(max-width:600px){
+  .listing-inner{flex-direction:column}
+  .l-actions{flex-direction:row;align-items:flex-start}
+  .filter-bar{padding:0 12px}
+  .main{padding:12px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOP NAV ═══ -->
+<div class="nav">
+  <div class="nav-logo" onclick="window.location='/'">Seno<em>va</em></div>
+  <div class="nav-search">
+    <span class="icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+    </span>
+    <input type="text" value="Home Health Care in Houston, TX" />
+    <button class="clear-btn">✕</button>
+  </div>
+  <div class="nav-right">
+    <a class="nav-link" href="/for-providers">For Providers</a>
+    <a class="nav-link" href="/signin">Sign In</a>
+    <button class="nav-btn" onclick="window.location='/signin'">Create Account</button>
+    <div class="nav-avatar">B</div>
+  </div>
+</div>
+
+<!-- ═══ FILTER TABS ═══ -->
+<div class="filter-bar">
+  <div class="tab active">All</div>
+  <div class="tab">Home Health</div>
+  <div class="tab">Adult Day Care</div>
+  <div class="tab">Hospice</div>
+  <div class="tab">Assisted Living</div>
+  <div class="tab">Drug & Alcohol Rehab</div>
+  <div class="tab">Memory Care</div>
+  <div class="filter-sep"></div>
+  <div class="filter-pill active">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+    Medicaid Accepted
+  </div>
+  <div class="filter-pill">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    Open Now
+  </div>
+  <div class="filter-pill">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    4+ Stars
+  </div>
+  <div class="filter-pill">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg>
+    Within 25 miles
+  </div>
+  <div class="filter-pill">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    Language
+  </div>
+  <div class="filter-pill">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+    Meals & Cuisine
+  </div>
+</div>
+
+<!-- ═══ PAGE LAYOUT ═══ -->
+<div class="page">
+
+  <!-- ── SIDEBAR FILTERS ── -->
+  <aside class="sidebar">
+    <div class="sb-section">
+      <h4>Care Type</h4>
+      <div class="sb-option"><input type="checkbox" id="c1" checked><label for="c1">Home Health Care</label><span class="sb-count">342</span></div>
+      <div class="sb-option"><input type="checkbox" id="c2"><label for="c2">Adult Day Care</label><span class="sb-count">87</span></div>
+      <div class="sb-option"><input type="checkbox" id="c3"><label for="c3">Hospice Care</label><span class="sb-count">64</span></div>
+      <div class="sb-option"><input type="checkbox" id="c4"><label for="c4">Assisted Living</label><span class="sb-count">198</span></div>
+      <div class="sb-option"><input type="checkbox" id="c5"><label for="c5">Drug & Alcohol Rehab</label><span class="sb-count">56</span></div>
+      <div class="sb-option"><input type="checkbox" id="c6"><label for="c6">Memory Care</label><span class="sb-count">31</span></div>
+    </div>
+
+    <div class="sb-section">
+      <h4>Payment Accepted</h4>
+      <div class="sb-option"><input type="checkbox" id="p1" checked><label for="p1">Medicaid / Title 19</label><span class="sb-count">298</span></div>
+      <div class="sb-option"><input type="checkbox" id="p2"><label for="p2">Medicare</label><span class="sb-count">310</span></div>
+      <div class="sb-option"><input type="checkbox" id="p3"><label for="p3">Private Insurance</label><span class="sb-count">225</span></div>
+      <div class="sb-option"><input type="checkbox" id="p4"><label for="p4">Private Pay / Self-Pay</label><span class="sb-count">342</span></div>
+    </div>
+
+    <div class="sb-section">
+      <h4>Distance</h4>
+      <input type="range" class="sb-range" min="5" max="100" value="25" />
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--light-gray);margin-top:4px">
+        <span>5 mi</span><span id="distVal" style="font-weight:600;color:var(--navy)">25 miles</span><span>100 mi</span>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <h4>Quality Rating</h4>
+      <div class="sb-option"><input type="checkbox" id="r5"><label for="r5">★★★★★ 5 Stars</label><span class="sb-count">67</span></div>
+      <div class="sb-option"><input type="checkbox" id="r4"><label for="r4">★★★★☆ 4+ Stars</label><span class="sb-count">148</span></div>
+      <div class="sb-option"><input type="checkbox" id="r3"><label for="r3">★★★☆☆ 3+ Stars</label><span class="sb-count">265</span></div>
+    </div>
+
+    <div class="sb-section">
+      <h4>Services Needed</h4>
+      <div class="sb-option"><input type="checkbox" id="s1"><label for="s1">Skilled Nursing</label></div>
+      <div class="sb-option"><input type="checkbox" id="s2"><label for="s2">Physical Therapy</label></div>
+      <div class="sb-option"><input type="checkbox" id="s3"><label for="s3">Home Health Aide</label></div>
+      <div class="sb-option"><input type="checkbox" id="s4"><label for="s4">Personal Care</label></div>
+      <div class="sb-option"><input type="checkbox" id="s5"><label for="s5">Respite Care</label></div>
+      <div class="sb-option"><input type="checkbox" id="s6"><label for="s6">HCBS Waiver</label></div>
+    </div>
+
+    <div class="sb-section">
+      <h4>Languages Spoken</h4>
+      <div class="sb-option"><input type="checkbox" id="lang1"><label for="lang1">English</label><span class="sb-count">340</span></div>
+      <div class="sb-option"><input type="checkbox" id="lang2"><label for="lang2">Spanish</label><span class="sb-count">186</span></div>
+      <div class="sb-option"><input type="checkbox" id="lang3"><label for="lang3">Hmong</label><span class="sb-count">24</span></div>
+      <div class="sb-option"><input type="checkbox" id="lang4"><label for="lang4">Vietnamese</label><span class="sb-count">42</span></div>
+      <div class="sb-option"><input type="checkbox" id="lang5"><label for="lang5">Chinese (Mandarin)</label><span class="sb-count">38</span></div>
+      <div class="sb-option"><input type="checkbox" id="lang6"><label for="lang6">Chinese (Cantonese)</label><span class="sb-count">19</span></div>
+      <div class="sb-option"><input type="checkbox" id="lang7"><label for="lang7">Korean</label><span class="sb-count">27</span></div>
+      <div class="sb-option"><input type="checkbox" id="lang8"><label for="lang8">Tagalog / Filipino</label><span class="sb-count">31</span></div>
+      <div class="sb-option"><input type="checkbox" id="lang9"><label for="lang9">Hindi</label><span class="sb-count">22</span></div>
+      <div class="sb-option"><input type="checkbox" id="lang10"><label for="lang10">Arabic</label><span class="sb-count">18</span></div>
+      <div class="sb-option"><input type="checkbox" id="lang11"><label for="lang11">Somali</label><span class="sb-count">15</span></div>
+      <div class="sb-option"><input type="checkbox" id="lang12"><label for="lang12">Russian</label><span class="sb-count">12</span></div>
+      <div class="sb-option"><input type="checkbox" id="lang13"><label for="lang13">French / Haitian Creole</label><span class="sb-count">21</span></div>
+      <div class="sb-option"><input type="checkbox" id="lang14"><label for="lang14">Portuguese</label><span class="sb-count">9</span></div>
+      <div class="sb-option"><input type="checkbox" id="lang15"><label for="lang15">Japanese</label><span class="sb-count">7</span></div>
+      <div class="sb-option"><input type="checkbox" id="lang16"><label for="lang16">Swahili</label><span class="sb-count">6</span></div>
+      <div class="sb-option"><input type="checkbox" id="lang17"><label for="lang17">American Sign Language (ASL)</label><span class="sb-count">14</span></div>
+    </div>
+
+    <div class="sb-section">
+      <h4>Meal Services & Cuisine</h4>
+      <div class="sb-option"><input type="checkbox" id="meal1"><label for="meal1">Meals Provided</label><span class="sb-count">198</span></div>
+      <div class="sb-option"><input type="checkbox" id="meal2"><label for="meal2">Hmong Cuisine</label><span class="sb-count">12</span></div>
+      <div class="sb-option"><input type="checkbox" id="meal3"><label for="meal3">Asian / East Asian</label><span class="sb-count">34</span></div>
+      <div class="sb-option"><input type="checkbox" id="meal4"><label for="meal4">Hispanic / Latin American</label><span class="sb-count">67</span></div>
+      <div class="sb-option"><input type="checkbox" id="meal5"><label for="meal5">Soul Food / Southern</label><span class="sb-count">48</span></div>
+      <div class="sb-option"><input type="checkbox" id="meal6"><label for="meal6">Caribbean</label><span class="sb-count">15</span></div>
+      <div class="sb-option"><input type="checkbox" id="meal7"><label for="meal7">Middle Eastern / Halal</label><span class="sb-count">21</span></div>
+      <div class="sb-option"><input type="checkbox" id="meal8"><label for="meal8">Indian / South Asian</label><span class="sb-count">18</span></div>
+      <div class="sb-option"><input type="checkbox" id="meal9"><label for="meal9">Kosher</label><span class="sb-count">9</span></div>
+      <div class="sb-option"><input type="checkbox" id="meal10"><label for="meal10">Vegetarian / Vegan</label><span class="sb-count">42</span></div>
+      <div class="sb-option"><input type="checkbox" id="meal11"><label for="meal11">Diabetic-Friendly</label><span class="sb-count">89</span></div>
+      <div class="sb-option"><input type="checkbox" id="meal12"><label for="meal12">Low-Sodium / Heart Healthy</label><span class="sb-count">76</span></div>
+      <div class="sb-option"><input type="checkbox" id="meal13"><label for="meal13">Pureed / Soft Diet</label><span class="sb-count">54</span></div>
+      <div class="sb-option"><input type="checkbox" id="meal14"><label for="meal14">African / West African</label><span class="sb-count">11</span></div>
+      <div class="sb-option"><input type="checkbox" id="meal15"><label for="meal15">Filipino</label><span class="sb-count">8</span></div>
+      <div class="sb-option"><input type="checkbox" id="meal16"><label for="meal16">Ethiopian / East African</label><span class="sb-count">7</span></div>
+    </div>
+
+    <!-- Help CTA in sidebar -->
+    <div class="chat-cta">
+      <div class="chat-cta-av">💡</div>
+      <div class="chat-cta-text">
+        <h4>Need help choosing?</h4>
+        <p>Create a free account to compare providers and request callbacks</p>
+      </div>
+      <button class="chat-cta-btn" onclick="window.location='/signin'">Sign Up Free</button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN RESULTS ── -->
+  <div class="main">
+
+    <!-- Results header -->
+    <div class="results-header">
+      <div class="results-count">
+        Showing <strong>342 providers</strong> for "Home Health Care" near <strong>Houston, TX 77002</strong>
+      </div>
+      <select class="sort-select">
+        <option>Sort by: Recommended</option>
+        <option>Sort by: Highest Rated</option>
+        <option>Sort by: Most Reviews</option>
+        <option>Sort by: Nearest</option>
+        <option>Sort by: Name A–Z</option>
+      </select>
+    </div>
+
+    <!-- Medicaid banner -->
+    <div class="medicaid-banner">
+      <span style="font-size:20px">📋</span>
+      <div><strong>Texas Medicaid</strong> covers home health care through the STAR+PLUS HCBS waiver program. Most listings below accept Medicaid at no cost to you. <a href="#" style="color:var(--teal);font-weight:600;text-decoration:underline">Learn more →</a></div>
+    </div>
+
+    <!-- ── LOADING STATE ── -->
+    <div id="loading-state" style="text-align:center;padding:60px 20px">
+      <div style="display:inline-block;width:40px;height:40px;border:4px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin 1s linear infinite"></div>
+      <p style="margin-top:16px;font-size:15px;color:var(--gray)">Searching government databases for real providers...</p>
+      <p style="margin-top:6px;font-size:13px;color:var(--light-gray)">Pulling data from CMS.gov Medicare Provider Database</p>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+    </div>
+
+    <!-- ── DYNAMIC LISTINGS CONTAINER ── -->
+    <div id="listings-container"></div>
+
+    <!-- ── PAGINATION ── -->
+    <div class="pagination" id="pagination-container"></div>
+
+    <div id="results-footer" style="text-align:center;font-size:13px;color:var(--light-gray);margin-bottom:20px"></div>
+
+  </div><!-- /main -->
+</div><!-- /page -->
+
+<script>
+// Distance slider
+document.querySelector('.sb-range')?.addEventListener('input', function(){
+  document.getElementById('distVal').textContent = this.value + ' miles';
+});
+
+/* ══════════════════════════════════════════════════════
+   CMS.GOV API INTEGRATION - REAL PROVIDER DATA
+   ══════════════════════════════════════════════════════ */
+
+// API endpoint — calls our own secure backend (no external keys exposed)
+// Falls back to direct CMS API if our backend isn't set up yet
+const API_BASE = '/api/providers';
+const CMS_FALLBACK = {
+  HOME_HEALTH: 'https://data.cms.gov/provider-data/api/1/datastore/query/6jpm-sxkc/0',
+  HOSPICE: 'https://data.cms.gov/provider-data/api/1/datastore/query/yc9t-dgbk/0'
+};
+
+const AVATAR_COLORS = ['#0D9488','#6D28D9','#F97316','#059669','#DC2626','#7C3AED','#0284C7','#EA580C','#4F46E5','#BE185D','#0369A1','#16A34A','#D97706','#9333EA','#E11D48'];
+
+function getInitials(name) {
+  return name.split(/\s+/).filter(w => w.length > 1 && w[0] === w[0].toUpperCase()).slice(0, 2).map(w => w[0]).join('');
+}
+
+function formatPhone(phone) {
+  const d = (phone || '').replace(/\D/g, '');
+  if (d.length === 10) return '(' + d.slice(0,3) + ') ' + d.slice(3,6) + '-' + d.slice(6);
+  return phone || '';
+}
+
+function renderStars(rating) {
+  const r = parseFloat(rating);
+  if (isNaN(r) || r <= 0) return '<span style="color:var(--light-gray);font-size:12px">No rating yet</span>';
+  let s = '';
+  for (let i = 1; i <= 5; i++) s += i <= Math.round(r) ? '★' : '☆';
+  return '<span class="l-stars">' + s + '</span><span class="l-reviews">' + r.toFixed(1) + ' (CMS Quality Rating)</span>';
+}
+
+function buildServiceTags(provider) {
+  const tags = [];
+  if (provider.offers_nursing_care_services === 'Yes') tags.push('Skilled Nursing');
+  if (provider.offers_physical_therapy_services === 'Yes') tags.push('Physical Therapy');
+  if (provider.offers_occupational_therapy_services === 'Yes') tags.push('Occupational Therapy');
+  if (provider.offers_speech_pathology_services === 'Yes') tags.push('Speech Pathology');
+  if (provider.offers_medical_social_services === 'Yes') tags.push('Medical Social Services');
+  if (provider.offers_home_health_aide_services === 'Yes') tags.push('Home Health Aide');
+  return tags;
+}
+
+function buildHospiceTags() {
+  return ['Hospice Care', 'Palliative Care', 'Pain Management', 'Bereavement Support'];
+}
+
+function renderListing(provider, index, type) {
+  const name = provider.provider_name || provider.facility_name || 'Unknown Provider';
+  const initials = getInitials(name) || 'P';
+  const color = AVATAR_COLORS[index % AVATAR_COLORS.length];
+  const city = provider.citytown || '';
+  const state = provider.state || '';
+  const zip = provider.zip_code || '';
+  const addr = provider.address || provider.address_line_1 || '';
+  const phone = formatPhone(provider.telephone_number || '');
+  const ownership = provider.type_of_ownership || provider.ownership_type || '';
+  const rating = provider.quality_of_patient_care_star_rating || '';
+  const certDate = provider.certification_date || '';
+  const ccn = provider.cms_certification_number_ccn || '';
+
+  const tags = type === 'hospice' ? buildHospiceTags() : buildServiceTags(provider);
+  const tagsHtml = tags.map(t => '<span class="l-tag">' + t + '</span>').join('');
+
+  const ownerBadge = ownership.toLowerCase().includes('non-profit') ? '<span class="badge" style="background:#DBEAFE;color:#1E40AF">Non-Profit</span>' : '';
+  const govBadge = ownership.toLowerCase().includes('government') ? '<span class="badge" style="background:#DBEAFE;color:#1E40AF">Government</span>' : '';
+  const typeBadge = type === 'hospice' ? '<span class="badge" style="background:#FEE2E2;color:#991B1B">Hospice</span>' : '<span class="badge badge-vf">Home Health</span>';
+
+  const descParts = [];
+  if (type === 'hospice') descParts.push('Medicare-certified hospice facility');
+  else descParts.push('Medicare-certified home health agency');
+  if (ownership) descParts.push(ownership.charAt(0).toUpperCase() + ownership.slice(1).toLowerCase() + ' organization');
+  if (certDate && certDate !== '-') descParts.push('certified since ' + certDate);
+  descParts.push('CMS Provider #' + ccn);
+  const desc = descParts.join('. ') + '.';
+
+  return '<div class="listing"><div class="listing-inner">' +
+    '<div class="l-av" style="background:' + color + '">' + initials + '</div>' +
+    '<div class="l-body">' +
+      '<div class="l-name"><a href="/provider/' + ccn + '">' + titleCase(name) + '</a>' +
+        '<div class="l-badges"><span class="badge badge-med">✓ Medicare</span>' + typeBadge + ownerBadge + govBadge + '</div>' +
+      '</div>' +
+      '<div class="l-loc">📍 <strong>' + addr + ', ' + city + ', ' + state + ' ' + zip + '</strong></div>' +
+      '<div class="l-desc">' + desc + '</div>' +
+      '<div class="l-tags">' + tagsHtml + '</div>' +
+      '<div class="l-footer">' + renderStars(rating) +
+        '<span class="l-status open">● Medicare Certified</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="l-actions">' +
+      '<button class="btn-cta" onclick="window.location=\'/signin'">Get More Info</button>' +
+      '<button class="btn-sec" onclick="window.location=\'/provider/' + ccn + ''">View Profile</button>' +
+      (phone ? '<span class="l-phone">📞 ' + phone + '</span>' : '') +
+    '</div>' +
+  '</div></div>';
+}
+
+function titleCase(str) {
+  return str.toLowerCase().replace(/(?:^|\s|[-/])\w/g, m => m.toUpperCase());
+}
+
+function renderPagination(currentPage, totalPages) {
+  const container = document.getElementById('pagination-container');
+  if (!container || totalPages <= 1) return;
+  let html = '<button class="pg arrow" onclick="changePage(' + (currentPage - 1) + ')"' + (currentPage <= 1 ? ' disabled style="opacity:.3"' : '') + '>‹</button>';
+  const start = Math.max(1, currentPage - 2);
+  const end = Math.min(totalPages, currentPage + 2);
+  if (start > 1) { html += '<button class="pg" onclick="changePage(1)">1</button>'; if (start > 2) html += '<button class="pg" disabled>...</button>'; }
+  for (let i = start; i <= end; i++) {
+    html += '<button class="pg' + (i === currentPage ? ' active' : '') + '" onclick="changePage(' + i + ')">' + i + '</button>';
+  }
+  if (end < totalPages) { if (end < totalPages - 1) html += '<button class="pg" disabled>...</button>'; html += '<button class="pg" onclick="changePage(' + totalPages + ')">' + totalPages + '</button>'; }
+  html += '<button class="pg arrow" onclick="changePage(' + (currentPage + 1) + ')"' + (currentPage >= totalPages ? ' disabled style="opacity:.3"' : '') + '>›</button>';
+  container.innerHTML = html;
+}
+
+/* ── GLOBAL STATE ── */
+let currentState = '';
+let currentZip = '';
+let currentCity = '';
+let currentCareType = 'all';
+let currentPage = 1;
+const RESULTS_PER_PAGE = 10;
+
+async function fetchProviders(state, zip, page, careType) {
+  const container = document.getElementById('listings-container');
+  const loading = document.getElementById('loading-state');
+  if (loading) loading.style.display = 'block';
+  container.innerHTML = '';
+
+  try {
+    let results = [];
+    let totalCount = 0;
+    let dataSource = 'cached';
+
+    // TRY 1: Our own secure cached API (Supabase backend)
+    try {
+      const params = new URLSearchParams();
+      if (state) params.set('state', state);
+      if (zip) params.set('zip', zip);
+      if (careType && careType !== 'all') params.set('type', careType);
+      params.set('page', page);
+      params.set('limit', RESULTS_PER_PAGE);
+
+      const apiResp = await fetch(API_BASE + '?' + params.toString());
+      if (apiResp.ok) {
+        const apiData = await apiResp.json();
+        if (apiData.providers && apiData.providers.length > 0) {
+          results = apiData.providers.map(p => ({...p, _type: p.provider_type || 'home_health'}));
+          totalCount = apiData.total || results.length;
+          dataSource = apiData.cached ? 'cached' : 'live';
+        }
+      }
+    } catch(e) { /* Backend not available, fall through to CMS */ }
+
+    // TRY 2: Direct CMS API fallback (if backend not set up yet)
+    if (results.length === 0) {
+      dataSource = 'cms_live';
+      const stateCondition = 'conditions[0][property]=state&conditions[0][value]=' + encodeURIComponent(state) + '&conditions[0][operator]=%3D';
+
+      let zipCondition = '';
+      if (zip && zip.length === 5) {
+        zipCondition = '&conditions[1][property]=zip_code&conditions[1][value]=' + encodeURIComponent(zip) + '&conditions[1][operator]=%3D';
+      }
+      const offset = (page - 1) * RESULTS_PER_PAGE;
+
+      if (careType === 'all' || careType === 'home_health') {
+        const hhUrl = CMS_FALLBACK.HOME_HEALTH + '?limit=' + RESULTS_PER_PAGE + '&offset=' + offset + '&' + stateCondition + zipCondition;
+        const hhResp = await fetch(hhUrl);
+        if (hhResp.ok) {
+          const hhData = await hhResp.json();
+          hhData.results.forEach(r => results.push({...r, _type: 'home_health'}));
+          totalCount += hhData.count || 0;
+        }
+      }
+
+      if (careType === 'all' || careType === 'hospice') {
+        const hUrl = CMS_FALLBACK.HOSPICE + '?limit=' + (careType==='all'?5:RESULTS_PER_PAGE) + '&offset=' + (careType==='all'?0:(page-1)*RESULTS_PER_PAGE) + '&' + stateCondition;
+        const hResp = await fetch(hUrl);
+        if (hResp.ok) {
+          const hData = await hResp.json();
+          hData.results.forEach(r => results.push({...r, _type: 'hospice', provider_name: r.facility_name}));
+          totalCount += hData.count || 0;
+        }
+      }
+
+      // Broaden if ZIP exact match returned nothing
+      if (results.length === 0 && zip) {
+        const broadUrl = CMS_FALLBACK.HOME_HEALTH + '?limit=' + RESULTS_PER_PAGE + '&offset=' + ((page-1)*RESULTS_PER_PAGE) + '&' + stateCondition;
+        const broadResp = await fetch(broadUrl);
+        if (broadResp.ok) {
+          const broadData = await broadResp.json();
+          broadData.results.forEach(r => results.push({...r, _type: 'home_health'}));
+          totalCount = broadData.count || 0;
+        }
+      }
+
+      // Sort: prioritize matching ZIP prefix
+      if (zip) {
+        const prefix = zip.substring(0, 3);
+        results.sort((a, b) => {
+          const aZip = (a.zip_code || '').substring(0, 3);
+          const bZip = (b.zip_code || '').substring(0, 3);
+          if (aZip === prefix && bZip !== prefix) return -1;
+          if (bZip === prefix && aZip !== prefix) return 1;
+          return (a.provider_name || '').localeCompare(b.provider_name || '');
+        });
+      }
+    }
+
+    // Render results
+    if (loading) loading.style.display = 'none';
+
+    if (results.length === 0) {
+      container.innerHTML = '<div style="text-align:center;padding:60px 20px"><p style="font-size:18px;font-weight:600;color:var(--navy);margin-bottom:8px">No providers found</p><p style="font-size:14px;color:var(--gray)">Try searching for a different ZIP code or expanding your search area.</p></div>';
+      return;
+    }
+
+    let html = '';
+    results.forEach((provider, i) => {
+      html += renderListing(provider, i, provider._type);
+    });
+    container.innerHTML = html;
+
+    // Update counts
+    const countEl = document.querySelector('.results-count');
+    const displayLoc = currentZip ? currentCity + ' ' + currentZip : currentCity;
+    const careLabel = careType === 'hospice' ? 'Hospice Care' : careType === 'home_health' ? 'Home Health Care' : 'Care Providers';
+    if (countEl) countEl.innerHTML = 'Showing <strong>' + totalCount.toLocaleString() + ' providers</strong> for "' + careLabel + '" near <strong>' + displayLoc + '</strong>';
+
+    // Pagination
+    const totalPages = Math.ceil(totalCount / RESULTS_PER_PAGE);
+    renderPagination(page, Math.min(totalPages, 50));
+
+    // Footer
+    const footer = document.getElementById('results-footer');
+    if (footer) {
+      const offset = (page - 1) * RESULTS_PER_PAGE;
+      const endNum = Math.min(offset + results.length, totalCount);
+      const srcLabel = dataSource === 'cached'
+        ? 'Senova database (synced from CMS.gov)'
+        : 'CMS.gov Medicare Provider Database';
+      footer.innerHTML = 'Showing ' + (offset + 1) + '–' + endNum + ' of ' + totalCount.toLocaleString() + ' providers · Data sourced from <strong>' + srcLabel + '</strong> · Updated quarterly';
+    }
+
+    // Sidebar counts
+    updateSidebarCounts(state);
+
+  } catch (err) {
+    if (loading) loading.style.display = 'none';
+    container.innerHTML = '<div style="text-align:center;padding:60px 20px"><p style="font-size:18px;font-weight:600;color:#DC2626;margin-bottom:8px">Error loading providers</p><p style="font-size:14px;color:var(--gray)">' + err.message + '</p><p style="margin-top:12px"><button class="btn-cta" onclick="fetchProviders(\'' + state + '\',\'' + zip + '\',' + page + ',\'' + careType + '\')">Try Again</button></p></div>';
+  }
+}
+
+async function updateSidebarCounts(state) {
+  try {
+    // Try our cached API first
+    const hhResp = await fetch(API_BASE + '?state=' + state + '&type=home_health&limit=1');
+    const hResp = await fetch(API_BASE + '?state=' + state + '&type=hospice&limit=1');
+    if (hhResp.ok) {
+      const d = await hhResp.json();
+      const el = document.querySelector('label[for="c1"]')?.parentElement?.querySelector('.sb-count');
+      if (el) el.textContent = d.total || 0;
+    }
+    if (hResp.ok) {
+      const d = await hResp.json();
+      const el = document.querySelector('label[for="c3"]')?.parentElement?.querySelector('.sb-count');
+      if (el) el.textContent = d.total || 0;
+    }
+  } catch(e) {
+    // Fallback to CMS direct
+    try {
+      const sc = 'conditions[0][property]=state&conditions[0][value]=' + encodeURIComponent(state) + '&conditions[0][operator]=%3D';
+      const [r1, r2] = await Promise.all([
+        fetch(CMS_FALLBACK.HOME_HEALTH + '?limit=1&offset=0&' + sc),
+        fetch(CMS_FALLBACK.HOSPICE + '?limit=1&offset=0&' + sc)
+      ]);
+      if (r1.ok) {
+        const d = await r1.json();
+        const el = document.querySelector('label[for="c1"]')?.parentElement?.querySelector('.sb-count');
+        if (el) el.textContent = d.count || 0;
+      }
+      if (r2.ok) {
+        const d = await r2.json();
+        const el = document.querySelector('label[for="c3"]')?.parentElement?.querySelector('.sb-count');
+        if (el) el.textContent = d.count || 0;
+      }
+    } catch(e2) {}
+  }
+}
+
+function changePage(page) {
+  if (page < 1) return;
+  currentPage = page;
+  window.scrollTo({top: 0, behavior: 'smooth'});
+  fetchProviders(currentState, currentZip, currentPage, currentCareType);
+}
+
+/* ── ZIP CODE → CITY/STATE LOOKUP ── */
+const ZIP_DB = {
+  '550':'Minneapolis, MN','551':'St. Paul, MN','553':'Minneapolis, MN','554':'Rochester, MN','556':'Duluth, MN',
+  '600':'North Suburban IL','601':'Carol Stream, IL','602':'Evanston, IL','603':'Oak Park, IL','604':'South Suburban IL','606':'Chicago, IL','608':'Kankakee, IL',
+  '100':'New York, NY','101':'New York, NY','102':'New York, NY','103':'Staten Island, NY','104':'Bronx, NY','105':'Westchester, NY','110':'Queens, NY','111':'Long Island City, NY','112':'Brooklyn, NY','113':'Flushing, NY','114':'Jamaica, NY','115':'Western Nassau, NY','116':'Far Rockaway, NY','117':'Hicksville, NY','118':'Hauppauge, NY','119':'Riverhead, NY',
+  '770':'Houston, TX','771':'Houston, TX','772':'Houston, TX','773':'Huntsville, TX','774':'Waco, TX','750':'North Texas','751':'Dallas, TX','752':'Fort Worth, TX','753':'Dallas, TX','760':'Fort Worth, TX','761':'Waco, TX','780':'San Antonio, TX','781':'San Antonio, TX','782':'San Antonio, TX','783':'Corpus Christi, TX','785':'McAllen, TX','786':'Austin, TX','787':'Austin, TX','788':'San Antonio, TX','790':'Amarillo, TX','791':'Amarillo, TX','793':'Lubbock, TX','794':'Lubbock, TX','795':'Abilene, TX','796':'Abilene, TX','797':'Midland, TX','798':'El Paso, TX','799':'El Paso, TX',
+  '900':'Los Angeles, CA','901':'Los Angeles, CA','902':'Inglewood, CA','903':'Inglewood, CA','904':'Santa Monica, CA','905':'Torrance, CA','906':'Long Beach, CA','907':'Long Beach, CA','908':'Long Beach, CA','910':'Pasadena, CA','911':'Pasadena, CA','912':'Glendale, CA','913':'Van Nuys, CA','914':'Van Nuys, CA','915':'Burbank, CA','916':'North Hollywood, CA','917':'Industry, CA','918':'Alhambra, CA','919':'San Diego, CA','920':'San Diego, CA','921':'San Diego, CA','922':'San Bernardino, CA','923':'San Bernardino, CA','924':'San Bernardino, CA','925':'Riverside, CA','926':'Santa Ana, CA','927':'Santa Ana, CA','928':'Anaheim, CA','930':'Oxnard, CA','931':'Santa Barbara, CA','932':'Bakersfield, CA','933':'Bakersfield, CA','934':'Santa Barbara, CA','935':'Mojave, CA','936':'Fresno, CA','937':'Fresno, CA','938':'Fresno, CA','939':'Salinas, CA','940':'San Francisco, CA','941':'San Francisco, CA','942':'Sacramento, CA','943':'Palo Alto, CA','944':'San Mateo, CA','945':'Oakland, CA','946':'Oakland, CA','947':'Berkeley, CA','948':'Richmond, CA','949':'San Rafael, CA','950':'San Jose, CA','951':'San Jose, CA','952':'Stockton, CA','953':'Stockton, CA','954':'Santa Rosa, CA','955':'Eureka, CA','956':'Sacramento, CA','957':'Sacramento, CA','958':'Sacramento, CA','959':'Marysville, CA','960':'Redding, CA','961':'Reno, NV',
+  '330':'Miami, FL','331':'Miami, FL','332':'Miami, FL','333':'Fort Lauderdale, FL','334':'West Palm Beach, FL','335':'Tampa, FL','336':'Tampa, FL','337':'St. Petersburg, FL','338':'Lakeland, FL','339':'Fort Myers, FL','340':'US Virgin Islands','341':'Naples, FL','342':'Gainesville, FL','344':'Gainesville, FL','346':'Tampa, FL','347':'Orlando, FL','348':'Orlando, FL','349':'Melbourne, FL',
+  '300':'Atlanta, GA','301':'Atlanta, GA','302':'Atlanta, GA','303':'Atlanta, GA','304':'Swainsboro, GA','305':'Athens, GA','306':'Athens, GA','307':'Chattanooga, TN','308':'Augusta, GA','309':'Augusta, GA','310':'Macon, GA','311':'Atlanta, GA','312':'Macon, GA','313':'Savannah, GA','314':'Savannah, GA','315':'Waycross, GA','316':'Valdosta, GA','317':'Albany, GA','318':'Columbus, GA','319':'Columbus, GA',
+  '200':'Washington, DC','201':'Dulles, VA','202':'Washington, DC','203':'Washington, DC','204':'Washington, DC','205':'Washington, DC','206':'Southern MD','207':'Southern MD','208':'Suburban MD','209':'Silver Spring, MD','210':'Baltimore, MD','211':'Baltimore, MD','212':'Baltimore, MD','214':'Annapolis, MD','215':'Cumberland, MD','216':'Easton, MD',
+  '150':'Pittsburgh, PA','151':'Pittsburgh, PA','152':'Pittsburgh, PA','153':'Washington, PA','154':'Uniontown, PA','155':'Johnstown, PA','156':'Greensburg, PA','157':'Bedford, PA','158':'DuBois, PA','159':'Johnstown, PA','160':'Butler, PA','161':'New Castle, PA','162':'Kittanning, PA','163':'Oil City, PA','164':'Erie, PA','165':'Erie, PA','166':'Altoona, PA','167':'Bradford, PA','168':'State College, PA','169':'Williamsport, PA','170':'Harrisburg, PA','171':'Harrisburg, PA','172':'Chambersburg, PA','173':'York, PA','174':'York, PA','175':'Lancaster, PA','176':'Lancaster, PA','177':'Williamsport, PA','178':'Sunbury, PA','179':'Pottsville, PA','180':'Lehigh Valley, PA','181':'Allentown, PA','182':'Wilkes-Barre, PA','183':'Stroudsburg, PA','184':'Scranton, PA','185':'Scranton, PA','186':'Wilkes-Barre, PA','187':'Wilkes-Barre, PA','188':'Scranton, PA','189':'Doylestown, PA','190':'Philadelphia, PA','191':'Philadelphia, PA','192':'Philadelphia, PA',
+  '070':'Newark, NJ','071':'Newark, NJ','072':'Elizabeth, NJ','073':'Jersey City, NJ','074':'Paterson, NJ','075':'Paterson, NJ','076':'Hackensack, NJ','077':'Red Bank, NJ','078':'Dover, NJ','079':'Summit, NJ','080':'South Jersey, NJ','081':'Camden, NJ','082':'Camden, NJ','083':'Cherry Hill, NJ','084':'Atlantic City, NJ','085':'Trenton, NJ','086':'Trenton, NJ','087':'Point Pleasant, NJ','088':'New Brunswick, NJ','089':'New Brunswick, NJ',
+  '430':'Columbus, OH','431':'Columbus, OH','432':'Columbus, OH','433':'Columbus, OH','434':'Toledo, OH','435':'Toledo, OH','436':'Toledo, OH','437':'Zanesville, OH','438':'Zanesville, OH','439':'Steubenville, OH','440':'Cleveland, OH','441':'Cleveland, OH','442':'Akron, OH','443':'Akron, OH','444':'Youngstown, OH','445':'Youngstown, OH','446':'Canton, OH','447':'Canton, OH','448':'Mansfield, OH','449':'Mansfield, OH','450':'Cincinnati, OH','451':'Cincinnati, OH','452':'Cincinnati, OH','453':'Dayton, OH','454':'Dayton, OH','455':'Springfield, OH','456':'Chillicothe, OH',
+  '480':'Royal Oak, MI','481':'Detroit, MI','482':'Detroit, MI','483':'Royal Oak, MI','484':'Flint, MI','485':'Flint, MI','486':'Saginaw, MI','487':'Saginaw, MI','488':'Lansing, MI','489':'Lansing, MI','490':'Kalamazoo, MI','491':'Kalamazoo, MI','492':'Jackson, MI','493':'Grand Rapids, MI','494':'Grand Rapids, MI','495':'Grand Rapids, MI','496':'Traverse City, MI','497':'Gaylord, MI','498':'Iron Mountain, MI','499':'Iron Mountain, MI',
+  '600':'Palatine, IL','601':'Carol Stream, IL','602':'Evanston, IL','603':'Oak Park, IL','604':'South Suburban, IL','605':'Fox Valley, IL','606':'Chicago, IL','607':'Chicago, IL','608':'Kankakee, IL','609':'Kankakee, IL','610':'Rockford, IL','611':'Rockford, IL','612':'Rock Island, IL','613':'La Salle, IL','614':'Galesburg, IL','615':'Peoria, IL','616':'Peoria, IL','617':'Bloomington, IL','618':'Champaign, IL','619':'Champaign, IL','620':'East St. Louis, IL','622':'East St. Louis, IL','623':'Quincy, IL','624':'Effingham, IL','625':'Springfield, IL','626':'Springfield, IL','627':'Springfield, IL','628':'Centralia, IL','629':'Carbondale, IL',
+  '530':'Milwaukee, WI','531':'Milwaukee, WI','532':'Milwaukee, WI','534':'Racine, WI','535':'Madison, WI','537':'Madison, WI','538':'Madison, WI','539':'Portage, WI','540':'St. Paul, MN','541':'Green Bay, WI','542':'Green Bay, WI','543':'Green Bay, WI','544':'Wausau, WI','545':'Rhinelander, WI','546':'La Crosse, WI','547':'Eau Claire, WI','548':'Spooner, WI','549':'Oshkosh, WI',
+  '460':'Indianapolis, IN','461':'Indianapolis, IN','462':'Indianapolis, IN','463':'Gary, IN','464':'Gary, IN','465':'South Bend, IN','466':'South Bend, IN','467':'Fort Wayne, IN','468':'Fort Wayne, IN','469':'Kokomo, IN','470':'Cincinnati, OH','471':'Louisville, KY','472':'Columbus, IN','473':'Muncie, IN','474':'Bloomington, IN','475':'Washington, IN','476':'Evansville, IN','477':'Evansville, IN','478':'Terre Haute, IN','479':'Lafayette, IN',
+  '370':'Nashville, TN','371':'Nashville, TN','372':'Nashville, TN','373':'Chattanooga, TN','374':'Chattanooga, TN','375':'Memphis, TN','376':'Johnson City, TN','377':'Knoxville, TN','378':'Knoxville, TN','379':'Knoxville, TN','380':'Memphis, TN','381':'Memphis, TN','382':'McKenzie, TN','383':'Jackson, TN','384':'Columbia, TN','385':'Cookeville, TN',
+  '270':'Greensboro, NC','271':'Winston-Salem, NC','272':'Greensboro, NC','273':'Greensboro, NC','274':'Greensboro, NC','275':'Raleigh, NC','276':'Raleigh, NC','277':'Durham, NC','278':'Rocky Mount, NC','279':'Elizabeth City, NC','280':'Charlotte, NC','281':'Charlotte, NC','282':'Charlotte, NC','283':'Fayetteville, NC','284':'Wilmington, NC','285':'Kinston, NC','286':'Hickory, NC','287':'Asheville, NC','288':'Asheville, NC','289':'Asheville, NC',
+  '220':'Fairfax, VA','221':'Fairfax, VA','222':'Arlington, VA','223':'Alexandria, VA','224':'Staunton, VA','225':'Fredericksburg, VA','226':'Winchester, VA','227':'Charlottesville, VA','228':'Harrisonburg, VA','229':'Charlottesville, VA','230':'Richmond, VA','231':'Richmond, VA','232':'Richmond, VA','233':'Norfolk, VA','234':'Norfolk, VA','235':'Norfolk, VA','236':'Norfolk, VA','237':'Portsmouth, VA','238':'Richmond, VA','239':'Farmville, VA','240':'Roanoke, VA','241':'Roanoke, VA','242':'Bristol, VA','243':'Lynchburg, VA','244':'Charlottesville, VA','245':'Lynchburg, VA','246':'Bluefield, WV',
+  '980':'Seattle, WA','981':'Seattle, WA','982':'Everett, WA','983':'Tacoma, WA','984':'Tacoma, WA','985':'Olympia, WA','986':'Portland, OR','988':'Wenatchee, WA','989':'Yakima, WA','990':'Spokane, WA','991':'Spokane, WA','992':'Spokane, WA','993':'Pasco, WA','994':'Lewiston, ID',
+  '970':'Portland, OR','971':'Portland, OR','972':'Portland, OR','973':'Salem, OR','974':'Eugene, OR','975':'Medford, OR','976':'Klamath Falls, OR','977':'Bend, OR','978':'Pendleton, OR','979':'Boise, ID',
+  '801':'Denver, CO','802':'Denver, CO','803':'Denver, CO','804':'Denver, CO','805':'Longmont, CO','806':'Denver, CO','807':'Denver, CO','808':'Colorado Springs, CO','809':'Colorado Springs, CO','810':'Pueblo, CO','811':'Alamosa, CO','812':'Salida, CO','813':'Durango, CO','814':'Grand Junction, CO','815':'Grand Junction, CO','816':'Glenwood Springs, CO',
+  '850':'Phoenix, AZ','851':'Phoenix, AZ','852':'Phoenix, AZ','853':'Phoenix, AZ','855':'Globe, AZ','856':'Tucson, AZ','857':'Tucson, AZ','859':'Show Low, AZ','860':'Flagstaff, AZ','863':'Prescott, AZ','864':'Kingman, AZ','865':'Gallup, NM',
+  '870':'Albuquerque, NM','871':'Albuquerque, NM','873':'Gallup, NM','874':'Farmington, NM','875':'Santa Fe, NM','877':'Las Vegas, NM','878':'Socorro, NM','879':'Truth or Consequences, NM','880':'Las Cruces, NM','881':'Clovis, NM','882':'Roswell, NM','883':'Alamogordo, NM','884':'Tucumcari, NM',
+  '889':'Las Vegas, NV','890':'Las Vegas, NV','891':'Las Vegas, NV','893':'Ely, NV','894':'Reno, NV','895':'Reno, NV','897':'Carson City, NV','898':'Elko, NV',
+  '831':'Salinas, CA','838':'Pocatello, ID','840':'Salt Lake City, UT','841':'Salt Lake City, UT','843':'Ogden, UT','844':'Ogden, UT','845':'Provo, UT','846':'Provo, UT','847':'Provo, UT',
+  '968':'Honolulu, HI','967':'Honolulu, HI',
+  '995':'Anchorage, AK','996':'Anchorage, AK','997':'Fairbanks, AK','998':'Juneau, AK','999':'Ketchikan, AK',
+  '010':'Springfield, MA','011':'Springfield, MA','012':'Pittsfield, MA','013':'Greenfield, MA','014':'Worcester, MA','015':'Worcester, MA','016':'Worcester, MA','017':'Framingham, MA','018':'Middlesex-Essex, MA','019':'Lynn, MA','020':'Brockton, MA','021':'Boston, MA','022':'Boston, MA','023':'Brockton, MA','024':'Lexington, MA','025':'Buzzards Bay, MA','026':'Cape Cod, MA','027':'Providence, RI','028':'Providence, RI','029':'Providence, RI',
+  '030':'Manchester, NH','031':'Manchester, NH','032':'Manchester, NH','033':'Concord, NH','034':'Manchester, NH','035':'White River Junction, VT','036':'Bellows Falls, VT','037':'White River Junction, VT','038':'Portsmouth, NH','039':'Portsmouth, NH',
+  '040':'Portland, ME','041':'Portland, ME','042':'Lewiston, ME','043':'Augusta, ME','044':'Bangor, ME','045':'Bath, ME','046':'Machias, ME','047':'Houlton, ME','048':'Portland, ME','049':'Waterville, ME',
+  '050':'White River Junction, VT','051':'Bellows Falls, VT','052':'Bennington, VT','053':'Brattleboro, VT','054':'Burlington, VT','056':'Montpelier, VT','057':'Rutland, VT','058':'St. Johnsbury, VT','059':'White River Junction, VT',
+  '060':'Hartford, CT','061':'Hartford, CT','062':'Hartford, CT','063':'New London, CT','064':'New London, CT','065':'New Haven, CT','066':'Bridgeport, CT','067':'Waterbury, CT','068':'Stamford, CT','069':'Stamford, CT',
+  '250':'Charleston, WV','251':'Charleston, WV','252':'Charleston, WV','253':'Charleston, WV','254':'Martinsburg, WV','255':'Huntington, WV','256':'Huntington, WV','257':'Huntington, WV','258':'Beckley, WV','259':'Beckley, WV','260':'Wheeling, WV','261':'Parkersburg, WV','262':'Buckhannon, WV','263':'Clarksburg, WV','264':'Clarksburg, WV','265':'Clarksburg, WV','266':'Gassaway, WV','267':'Cumberland, MD','268':'Petersburg, WV',
+  '350':'Birmingham, AL','351':'Birmingham, AL','352':'Birmingham, AL','354':'Tuscaloosa, AL','355':'Birmingham, AL','356':'Huntsville, AL','357':'Huntsville, AL','358':'Huntsville, AL','359':'Gadsden, AL','360':'Montgomery, AL','361':'Montgomery, AL','362':'Anniston, AL','363':'Dothan, AL','364':'Evergreen, AL','365':'Mobile, AL','366':'Mobile, AL','367':'Selma, AL','368':'Hattiesburg, MS','369':'Meridian, MS',
+  '386':'Jackson, MS','387':'Greenville, MS','388':'Tupelo, MS','389':'Grenada, MS','390':'Jackson, MS','391':'Jackson, MS','392':'Jackson, MS','393':'Meridian, MS','394':'Hattiesburg, MS','395':'Gulfport, MS','396':'McComb, MS','397':'Columbus, MS',
+  '700':'New Orleans, LA','701':'New Orleans, LA','703':'Thibodaux, LA','704':'Hammond, LA','705':'Lafayette, LA','706':'Lake Charles, LA','707':'Baton Rouge, LA','708':'Baton Rouge, LA','710':'Shreveport, LA','711':'Shreveport, LA','712':'Monroe, LA','713':'Alexandria, LA','714':'Alexandria, LA',
+  '716':'Pine Bluff, AR','717':'Camden, AR','718':'Texarkana, AR','719':'Hot Springs, AR','720':'Little Rock, AR','721':'Little Rock, AR','722':'Little Rock, AR','723':'Memphis, TN','724':'Jonesboro, AR','725':'Batesville, AR','726':'Harrison, AR','727':'Fayetteville, AR','728':'Russellville, AR','729':'Fort Smith, AR',
+  '730':'Oklahoma City, OK','731':'Oklahoma City, OK','734':'Ardmore, OK','735':'Lawton, OK','736':'Clinton, OK','737':'Enid, OK','738':'Woodward, OK','739':'Liberal, KS','740':'Tulsa, OK','741':'Tulsa, OK','743':'Tulsa, OK','744':'Muskogee, OK','745':'McAlester, OK','746':'Ponca City, OK','747':'Durant, OK','748':'Shawnee, OK','749':'Poteau, OK',
+  '660':'Kansas City, KS','661':'Kansas City, KS','662':'Shawnee Mission, KS','664':'Topeka, KS','665':'Topeka, KS','666':'Topeka, KS','667':'Fort Scott, KS','668':'Emporia, KS','669':'Belleville, KS','670':'Wichita, KS','671':'Wichita, KS','672':'Independence, KS','673':'Independence, KS','674':'Salina, KS','675':'Hutchinson, KS','676':'Hays, KS','677':'Colby, KS','678':'Dodge City, KS','679':'Liberal, KS',
+  '630':'St. Louis, MO','631':'St. Louis, MO','633':'St. Louis, MO','634':'Quincy, IL','635':'Springfield, MO','636':'Cape Girardeau, MO','637':'Springfield, MO','638':'Springfield, MO','639':'Poplar Bluff, MO','640':'Kansas City, MO','641':'Kansas City, MO','644':'St. Joseph, MO','645':'St. Joseph, MO','646':'Chillicothe, MO','647':'Harrisonville, MO','648':'Joplin, MO','649':'Kansas City, MO','650':'Jefferson City, MO','651':'Jefferson City, MO','652':'Columbia, MO','653':'Sedalia, MO','654':'Rolla, MO','655':'Rolla, MO','656':'Springfield, MO','657':'Springfield, MO','658':'Springfield, MO',
+  '570':'Sioux Falls, SD','571':'Sioux Falls, SD','572':'Watertown, SD','573':'Mitchell, SD','574':'Aberdeen, SD','575':'Pierre, SD','576':'Mobridge, SD','577':'Rapid City, SD',
+  '580':'Fargo, ND','581':'Fargo, ND','582':'Grand Forks, ND','583':'Devils Lake, ND','584':'Jamestown, ND','585':'Bismarck, ND','586':'Bismarck, ND','587':'Minot, ND','588':'Williston, ND',
+  '590':'Billings, MT','591':'Billings, MT','592':'Wolf Point, MT','593':'Miles City, MT','594':'Great Falls, MT','595':'Havre, MT','596':'Helena, MT','597':'Butte, MT','598':'Missoula, MT','599':'Kalispell, MT',
+  '820':'Cheyenne, WY','821':'Yellowstone, WY','822':'Wheatland, WY','823':'Rawlins, WY','824':'Worland, WY','825':'Riverton, WY','826':'Casper, WY','827':'Gillette, WY','828':'Sheridan, WY','829':'Rock Springs, WY','830':'Rock Springs, WY','831':'Rock Springs, WY',
+  '500':'Des Moines, IA','501':'Des Moines, IA','502':'Des Moines, IA','503':'Des Moines, IA','504':'Mason City, IA','505':'Fort Dodge, IA','506':'Waterloo, IA','507':'Waterloo, IA','508':'Creston, IA','509':'Des Moines, IA','510':'Sioux City, IA','511':'Sioux City, IA','512':'Sheldon, IA','513':'Spencer, IA','514':'Carroll, IA','515':'Omaha, NE','516':'Omaha, NE',
+  '680':'Omaha, NE','681':'Omaha, NE','683':'Lincoln, NE','684':'Lincoln, NE','685':'Lincoln, NE','686':'Columbus, NE','687':'Norfolk, NE','688':'Grand Island, NE','689':'Hastings, NE','690':'McCook, NE','691':'North Platte, NE','692':'Valentine, NE','693':'Alliance, NE',
+  '290':'Charleston, SC','291':'Charleston, SC','292':'Columbia, SC','293':'Greenville, SC','294':'Charleston, SC','295':'Florence, SC','296':'Greenville, SC','297':'Charlotte, NC','298':'Augusta, GA','299':'Savannah, GA',
+  '400':'Louisville, KY','401':'Louisville, KY','402':'Louisville, KY','403':'Lexington, KY','404':'Lexington, KY','405':'Lexington, KY','406':'Frankfort, KY','407':'Corbin, KY','408':'Corbin, KY','409':'Corbin, KY','410':'Cincinnati, OH','411':'Ashland, KY','412':'Ashland, KY','413':'Campbellsville, KY','414':'Campbellsville, KY','415':'Pikeville, KY','416':'Pikeville, KY','417':'Hazard, KY','418':'Hazard, KY',
+  '420':'Paducah, KY','421':'Bowling Green, KY','422':'Bowling Green, KY','423':'Owensboro, KY','424':'Evansville, IN','425':'Somerset, KY','426':'Somerset, KY','427':'Elizabethtown, KY',
+  '520':'Dubuque, IA','521':'Decorah, IA','522':'Cedar Rapids, IA','523':'Cedar Rapids, IA','524':'Cedar Rapids, IA','525':'Ottumwa, IA','526':'Burlington, IA','527':'Rock Island, IL','528':'Davenport, IA'
+};
+
+function lookupZip(zip) {
+  const prefix = zip.substring(0, 3);
+  return ZIP_DB[prefix] || null;
+}
+
+const STATE_NAME_MAP = {
+  'alabama':'AL','alaska':'AK','arizona':'AZ','arkansas':'AR','california':'CA',
+  'colorado':'CO','connecticut':'CT','delaware':'DE','florida':'FL','georgia':'GA',
+  'hawaii':'HI','idaho':'ID','illinois':'IL','indiana':'IN','iowa':'IA',
+  'kansas':'KS','kentucky':'KY','louisiana':'LA','maine':'ME','maryland':'MD',
+  'massachusetts':'MA','michigan':'MI','minnesota':'MN','mississippi':'MS','missouri':'MO',
+  'montana':'MT','nebraska':'NE','nevada':'NV','new hampshire':'NH','new jersey':'NJ',
+  'new mexico':'NM','new york':'NY','north carolina':'NC','north dakota':'ND','ohio':'OH',
+  'oklahoma':'OK','oregon':'OR','pennsylvania':'PA','rhode island':'RI','south carolina':'SC',
+  'south dakota':'SD','tennessee':'TN','texas':'TX','utah':'UT','vermont':'VT',
+  'virginia':'VA','washington':'WA','west virginia':'WV','wisconsin':'WI','wyoming':'WY'
+};
+function getStateFromLocation(loc) {
+  const m = loc.match(/,\s*([A-Z]{2})$/);
+  if (m) return m[1];
+  const lower = loc.trim().toLowerCase();
+  if (STATE_NAME_MAP[lower]) return STATE_NAME_MAP[lower];
+  return '';
+}
+
+/* State-specific Medicaid info */
+const STATE_MEDICAID = {
+  'MN': {name:'Minnesota Medical Assistance', program:'the Minnesota Medical Assistance program and various home and community-based waivers'},
+  'TX': {name:'Texas Medicaid', program:'the STAR+PLUS HCBS waiver program'},
+  'CA': {name:'Medi-Cal', program:'the Medi-Cal Home & Community-Based Services program'},
+  'FL': {name:'Florida Medicaid', program:'the Statewide Medicaid Managed Care Long-Term Care program'},
+  'NY': {name:'New York Medicaid', program:'the Managed Long-Term Care (MLTC) program'},
+  'IL': {name:'Illinois Medicaid', program:'the Community Care Program and HCBS waivers'},
+  'PA': {name:'Pennsylvania Medicaid', program:'the LIFE program and home health waiver services'},
+  'OH': {name:'Ohio Medicaid', program:'the PASSPORT and MyCare Ohio programs'},
+  'GA': {name:'Georgia Medicaid', program:'the Community Care Services Program (CCSP)'},
+  'NC': {name:'North Carolina Medicaid', program:'the NC Medicaid Direct and Community Alternatives Program'},
+  'MI': {name:'Michigan Medicaid', program:'the MI Choice Waiver and MI Health Link programs'},
+  'NJ': {name:'New Jersey Medicaid', program:'the Managed Long-Term Services and Supports program'},
+  'VA': {name:'Virginia Medicaid', program:'the Commonwealth Coordinated Care Plus waiver'},
+  'WA': {name:'Washington Apple Health', program:'Apple Health home and community services'},
+  'CO': {name:'Health First Colorado', program:'Home and Community-Based Services waivers'},
+  'AZ': {name:'AHCCCS', program:'the Arizona Long-Term Care System (ALTCS)'},
+  'MA': {name:'MassHealth', program:'the MassHealth home health and community-based services'},
+  'TN': {name:'TennCare', program:'the CHOICES in Long-Term Services & Supports program'},
+  'IN': {name:'Indiana Medicaid', program:'the Aged & Disabled waiver program'},
+  'WI': {name:'Wisconsin Medicaid', program:'the Family Care and IRIS programs'},
+  'MO': {name:'MO HealthNet', program:'the MO HealthNet home and community-based services'},
+  'SC': {name:'South Carolina Medicaid', program:'the Community Choices waiver program'},
+  'AL': {name:'Alabama Medicaid', program:'the Elderly & Disabled waiver program'},
+  'LA': {name:'Louisiana Medicaid', program:'the Community Choices Waiver program'},
+  'KY': {name:'Kentucky Medicaid', program:'the Home and Community Based waiver program'},
+  'OR': {name:'Oregon Health Plan', program:'the Oregon Health Plan home and community-based services'},
+  'OK': {name:'SoonerCare', program:'the ADvantage waiver program'},
+  'CT': {name:'HUSKY Health', program:'the Connecticut Home Care Program for Elders'},
+  'UT': {name:'Utah Medicaid', program:'the Aging Waiver and New Choices Waiver programs'},
+  'NV': {name:'Nevada Medicaid', program:'the Home and Community-Based waiver services'},
+  'NM': {name:'New Mexico Medicaid', program:'the Mi Via and Medically Fragile waiver programs'},
+  'WV': {name:'West Virginia Medicaid', program:'the Aged & Disabled waiver program'},
+  'NE': {name:'Nebraska Medicaid', program:'the Aged & Disabled waiver program'},
+  'KS': {name:'KanCare', program:'the HCBS Frail Elderly waiver'},
+  'AR': {name:'ARKids First/Medicaid', program:'the ARChoices in Home Care waiver'},
+  'MS': {name:'Mississippi Medicaid', program:'the Elderly & Disabled waiver program'},
+  'IA': {name:'Iowa Medicaid', program:'the HCBS Elderly waiver program'},
+  'HI': {name:'Med-QUEST', program:'the QUEST Integration community-based services'},
+  'ID': {name:'Idaho Medicaid', program:'the Aged & Disabled waiver program'},
+  'ME': {name:'MaineCare', program:'home and community benefits'},
+  'NH': {name:'New Hampshire Medicaid', program:'the Choices for Independence waiver'},
+  'RI': {name:'Rhode Island Medicaid', program:'home and community-based care services'},
+  'MT': {name:'Montana Medicaid', program:'the Big Sky Waiver and HCBS programs'},
+  'SD': {name:'South Dakota Medicaid', program:'the HOPE waiver program'},
+  'ND': {name:'North Dakota Medicaid', program:'the SPED waiver and Expanded SPED'},
+  'VT': {name:'Vermont Medicaid', program:'Choices for Care home-based services'},
+  'WY': {name:'Wyoming Medicaid', program:'the Long-Term Care Community Choices waiver'},
+  'AK': {name:'Alaska Medicaid', program:'home and community-based waiver services'},
+  'DC': {name:'DC Medicaid', program:'the Elderly & Persons with Disabilities waiver'},
+  'MD': {name:'Maryland Medicaid', program:'the Community Options waiver program'},
+  'DE': {name:'Delaware Medicaid', program:'the HCBS waiver for Elderly & Disabled'}
+};
+
+/* ── READ SEARCH QUERY FROM URL & FETCH REAL DATA ── */
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const q = params.get('q');
+  if (q) {
+    document.querySelector('.nav-search input').value = q;
+
+    const zipMatch = q.match(/\b(\d{5})\b/);
+    const locMatch = q.match(/in\s+(.+)/i);
+    let city = 'Houston, TX';
+    let zip = '';
+    let state = 'TX';
+
+    if (zipMatch) {
+      zip = zipMatch[1];
+      const looked = lookupZip(zip);
+      if (looked) { city = looked; }
+      else { city = 'ZIP ' + zip; }
+    } else if (locMatch) {
+      city = locMatch[1].trim();
+      // Try to match city to a state abbreviation
+      const stMatch = city.match(/,\s*([A-Z]{2})\s*$/);
+      if (stMatch) state = stMatch[1];
+    } else if (q.length > 1) {
+      // Check if query is a state name or abbreviation
+      const lower = q.trim().toLowerCase();
+      const stateFromName = STATE_NAME_MAP[lower];
+      if (stateFromName) {
+        state = stateFromName;
+        city = q.trim();
+      } else {
+        const twoLetter = q.trim().toUpperCase();
+        if (twoLetter.length === 2 && Object.values(STATE_NAME_MAP).includes(twoLetter)) {
+          state = twoLetter;
+          city = twoLetter;
+        } else {
+          city = q;
+        }
+      }
+    }
+
+    state = getStateFromLocation(city) || state || 'TX';
+    currentState = state;
+    currentZip = zip;
+    currentCity = city;
+
+    const displayLoc = zip ? city + ' ' + zip : city;
+
+    // Detect care type from query
+    let careLabel = 'Care Providers';
+    const lower = q.toLowerCase();
+    if (lower.includes('home health')) { careLabel = 'Home Health Care'; currentCareType = 'home_health'; }
+    else if (lower.includes('hospice')) { careLabel = 'Hospice Care'; currentCareType = 'hospice'; }
+    else { currentCareType = 'all'; }
+
+    // Update page title
+    document.title = careLabel + ' in ' + displayLoc + ' — Senova Search Results';
+
+    // Update results header (will be updated again after API returns with real count)
+    const countEl = document.querySelector('.results-count');
+    if (countEl) countEl.innerHTML = 'Searching for <strong>' + careLabel + '</strong> near <strong>' + displayLoc + '</strong>...';
+
+    // Update Medicaid banner
+    const medBanner = document.querySelector('.medicaid-banner');
+    if (medBanner && STATE_MEDICAID[state]) {
+      const sm = STATE_MEDICAID[state];
+      medBanner.innerHTML = '<span style="font-size:20px">📋</span><div><strong>' + sm.name + '</strong> covers home health care through ' + sm.program + '. Most listings below accept Medicaid at no cost to you. <a href="#" style="color:var(--teal);font-weight:600;text-decoration:underline">Learn more →</a></div>';
+    }
+
+    // Highlight the matching tab
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.classList.remove('active');
+      if (tab.textContent.trim() === 'All' && currentCareType === 'all') tab.classList.add('active');
+      if (tab.textContent.trim() === 'Home Health' && currentCareType === 'home_health') tab.classList.add('active');
+      if (tab.textContent.trim() === 'Hospice' && currentCareType === 'hospice') tab.classList.add('active');
+    });
+
+    // Tab click handlers
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        const label = this.textContent.trim();
+        if (label === 'Home Health') currentCareType = 'home_health';
+        else if (label === 'Hospice') currentCareType = 'hospice';
+        else currentCareType = 'all';
+        currentPage = 1;
+        fetchProviders(currentState, currentZip, currentPage, currentCareType);
+      });
+    });
+
+    // FETCH REAL DATA FROM CMS.GOV
+    fetchProviders(state, zip, 1, currentCareType);
+
+  } else {
+    // No query - hide loading, show message
+    const loading = document.getElementById('loading-state');
+    if (loading) loading.innerHTML = '<p style="font-size:16px;color:var(--gray)">Enter a ZIP code, city, or state to search for care providers.</p>';
+  }
+})();
+
+/* ── SEARCH BAR FUNCTIONALITY ── */
+function doSearch() {
+  const q = document.querySelector('.nav-search input').value.trim();
+  if (!q) return;
+  window.location.href = '/search?q=' + encodeURIComponent(q);
+}
+document.querySelector('.nav-search input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doSearch();
+});
+</script>
+
+</body>
+</html>
