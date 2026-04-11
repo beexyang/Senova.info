@@ -616,12 +616,15 @@ async function fetchProviders(state, zip, page, careType) {
     if (results.length === 0) {
       dataSource = 'cms_live';
       const stateCondition = 'conditions[0][property]=state&conditions[0][value]=' + encodeURIComponent(state) + '&conditions[0][operator]=%3D';
+      const offset = (page - 1) * RESULTS_PER_PAGE;
 
+      // Build ZIP condition: use "starts with" on 3-digit prefix instead of exact 5-digit match
+      let zipPrefix = '';
       let zipCondition = '';
       if (zip && zip.length === 5) {
-        zipCondition = '&conditions[1][property]=zip_code&conditions[1][value]=' + encodeURIComponent(zip) + '&conditions[1][operator]=%3D';
+        zipPrefix = zip.substring(0, 3);
+        zipCondition = '&conditions[1][property]=zip_code&conditions[1][value]=' + encodeURIComponent(zipPrefix) + '&conditions[1][operator]=STARTS_WITH';
       }
-      const offset = (page - 1) * RESULTS_PER_PAGE;
 
       if (careType === 'all' || careType === 'home_health') {
         const hhUrl = CMS_FALLBACK.HOME_HEALTH + '?limit=' + RESULTS_PER_PAGE + '&offset=' + offset + '&' + stateCondition + zipCondition;
@@ -634,7 +637,7 @@ async function fetchProviders(state, zip, page, careType) {
       }
 
       if (careType === 'all' || careType === 'hospice') {
-        const hUrl = CMS_FALLBACK.HOSPICE + '?limit=' + (careType==='all'?5:RESULTS_PER_PAGE) + '&offset=' + (careType==='all'?0:(page-1)*RESULTS_PER_PAGE) + '&' + stateCondition;
+        const hUrl = CMS_FALLBACK.HOSPICE + '?limit=' + (careType==='all'?5:RESULTS_PER_PAGE) + '&offset=' + (careType==='all'?0:(page-1)*RESULTS_PER_PAGE) + '&' + stateCondition + zipCondition;
         const hResp = await fetch(hUrl);
         if (hResp.ok) {
           const hData = await hResp.json();
@@ -643,7 +646,7 @@ async function fetchProviders(state, zip, page, careType) {
         }
       }
 
-      // Broaden if ZIP exact match returned nothing
+      // Broaden to state-level only if ZIP prefix match returned nothing
       if (results.length === 0 && zip) {
         const broadUrl = CMS_FALLBACK.HOME_HEALTH + '?limit=' + RESULTS_PER_PAGE + '&offset=' + ((page-1)*RESULTS_PER_PAGE) + '&' + stateCondition;
         const broadResp = await fetch(broadUrl);
@@ -654,19 +657,25 @@ async function fetchProviders(state, zip, page, careType) {
         }
       }
 
-      // Sort: prioritize matching ZIP prefix
+      // Sort: closest ZIP first (exact match > same prefix > everything else)
       if (zip) {
         const prefix = zip.substring(0, 3);
         results.sort((a, b) => {
-          const aZip = (a.zip_code || '').substring(0, 3);
-          const bZip = (b.zip_code || '').substring(0, 3);
-          if (aZip === prefix && bZip !== prefix) return -1;
-          if (bZip === prefix && aZip !== prefix) return 1;
-          return (a.provider_name || '').localeCompare(b.provider_name || '');
+          const aZip = a.zip_code || '';
+          const bZip = b.zip_code || '';
+          // Exact ZIP match first
+          if (aZip === zip && bZip !== zip) return -1;
+          if (bZip === zip && aZip !== zip) return 1;
+          // Then same 3-digit prefix
+          const aPrefix = aZip.substring(0, 3) === prefix;
+          const bPrefix = bZip.substring(0, 3) === prefix;
+          if (aPrefix && !bPrefix) return -1;
+          if (bPrefix && !aPrefix) return 1;
+          // Then by numeric ZIP distance
+          return Math.abs(parseInt(aZip) - parseInt(zip)) - Math.abs(parseInt(bZip) - parseInt(zip));
         });
       }
     }
-
     // Render results
     if (loading) loading.style.display = 'none';
 
