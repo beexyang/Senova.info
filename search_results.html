@@ -663,19 +663,17 @@ async function fetchProviders(state, zip, page, careType) {
         results.sort((a, b) => {
           const aZip = a.zip_code || '';
           const bZip = b.zip_code || '';
-          // Exact ZIP match first
           if (aZip === zip && bZip !== zip) return -1;
           if (bZip === zip && aZip !== zip) return 1;
-          // Then same 3-digit prefix
           const aPrefix = aZip.substring(0, 3) === prefix;
           const bPrefix = bZip.substring(0, 3) === prefix;
           if (aPrefix && !bPrefix) return -1;
           if (bPrefix && !aPrefix) return 1;
-          // Then by numeric ZIP distance
           return Math.abs(parseInt(aZip) - parseInt(zip)) - Math.abs(parseInt(bZip) - parseInt(zip));
         });
       }
     }
+
     // Render results
     if (loading) loading.style.display = 'none';
 
