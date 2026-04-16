@@ -618,12 +618,12 @@ async function fetchProviders(state, zip, page, careType) {
       const stateCondition = 'conditions[0][property]=state&conditions[0][value]=' + encodeURIComponent(state) + '&conditions[0][operator]=%3D';
       const offset = (page - 1) * RESULTS_PER_PAGE;
 
-      // Build ZIP condition: use "starts with" on 3-digit prefix instead of exact 5-digit match
+     // Build ZIP condition: use LIKE operator with 3-digit prefix wildcard
       let zipPrefix = '';
       let zipCondition = '';
       if (zip && zip.length === 5) {
         zipPrefix = zip.substring(0, 3);
-        zipCondition = '&conditions[1][property]=zip_code&conditions[1][value]=' + encodeURIComponent(zipPrefix) + '&conditions[1][operator]=STARTS_WITH';
+        zipCondition = '&conditions[1][property]=zip_code&conditions[1][value]=' + encodeURIComponent(zipPrefix + '%') + '&conditions[1][operator]=LIKE';
       }
 
       if (careType === 'all' || careType === 'home_health') {
