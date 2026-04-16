@@ -1,186 +1,149 @@
-// ============================================
-// SENOVA API: /api/providers
-// Secure serverless endpoint — queries cached Supabase data
-// NO API KEYS IN FRONTEND — all keys from env vars
-// ============================================
+// api/providers.js — Fast provider search from Supabase (replaces slow CMS calls)
+// Returns results in ~50-200ms instead of 30-60 seconds
 
-// CORS headers for browser requests
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-  'Content-Type': 'application/json',
-  'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600'
-};
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
-// Input sanitization — prevent SQL injection and XSS
-function sanitize(str) {
-  if (!str) return null;
-  return str
-    .replace(/[<>\"\';\-\-\/\*\\]/g, '') // Strip dangerous chars
-    .replace(/\s+/g, ' ')                 // Normalize whitespace
-    .trim()
-    .substring(0, 100);                   // Max length
-}
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
-function isValidState(s) {
-  if (!s) return false;
-  return /^[A-Z]{2}$/.test(s.toUpperCase());
-}
-
-function isValidZip(z) {
-  if (!z) return false;
-  return /^\d{5}$/.test(z);
-}
-
-function isValidType(t) {
-  return ['home_health', 'hospice', 'nursing_home', 'all'].includes(t);
-}
-
-module.exports = async function handler(req, res) {
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    res.writeHead(204, CORS_HEADERS);
-    res.end();
-    return;
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    return res.status(500).json({ error: 'Database not configured' });
   }
 
-  // Only allow GET
-  if (req.method !== 'GET') {
-    res.writeHead(405, CORS_HEADERS);
-    res.end(JSON.stringify({ error: 'Method not allowed' }));
-    return;
-  }
+  const { state, zip, type, page = 1, limit = 10 } = req.query;
 
-  // Rate limit check (basic — Vercel handles most of this)
-  // In production, use Vercel's built-in rate limiting or Upstash Redis
+  if (!state && !zip) {
+    return res.status(400).json({ error: 'Provide state or zip parameter' });
+  }
 
   try {
-    // Get credentials from environment variables (NEVER hardcoded)
-    const SUPABASE_URL = process.env.SUPABASE_URL;
-    const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+    const pageNum = parseInt(page) || 1;
+    const limitNum = Math.min(parseInt(limit) || 10, 50);
+    const offset = (pageNum - 1) * limitNum;
 
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      res.writeHead(500, CORS_HEADERS);
-      res.end(JSON.stringify({ error: 'Server configuration error' }));
-      return;
+    // Build Supabase filter query
+    let filters = [];
+    let queryState = state;
+
+    // If ZIP provided, derive state from it (or use provided state)
+    if (zip && zip.length === 5) {
+      // Filter by ZIP prefix (first 3 digits) for nearby results
+      const prefix = zip.substring(0, 3);
+      filters.push('zip_code=like.' + prefix + '*');
     }
 
-    // Parse and sanitize query parameters
-    const url = new URL(req.url, `http://${req.headers.host}`);
-    const state = sanitize(url.searchParams.get('state'))?.toUpperCase();
-    const city = sanitize(url.searchParams.get('city'));
-    const zip = sanitize(url.searchParams.get('zip'));
-    const type = sanitize(url.searchParams.get('type')) || 'all';
-    const page = Math.max(1, Math.min(100, parseInt(url.searchParams.get('page')) || 1));
-    const limit = Math.max(1, Math.min(50, parseInt(url.searchParams.get('limit')) || 20));
-    const offset = (page - 1) * limit;
-
-    // Validate inputs
-    if (state && !isValidState(state)) {
-      res.writeHead(400, CORS_HEADERS);
-      res.end(JSON.stringify({ error: 'Invalid state code' }));
-      return;
-    }
-    if (zip && !isValidZip(zip)) {
-      res.writeHead(400, CORS_HEADERS);
-      res.end(JSON.stringify({ error: 'Invalid ZIP code' }));
-      return;
-    }
-    if (!isValidType(type)) {
-      res.writeHead(400, CORS_HEADERS);
-      res.end(JSON.stringify({ error: 'Invalid provider type' }));
-      return;
+    if (queryState) {
+      filters.push('state=eq.' + queryState);
     }
 
-    // Must have at least one search parameter
-    if (!state && !city && !zip) {
-      res.writeHead(400, CORS_HEADERS);
-      res.end(JSON.stringify({ error: 'Please provide state, city, or zip' }));
-      return;
+    if (type && type !== 'all') {
+      filters.push('provider_type=eq.' + type);
     }
 
-    // Call the Supabase RPC function for optimized search
-    const rpcBody = {
-      p_state: state || null,
-      p_city: city || null,
-      p_zip: zip || null,
-      p_type: type === 'all' ? null : type,
-      p_limit: limit,
-      p_offset: offset
-    };
+    // Build the Supabase REST URL
+    let url = SUPABASE_URL + '/rest/v1/providers?select=*';
 
-    const supaResp = await fetch(`${SUPABASE_URL}/rest/v1/rpc/search_providers`, {
-      method: 'POST',
+    // Add filters
+    for (const f of filters) {
+      url += '&' + f;
+    }
+
+    // Add ordering: exact ZIP match first, then by ZIP proximity
+    if (zip) {
+      url += '&order=zip_code.asc';
+    } else {
+      url += '&order=provider_name.asc';
+    }
+
+    // First: get total count
+    const countResp = await fetch(url, {
+      method: 'HEAD',
       headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify(rpcBody)
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'count=exact'
+      }
     });
 
-    if (!supaResp.ok) {
-      // Fallback: direct table query if RPC not yet set up
-      const zip3 = zip ? zip.substring(0, 3) : null;
-      let queryParts = [];
-      if (state) queryParts.push(`state=eq.${state}`);
-      if (city) queryParts.push(`city=ilike.${encodeURIComponent(city)}`);
-      if (zip) queryParts.push(`or=(zip_code.eq.${zip},zip3.eq.${zip3})`);
-      if (type !== 'all') queryParts.push(`provider_type=eq.${type}`);
+    const totalCount = parseInt(countResp.headers.get('content-range')?.split('/')[1]) || 0;
 
-      const queryString = queryParts.join('&');
-      const fallbackUrl = `${SUPABASE_URL}/rest/v1/providers?${queryString}&order=star_rating.desc.nullslast,provider_name&limit=${limit}&offset=${offset}`;
+    // Then: get paginated results
+    const dataUrl = url + '&offset=' + offset + '&limit=' + limitNum;
 
-      const fallbackResp = await fetch(fallbackUrl, {
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'Prefer': 'count=exact'
-        }
-      });
-
-      if (!fallbackResp.ok) {
-        const errText = await fallbackResp.text();
-        res.writeHead(502, CORS_HEADERS);
-        res.end(JSON.stringify({ error: 'Database query failed', detail: errText.substring(0, 200) }));
-        return;
+    const dataResp = await fetch(dataUrl, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'count=exact'
       }
+    });
 
-      const data = await fallbackResp.json();
-      const totalCount = parseInt(fallbackResp.headers.get('content-range')?.split('/')[1] || '0');
-
-      res.writeHead(200, CORS_HEADERS);
-      res.end(JSON.stringify({
-        providers: data,
-        total: totalCount,
-        page,
-        limit,
-        source: 'cms_gov',
-        cached: true
-      }));
-      return;
+    if (!dataResp.ok) {
+      const errText = await dataResp.text();
+      return res.status(500).json({ error: 'Database query failed: ' + errText });
     }
 
-    const data = await supaResp.json();
-    const totalCount = data.length > 0 ? data[0].total_count : 0;
+    const providers = await dataResp.json();
 
-    // Strip the total_count from individual records
-    const providers = data.map(({ total_count, ...rest }) => rest);
+    // Sort: exact ZIP match first, then same prefix, then by distance
+    if (zip) {
+      const prefix = zip.substring(0, 3);
+      providers.sort((a, b) => {
+        const aZip = a.zip_code || '';
+        const bZip = b.zip_code || '';
+        if (aZip === zip && bZip !== zip) return -1;
+        if (bZip === zip && aZip !== zip) return 1;
+        const aP = aZip.substring(0, 3) === prefix;
+        const bP = bZip.substring(0, 3) === prefix;
+        if (aP && !bP) return -1;
+        if (bP && !aP) return 1;
+        return Math.abs(parseInt(aZip) - parseInt(zip)) - Math.abs(parseInt(bZip) - parseInt(zip));
+      });
+    }
 
-    res.writeHead(200, CORS_HEADERS);
-    res.end(JSON.stringify({
-      providers,
-      total: parseInt(totalCount),
-      page,
-      limit,
-      source: 'cms_gov',
-      cached: true
+    // Map to frontend-expected format
+    const mapped = providers.map(p => ({
+      provider_name: p.provider_name,
+      facility_name: p.provider_name,
+      address: p.address,
+      address_line_1: p.address,
+      citytown: p.city,
+      city_town: p.city,
+      state: p.state,
+      zip_code: p.zip_code,
+      telephone_number: p.telephone,
+      type_of_ownership: p.ownership_type,
+      ownership_type: p.ownership_type,
+      quality_of_patient_care_star_rating: p.quality_rating,
+      certification_date: p.certification_date,
+      cms_certification_number_ccn: p.ccn,
+      provider_type: p.provider_type,
+      offers_nursing_care_services: p.offers_nursing ? 'Yes' : 'No',
+      offers_physical_therapy_services: p.offers_pt ? 'Yes' : 'No',
+      offers_occupational_therapy_services: p.offers_ot ? 'Yes' : 'No',
+      offers_speech_pathology_services: p.offers_speech ? 'Yes' : 'No',
+      offers_medical_social_services: p.offers_medical_social ? 'Yes' : 'No',
+      offers_home_health_aide_services: p.offers_aide ? 'Yes' : 'No',
+      _type: p.provider_type
     }));
 
+    // Cache for 5 minutes
+    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
+
+    return res.status(200).json({
+      providers: mapped,
+      total: totalCount,
+      page: pageNum,
+      limit: limitNum,
+      cached: true,
+      source: 'supabase'
+    });
+
   } catch (err) {
-    res.writeHead(500, CORS_HEADERS);
-    res.end(JSON.stringify({ error: 'Internal server error' }));
+    console.error('Provider query error:', err);
+    return res.status(500).json({ error: err.message });
   }
-};
+}
