@@ -70,61 +70,82 @@ module.exports = async (req, res) => {
       })
     });
 
-    const user = (await userRes.json())[0];
+    if (!userRes.ok) {
+      const userErr = await userRes.text();
+      console.error('User insert failed:', userErr);
+      return res.status(500).json({ error: 'Failed to create user profile. Database tables may not be set up yet.' });
+    }
 
-    // 3. Link auth to user
-    await fetch(`${SUPABASE_URL}/rest/v1/user_auth`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_SERVICE_KEY,
-        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({
-        auth_user_id: authUser.id,
-        user_id: user.id,
-        email
-      })
-    });
+    const userBody = await userRes.json();
+    const user = userBody[0];
 
-    // 4. Admin notification
-    await fetch(`${SUPABASE_URL}/rest/v1/admin_notifications`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_SERVICE_KEY,
-        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({
-        type: 'new_user',
-        title: `New User: ${first_name} ${last_name}`,
-        message: `${first_name} from ${city || ''}, ${state || ''} signed up. Care for: ${care_for || 'N/A'}. Match with vendors and send lead.`,
-        reference_id: user.id,
-        reference_type: 'user'
-      })
-    });
+    if (!user || !user.id) {
+      console.error('User insert returned empty:', JSON.stringify(userBody));
+      return res.status(500).json({ error: 'User profile was not created. Check database schema.' });
+    }
 
-    // 5. Schedule 3-month survey
-    const surveyDate = new Date();
-    surveyDate.setMonth(surveyDate.getMonth() + 3);
+    // 3. Link auth to user (best effort â don't block signup if this fails)
+    try {
+      const linkRes = await fetch(`${SUPABASE_URL}/rest/v1/user_auth`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          auth_user_id: authUser.id,
+          user_id: user.id,
+          email
+        })
+      });
+      if (!linkRes.ok) console.error('user_auth insert failed:', await linkRes.text());
+    } catch (linkErr) { console.error('user_auth error:', linkErr.message); }
 
-    await fetch(`${SUPABASE_URL}/rest/v1/user_surveys`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_SERVICE_KEY,
-        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({
-        user_id: user.id,
-        survey_type: '3_month',
-        status: 'pending',
-        scheduled_for: surveyDate.toISOString()
-      })
-    });
+    // 4. Admin notification (best effort)
+    try {
+      const notifRes = await fetch(`${SUPABASE_URL}/rest/v1/admin_notifications`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          type: 'new_user',
+          title: `New User: ${first_name} ${last_name}`,
+          message: `${first_name} from ${city || ''}, ${state || ''} signed up. Care for: ${care_for || 'N/A'}. Match with vendors and send lead.`,
+          reference_id: user.id,
+          reference_type: 'user'
+        })
+      });
+      if (!notifRes.ok) console.error('admin_notifications insert failed:', await notifRes.text());
+    } catch (notifErr) { console.error('notification error:', notifErr.message); }
+
+    // 5. Schedule 3-month survey (best effort)
+    try {
+      const surveyDate = new Date();
+      surveyDate.setMonth(surveyDate.getMonth() + 3);
+
+      const surveyRes = await fetch(`${SUPABASE_URL}/rest/v1/user_surveys`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          survey_type: '3_month',
+          status: 'pending',
+          scheduled_for: surveyDate.toISOString()
+        })
+      });
+      if (!surveyRes.ok) console.error('user_surveys insert failed:', await surveyRes.text());
+    } catch (surveyErr) { console.error('survey error:', surveyErr.message); }
 
     // 6. Send welcome email to user
     if (RESEND_API_KEY) {
@@ -191,6 +212,7 @@ module.exports = async (req, res) => {
 
     res.status(200).json({ success: true, user_id: user.id });
   } catch (error) {
+    console.error('user-signup error:', error);
     res.status(500).json({ error: error.message });
   }
 };
