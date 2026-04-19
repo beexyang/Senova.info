@@ -429,7 +429,7 @@ a{text-decoration:none;color:inherit}
     <!-- Medicaid banner -->
     <div class="medicaid-banner">
       <span style="font-size:20px">&#128203;</span>
-      <div><strong>Texas Medicaid</strong> covers home health care through the STAR+PLUS HCBS waiver program. Most listings below accept Medicaid at no cost to you. <a href="#" style="color:var(--teal);font-weight:600;text-decoration:underline">Learn more &rarr;</a></div>
+      <div><strong>Texas Medicaid</strong> covers home health care through the STAR+PLUS HCBS waiver program. Most listings below accept Medicaid at no cost to you. <a href="/signup" style="color:var(--teal);font-weight:600;text-decoration:underline">Learn more &rarr;</a></div>
     </div>
 
     <!-- ── LOADING STATE ── -->
@@ -1213,7 +1213,7 @@ initSidebarFilters();
     const medBanner = document.querySelector('.medicaid-banner');
     if (medBanner && STATE_MEDICAID[state]) {
       const sm = STATE_MEDICAID[state];
-      medBanner.innerHTML = '<span style="font-size:20px">&#128203;</span><div><strong>' + sm.name + '</strong> covers home health care through ' + sm.program + '. Most listings below accept Medicaid at no cost to you. <a href="#" style="color:var(--teal);font-weight:600;text-decoration:underline">Learn more &rarr;</a></div>';
+      medBanner.innerHTML = '<span style="font-size:20px">&#128203;</span><div><strong>' + sm.name + '</strong> covers home health care through ' + sm.program + '. Most listings below accept Medicaid at no cost to you. <a href="/signup" style="color:var(--teal);font-weight:600;text-decoration:underline">Learn more &rarr;</a></div>';
     }
 
     // Highlight the matching tab
