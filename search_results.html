@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Home Health Care in Houston, TX — Senova Search Results</title>
+<title>Home Health Care in Houston, TX &mdash; Senova Search Results</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -342,9 +342,9 @@ a{text-decoration:none;color:inherit}
 
     <div class="sb-section">
       <h4>Quality Rating</h4>
-      <div class="sb-option"><input type="checkbox" id="r5"><label for="r5">★★★★★ 5 Stars</label><span class="sb-count">67</span></div>
-      <div class="sb-option"><input type="checkbox" id="r4"><label for="r4">★★★★☆ 4+ Stars</label><span class="sb-count">148</span></div>
-      <div class="sb-option"><input type="checkbox" id="r3"><label for="r3">★★★☆☆ 3+ Stars</label><span class="sb-count">265</span></div>
+      <div class="sb-option"><input type="checkbox" id="r5"><label for="r5">&#9733;&#9733;&#9733;&#9733;&#9733; 5 Stars</label><span class="sb-count">67</span></div>
+      <div class="sb-option"><input type="checkbox" id="r4"><label for="r4">&#9733;&#9733;&#9733;&#9733;&#9734; 4+ Stars</label><span class="sb-count">148</span></div>
+      <div class="sb-option"><input type="checkbox" id="r3"><label for="r3">&#9733;&#9733;&#9733;&#9734;&#9734; 3+ Stars</label><span class="sb-count">265</span></div>
     </div>
 
     <div class="sb-section">
@@ -422,14 +422,14 @@ a{text-decoration:none;color:inherit}
         <option>Sort by: Highest Rated</option>
         <option>Sort by: Most Reviews</option>
         <option>Sort by: Nearest</option>
-        <option>Sort by: Name A–Z</option>
+        <option>Sort by: Name A&#8211;Z</option>
       </select>
     </div>
 
     <!-- Medicaid banner -->
     <div class="medicaid-banner">
-      <span style="font-size:20px">📋</span>
-      <div><strong>Texas Medicaid</strong> covers home health care through the STAR+PLUS HCBS waiver program. Most listings below accept Medicaid at no cost to you. <a href="#" style="color:var(--teal);font-weight:600;text-decoration:underline">Learn more →</a></div>
+      <span style="font-size:20px">&#128203;</span>
+      <div><strong>Texas Medicaid</strong> covers home health care through the STAR+PLUS HCBS waiver program. Most listings below accept Medicaid at no cost to you. <a href="#" style="color:var(--teal);font-weight:600;text-decoration:underline">Learn more &rarr;</a></div>
     </div>
 
     <!-- ── LOADING STATE ── -->
@@ -483,7 +483,7 @@ function renderStars(rating) {
   const r = parseFloat(rating);
   if (isNaN(r) || r <= 0) return '<span style="color:var(--light-gray);font-size:12px">No rating yet</span>';
   let s = '';
-  for (let i = 1; i <= 5; i++) s += i <= Math.round(r) ? '★' : '☆';
+  for (let i = 1; i <= 5; i++) s += i <= Math.round(r) ? '&#9733;' : '&#9734;';
   return '<span class="l-stars">' + s + '</span><span class="l-reviews">' + r.toFixed(1) + ' (CMS Quality Rating)</span>';
 }
 
@@ -547,7 +547,7 @@ function renderListing(provider, index, type) {
     '<div class="l-actions">' +
       '<button class="btn-cta" onclick="window.location=\'/signin\'">Get More Info</button>' +
       '<button class="btn-sec" onclick="window.location=\'/provider/' + ccn + '\'">View Profile</button>' +
-      (phone ? '<span class="l-phone">📞 ' + phone + '</span>' : '') +
+      (phone ? '<span class="l-phone">&#128222; ' + phone + '</span>' : '') +
     '</div>' +
   '</div></div>';
 }
@@ -583,7 +583,7 @@ let filteredResults = [];  // After filters applied
 let totalServerCount = 0;
 
 /* ═══════════════════════════════════════════════════════
-   FILTER SYSTEM — Pills, Sidebar Checkboxes, Sliders
+   FILTER SYSTEM &mdash; Pills, Sidebar Checkboxes, Sliders
    ═══════════════════════════════════════════════════════ */
 
 // Active filter state
@@ -721,7 +721,7 @@ function renderFilteredResults() {
   const footer = document.getElementById('results-footer');
   if (footer) {
     const endNum = Math.min(start + pageResults.length, total);
-    footer.innerHTML = 'Showing ' + (start + 1) + '–' + endNum + ' of ' + total.toLocaleString() + ' providers · Filtered from ' + totalServerCount.toLocaleString() + ' total · Data sourced from <strong>Senova database (synced from CMS.gov)</strong>';
+    footer.innerHTML = 'Showing ' + (start + 1) + '&#8211;' + endNum + ' of ' + total.toLocaleString() + ' providers &middot; Filtered from ' + totalServerCount.toLocaleString() + ' total &middot; Data sourced from <strong>Senova database (synced from CMS.gov)</strong>';
   }
 
   // Update sidebar counts based on filtered data
@@ -1009,7 +1009,7 @@ function changePage(page) {
   renderFilteredResults();
 }
 
-/* ── ZIP CODE → CITY/STATE LOOKUP ── */
+/* ── ZIP CODE &rarr; CITY/STATE LOOKUP ── */
 const ZIP_DB = {
   '550':'Minneapolis, MN','551':'St. Paul, MN','553':'Minneapolis, MN','554':'Rochester, MN','556':'Duluth, MN',
   '600':'North Suburban IL','601':'Carol Stream, IL','602':'Evanston, IL','603':'Oak Park, IL','604':'South Suburban IL','606':'Chicago, IL','608':'Kankakee, IL',
@@ -1068,9 +1068,25 @@ function lookupZip(zip) {
   return ZIP_DB[prefix] || null;
 }
 
+const STATE_NAME_TO_ABBR = {
+  'alabama':'AL','alaska':'AK','arizona':'AZ','arkansas':'AR','california':'CA',
+  'colorado':'CO','connecticut':'CT','delaware':'DE','florida':'FL','georgia':'GA',
+  'hawaii':'HI','idaho':'ID','illinois':'IL','indiana':'IN','iowa':'IA',
+  'kansas':'KS','kentucky':'KY','louisiana':'LA','maine':'ME','maryland':'MD',
+  'massachusetts':'MA','michigan':'MI','minnesota':'MN','mississippi':'MS','missouri':'MO',
+  'montana':'MT','nebraska':'NE','nevada':'NV','new hampshire':'NH','new jersey':'NJ',
+  'new mexico':'NM','new york':'NY','north carolina':'NC','north dakota':'ND','ohio':'OH',
+  'oklahoma':'OK','oregon':'OR','pennsylvania':'PA','rhode island':'RI','south carolina':'SC',
+  'south dakota':'SD','tennessee':'TN','texas':'TX','utah':'UT','vermont':'VT',
+  'virginia':'VA','washington':'WA','west virginia':'WV','wisconsin':'WI','wyoming':'WY'
+};
+
 function getStateFromLocation(loc) {
   const m = loc.match(/,\s*([A-Z]{2})$/);
-  return m ? m[1] : '';
+  if (m) return m[1];
+  const abbr = STATE_NAME_TO_ABBR[loc.trim().toLowerCase()];
+  if (abbr) return abbr;
+  return '';
 }
 
 /* State-specific Medicaid info */
@@ -1161,7 +1177,14 @@ initSidebarFilters();
         state = twoLetter;
         city = twoLetter;
       } else {
-        city = q;
+        // Check if it's a full state name (e.g. "Alabama" from Browse by Location)
+        const stateAbbrFromName = STATE_NAME_TO_ABBR[q.trim().toLowerCase()];
+        if (stateAbbrFromName) {
+          state = stateAbbrFromName;
+          city = q.trim();
+        } else {
+          city = q;
+        }
       }
     }
 
@@ -1180,7 +1203,7 @@ initSidebarFilters();
     else { currentCareType = 'all'; }
 
     // Update page title
-    document.title = careLabel + ' in ' + displayLoc + ' — Senova Search Results';
+    document.title = careLabel + ' in ' + displayLoc + ' &mdash; Senova Search Results';
 
     // Update results header
     const countEl = document.querySelector('.results-count');
@@ -1190,7 +1213,7 @@ initSidebarFilters();
     const medBanner = document.querySelector('.medicaid-banner');
     if (medBanner && STATE_MEDICAID[state]) {
       const sm = STATE_MEDICAID[state];
-      medBanner.innerHTML = '<span style="font-size:20px">📋</span><div><strong>' + sm.name + '</strong> covers home health care through ' + sm.program + '. Most listings below accept Medicaid at no cost to you. <a href="#" style="color:var(--teal);font-weight:600;text-decoration:underline">Learn more →</a></div>';
+      medBanner.innerHTML = '<span style="font-size:20px">&#128203;</span><div><strong>' + sm.name + '</strong> covers home health care through ' + sm.program + '. Most listings below accept Medicaid at no cost to you. <a href="#" style="color:var(--teal);font-weight:600;text-decoration:underline">Learn more &rarr;</a></div>';
     }
 
     // Highlight the matching tab
