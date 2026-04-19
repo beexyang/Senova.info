@@ -71,61 +71,82 @@ module.exports = async (req, res) => {
       })
     });
 
-    const vendor = (await vendorRes.json())[0];
+    if (!vendorRes.ok) {
+      const vendorErr = await vendorRes.text();
+      console.error('Vendor insert failed:', vendorErr);
+      return res.status(500).json({ error: 'Failed to create vendor profile. Database tables may not be set up yet.' });
+    }
 
-    // 3. Link auth user to vendor
-    await fetch(`${SUPABASE_URL}/rest/v1/vendor_auth`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_SERVICE_KEY,
-        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({
-        auth_user_id: authUser.id,
-        vendor_id: vendor.id,
-        email
-      })
-    });
+    const vendorBody = await vendorRes.json();
+    const vendor = vendorBody[0];
 
-    // 4. Create default membership (inactive â no plan)
-    await fetch(`${SUPABASE_URL}/rest/v1/vendor_memberships`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_SERVICE_KEY,
-        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({
-        vendor_id: vendor.id,
-        plan_name: 'none',
-        plan_status: 'inactive',
-        leads_per_month: 0,
-        price_monthly: 0
-      })
-    });
+    if (!vendor || !vendor.id) {
+      console.error('Vendor insert returned empty:', JSON.stringify(vendorBody));
+      return res.status(500).json({ error: 'Vendor profile was not created. Check database schema.' });
+    }
 
-    // 5. Create admin notification
-    await fetch(`${SUPABASE_URL}/rest/v1/admin_notifications`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_SERVICE_KEY,
-        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({
-        type: 'new_vendor',
-        title: `New Vendor: ${business_name}`,
-        message: `${contact_name || 'Unknown'} from ${city || ''}, ${state || ''} just created a vendor profile. Upsell to lead plan.`,
-        reference_id: vendor.id,
-        reference_type: 'vendor'
-      })
-    });
+    // 3. Link auth user to vendor (best effort â don't block signup if this fails)
+    try {
+      const linkRes = await fetch(`${SUPABASE_URL}/rest/v1/vendor_auth`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          auth_user_id: authUser.id,
+          vendor_id: vendor.id,
+          email
+        })
+      });
+      if (!linkRes.ok) console.error('vendor_auth insert failed:', await linkRes.text());
+    } catch (linkErr) { console.error('vendor_auth error:', linkErr.message); }
 
-    // 6. Send admin email via Resend
+    // 4. Create default membership (best effort)
+    try {
+      const memRes = await fetch(`${SUPABASE_URL}/rest/v1/vendor_memberships`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          vendor_id: vendor.id,
+          plan_name: 'none',
+          plan_status: 'inactive',
+          leads_per_month: 0,
+          price_monthly: 0
+        })
+      });
+      if (!memRes.ok) console.error('vendor_memberships insert failed:', await memRes.text());
+    } catch (memErr) { console.error('membership error:', memErr.message); }
+
+    // 5. Create admin notification (best effort)
+    try {
+      const notifRes = await fetch(`${SUPABASE_URL}/rest/v1/admin_notifications`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          type: 'new_vendor',
+          title: `New Vendor: ${business_name}`,
+          message: `${contact_name || 'Unknown'} from ${city || ''}, ${state || ''} just created a vendor profile. Upsell to lead plan.`,
+          reference_id: vendor.id,
+          reference_type: 'vendor'
+        })
+      });
+      if (!notifRes.ok) console.error('admin_notifications insert failed:', await notifRes.text());
+    } catch (notifErr) { console.error('notification error:', notifErr.message); }
+
+    // 6. Send admin email via Resend (best effort)
     if (RESEND_API_KEY) {
       try {
         await fetch('https://api.resend.com/emails', {
@@ -153,6 +174,7 @@ module.exports = async (req, res) => {
 
     res.status(200).json({ success: true, vendor_id: vendor.id });
   } catch (error) {
+    console.error('vendor-signup error:', error);
     res.status(500).json({ error: error.message });
   }
 };
