@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Sign In or Create Account — Senova</title>
+<title>Sign In or Create Account â Senova</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -217,11 +217,11 @@ a{text-decoration:none;color:inherit}
       <li><span class="check">&#10003;</span> Access detailed provider profiles and photos</li>
       <li><span class="check">&#10003;</span> Compare facilities side by side</li>
       <li><span class="check">&#10003;</span> Request callbacks directly from providers</li>
-      <li><span class="check">&#10003;</span> 100% free — no credit card required</li>
+      <li><span class="check">&#10003;</span> 100% free â no credit card required</li>
     </ul>
     <div class="left-quote">
       <p>"Senova helped me find the perfect home health aide for my mother in just two days. The provider profiles made it so easy to compare options."</p>
-      <div class="author">— Maria G., Houston TX</div>
+      <div class="author">â Maria G., Houston TX</div>
     </div>
   </div>
 
@@ -416,7 +416,7 @@ function handleSignIn() {
   setTimeout(() => { window.location = '/'; }, 2000);
 }
 
-function handleSignUp() {
+async function handleSignUp() {
   let valid = true;
   const fields = [
     {id:'su_first'}, {id:'su_last'}, {id:'su_email', type:'email'},
@@ -449,9 +449,41 @@ function handleSignUp() {
 
   if (!valid) { alert('Please fill in all required fields correctly.'); return; }
 
-  // Success
-  document.getElementById('successOverlay').classList.add('show');
-  setTimeout(() => { window.location = '/'; }, 2000);
+  // Collect care types from checkboxes
+  const careTypes = [];
+  document.querySelectorAll('.check-item input[type="checkbox"]:checked').forEach(cb => {
+    careTypes.push(cb.value);
+  });
+
+  // Send to API
+  try {
+    const res = await fetch('/api/user-signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: document.getElementById('su_email').value.trim(),
+        password: document.getElementById('su_pass').value,
+        first_name: document.getElementById('su_first').value.trim(),
+        last_name: document.getElementById('su_last').value.trim(),
+        phone: document.getElementById('su_phone').value.trim(),
+        street_address: document.getElementById('su_street').value.trim(),
+        city: document.getElementById('su_city').value.trim(),
+        state: document.getElementById('su_state').value,
+        zip_code: document.getElementById('su_zip').value.trim(),
+        care_for: document.getElementById('su_carefor').value,
+        care_types: careTypes
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Signup failed');
+
+    // Success
+    document.getElementById('successOverlay').classList.add('show');
+    setTimeout(() => { window.location = '/'; }, 2000);
+  } catch (err) {
+    alert(err.message || 'Something went wrong. Please try again.');
+  }
 }
 
 // Auto-detect which tab to show based on URL path
