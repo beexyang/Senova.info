@@ -573,7 +573,7 @@ footer .logo { color: #fff; margin-bottom: 14px; }
         <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
     </span>
-    <input class="search-bar" type="text" placeholder="Search by city, ZIP, or provider name…" aria-label="Search for home care, adult day programs, hospice, or rehab by city, ZIP code, or provider name" />
+    <input id="heroSearch" class="search-bar" type="text" placeholder="Search by city, ZIP, or provider name…" aria-label="Search for home care, adult day programs, hospice, or rehab by city, ZIP code, or provider name" />
   </div>
 
   <!-- Google-style two buttons -->
@@ -647,7 +647,7 @@ footer .logo { color: #fff; margin-bottom: 14px; }
       <div class="mc"><div class="icon">🌿</div><h4>SUD Treatment Waivers</h4><p>Medicaid covers residential substance use treatment including sober living in most states.</p></div>
     </div>
     <div class="med-cta">
-      <button class="btn-white" onclick="window.location='/search'">Search providers in your state →</button>
+      <button class="btn-white" onclick="document.getElementById('heroSearch').scrollIntoView({behavior:'smooth'});setTimeout(function(){document.getElementById('heroSearch').focus()},500)">Search providers in your state →</button>
     </div>
   </div>
 </section>
