@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Dashboard â Senova</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;color:#202124;background:#F8FAFB;min-height:100vh}
+a{text-decoration:none;color:inherit}
+h1,h2,h3,h4{font-family:'Poppins',sans-serif;font-weight:600}
+
+:root{
+  --teal:#0D9488;--teal-dark:#0B7A6E;--teal-light:#F0FDFA;
+  --orange:#F97316;--orange-dark:#EA6C0A;
+  --navy:#202124;--gray:#5F6368;--light-gray:#9AA0A6;
+  --bg:#F8FAFB;--border:#E5E7EB;--green:#16A34A;--red:#DC2626;--blue:#2563EB;
+  --shadow:0 1px 6px rgba(32,33,36,.12);
+}
+
+/* Layout */
+.layout{display:flex;min-height:100vh}
+
+/* Sidebar */
+.sidebar{width:240px;background:#fff;border-right:1px solid var(--border);position:fixed;left:0;top:0;height:100vh;display:flex;flex-direction:column;z-index:100}
+.sidebar-logo{padding:24px;border-bottom:1px solid var(--border);font-family:'Poppins',sans-serif;font-weight:800;font-size:20px}
+.sidebar-logo .sen{color:var(--teal)}.sidebar-logo .ova{color:var(--orange)}
+.sidebar-logo small{display:block;font-size:12px;font-weight:500;color:var(--gray);margin-top:2px}
+.sidebar-nav{padding:16px 12px;flex:1}
+.nav-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;color:var(--gray);margin-bottom:4px;transition:all .2s}
+.nav-item:hover{background:var(--teal-light);color:var(--teal)}
+.nav-item.active{background:var(--teal);color:#fff}
+.nav-item .badge{margin-left:auto;background:var(--red);color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700}
+.nav-item.active .badge{background:rgba(255,255,255,.3)}
+
+/* Main content */
+.main{margin-left:240px;flex:1;padding:32px}
+.main-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
+.main-header h1{font-size:24px}
+.header-right{display:flex;align-items:center;gap:12px}
+.btn-refresh{padding:8px 16px;background:#fff;border:1.5px solid var(--border);border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit}
+
+/* Login overlay */
+.admin-login{position:fixed;inset:0;background:#F8FAFB;z-index:200;display:flex;align-items:center;justify-content:center}
+.admin-login-card{background:#fff;border-radius:16px;padding:48px;box-shadow:var(--shadow);max-width:400px;width:100%}
+.admin-login-card h2{margin-bottom:8px}
+.admin-login-card p{color:var(--gray);margin-bottom:24px;font-size:14px}
+.admin-login-card .form-group{margin-bottom:16px}
+.admin-login-card label{display:block;font-weight:600;font-size:13px;margin-bottom:6px}
+.admin-login-card input{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-family:inherit}
+.admin-login-card input:focus{outline:none;border-color:var(--teal)}
+.btn-admin-login{width:100%;padding:14px;background:var(--teal);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:8px}
+.admin-error{background:#FEF2F2;color:var(--red);padding:10px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:#fff;border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px}
+.stat-label{font-size:12px;color:var(--gray);font-weight:500;margin-bottom:4px}
+.stat-value{font-size:24px;font-weight:700;font-family:'Poppins',sans-serif}
+
+/* Notifications panel */
+.notifications{background:#fff;border-radius:14px;box-shadow:var(--shadow);margin-bottom:24px}
+.notifications-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.notif-item{padding:16px 24px;border-bottom:1px solid #F3F4F6;display:flex;align-items:flex-start;gap:14px;cursor:pointer;transition:background .15s}
+.notif-item:hover{background:#F9FAFB}
+.notif-item.unread{background:#FAFFFE;border-left:3px solid var(--teal)}
+.notif-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.notif-icon.vendor{background:#F0FDF4;color:var(--green)}
+.notif-icon.user{background:#EFF6FF;color:var(--blue)}
+.notif-icon.image{background:#FFF7ED;color:var(--orange)}
+.notif-icon.lead{background:var(--teal-light);color:var(--teal)}
+.notif-body{flex:1;min-width:0}
+.notif-title{font-weight:600;font-size:14px;margin-bottom:2px}
+.notif-msg{font-size:13px;color:var(--gray)}
+.notif-time{font-size:12px;color:var(--light-gray);white-space:nowrap;margin-top:4px}
+
+/* Tables */
+.panel{background:#fff;border-radius:14px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:24px}
+.panel-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.panel-header h3{font-size:16px}
+
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;padding:12px 20px;font-size:12px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);background:#FAFBFC}
+tbody td{padding:14px 20px;border-bottom:1px solid #F3F4F6;font-size:14px}
+tbody tr:hover{background:#F9FAFB}
+
+.badge{display:inline-flex;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600}
+.badge-green{background:#DCFCE7;color:var(--green)}
+.badge-orange{background:#FFF7ED;color:var(--orange)}
+.badge-red{background:#FEF2F2;color:var(--red)}
+.badge-blue{background:#EFF6FF;color:var(--blue)}
+.badge-teal{background:var(--teal-light);color:var(--teal)}
+
+.btn-sm{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.btn-approve{background:#DCFCE7;color:var(--green)}.btn-approve:hover{background:var(--green);color:#fff}
+.btn-deny{background:#FEF2F2;color:var(--red)}.btn-deny:hover{background:var(--red);color:#fff}
+
+/* Section pages (hidden by default) */
+.section-page{display:none}
+.section-page.active{display:block}
+
+@media(max-width:900px){
+  .sidebar{display:none}
+  .main{margin-left:0}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- ADMIN LOGIN -->
+<div class="admin-login" id="adminLogin">
+  <div class="admin-login-card">
+    <h2>Admin Login</h2>
+    <p>Senova internal dashboard</p>
+    <div class="admin-error" id="adminError"></div>
+    <form onsubmit="adminLoginHandler(event)">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="adminEmail" required placeholder="admin@senova.info"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="adminPass" required placeholder="Admin password"/>
+      </div>
+      <button type="submit" class="btn-admin-login" id="adminLoginBtn">Sign In</button>
+    </form>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout" id="mainLayout" style="display:none">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <span class="sen">Sen</span><span class="ova">ova</span>
+      <small>Admin Dashboard</small>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-item active" onclick="showSection('overview',this)">ð Overview</div>
+      <div class="nav-item" onclick="showSection('vendors',this)">ð¢ Vendors <span class="badge" id="vendorCountBadge">0</span></div>
+      <div class="nav-item" onclick="showSection('users',this)">ð¤ Users <span class="badge" id="userCountBadge">0</span></div>
+      <div class="nav-item" onclick="showSection('leads',this)">ð Leads</div>
+      <div class="nav-item" onclick="showSection('images',this)">ð¼ Image Approvals <span class="badge" id="imageCountBadge">0</span></div>
+      <div class="nav-item" onclick="showSection('notifications',this)">ð Notifications</div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main">
+    <!-- OVERVIEW -->
+    <div class="section-page active" id="page-overview">
+      <div class="main-header">
+        <h1>Dashboard Overview</h1>
+        <div class="header-right">
+          <button class="btn-refresh" onclick="loadAllData()">Refresh</button>
+          <button class="btn-refresh" onclick="adminLogout()" style="color:var(--red);border-color:var(--red)">Log Out</button>
+        </div>
+      </div>
+
+      <div class="stats-grid" id="overviewStats">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--teal-light)">ð¢</div>
+          <div class="stat-label">Total Vendors</div>
+          <div class="stat-value" id="totalVendors">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#EFF6FF">ð¤</div>
+          <div class="stat-label">Total Users</div>
+          <div class="stat-value" id="totalUsers">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#F0FDF4">ð</div>
+          <div class="stat-label">Total Leads</div>
+          <div class="stat-value" id="totalLeads">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#FFF7ED">ð¼</div>
+          <div class="stat-label">Pending Images</div>
+          <div class="stat-value" id="pendingImages">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#FEF2F2">ð°</div>
+          <div class="stat-label">Active Plans</div>
+          <div class="stat-value" id="activePlans">0</div>
+        </div>
+      </div>
+
+      <!-- Recent Notifications -->
+      <div class="notifications">
+        <div class="notifications-header">
+          <h3>Recent Activity</h3>
+          <span style="font-size:13px;color:var(--gray)" id="notifCount">0 new</span>
+        </div>
+        <div id="notifList">
+          <div style="padding:40px;text-align:center;color:var(--gray)">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VENDORS PAGE -->
+    <div class="section-page" id="page-vendors">
+      <div class="main-header">
+        <h1>Vendor Profiles</h1>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h3>All Vendors</h3>
+        </div>
+        <table>
+          <thead><tr><th>Business Name</th><th>Contact</th><th>Location</th><th>Care Types</th><th>Membership</th><th>Joined</th></tr></thead>
+          <tbody id="vendorsTableBody"><tr><td colspan="6" style="text-align:center;padding:40px;color:var(--gray)">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USERS PAGE -->
+    <div class="section-page" id="page-users">
+      <div class="main-header">
+        <h1>User Profiles</h1>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h3>All Users</h3>
+        </div>
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Location</th><th>Care For</th><th>Joined</th></tr></thead>
+          <tbody id="usersTableBody"><tr><td colspan="6" style="text-align:center;padding:40px;color:var(--gray)">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LEADS PAGE -->
+    <div class="section-page" id="page-leads">
+      <div class="main-header">
+        <h1>Lead Tracking</h1>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h3>All Leads</h3>
+        </div>
+        <table>
+          <thead><tr><th>Date</th><th>Lead Name</th><th>Email</th><th>Vendor Assigned</th><th>Sent Via</th><th>Status</th><th>Contacted</th><th>Closed</th></tr></thead>
+          <tbody id="leadsTableBody"><tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray)">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- IMAGE APPROVALS PAGE -->
+    <div class="section-page" id="page-images">
+      <div class="main-header">
+        <h1>Image Approvals</h1>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h3>Pending Review</h3>
+        </div>
+        <div id="imageReviewGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:24px">
+          <div style="text-align:center;color:var(--gray);grid-column:1/-1;padding:40px">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS PAGE -->
+    <div class="section-page" id="page-notifications">
+      <div class="main-header">
+        <h1>All Notifications</h1>
+        <button class="btn-refresh" onclick="markAllRead()">Mark All Read</button>
+      </div>
+      <div class="notifications" id="allNotifsPanel">
+        <div id="allNotifsList">
+          <div style="padding:40px;text-align:center;color:var(--gray)">Loading...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'SUPABASE_URL_PLACEHOLDER';
+const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY_PLACEHOLDER';
+const ADMIN_EMAIL = '[ADMIN_EMAIL_REDACTED]';
+
+let adminToken = null;
+
+// ===== ADMIN AUTH =====
+async function adminLoginHandler(e) {
+  e.preventDefault();
+  const email = document.getElementById('adminEmail').value;
+  const pass = document.getElementById('adminPass').value;
+  const err = document.getElementById('adminError');
+  const btn = document.getElementById('adminLoginBtn');
+
+  btn.textContent = 'Signing in...'; btn.disabled = true; err.style.display = 'none';
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+      body: JSON.stringify({ email, password: pass })
+    });
+    if (!res.ok) throw new Error('Invalid credentials');
+    const data = await res.json();
+
+    // Check if this user is admin
+    if (data.user.email !== ADMIN_EMAIL) {
+      throw new Error('Not authorized');
+    }
+
+    adminToken = data.access_token;
+    localStorage.setItem('admin_token', adminToken);
+    document.getElementById('adminLogin').style.display = 'none';
+    document.getElementById('mainLayout').style.display = 'flex';
+    loadAllData();
+  } catch (error) {
+    err.textContent = error.message; err.style.display = 'block';
+  } finally {
+    btn.textContent = 'Sign In'; btn.disabled = false;
+  }
+}
+
+function adminLogout() {
+  localStorage.removeItem('admin_token');
+  adminToken = null;
+  document.getElementById('adminLogin').style.display = 'flex';
+  document.getElementById('mainLayout').style.display = 'none';
+}
+
+// Auto-login
+(async function checkAdmin() {
+  const t = localStorage.getItem('admin_token');
+  if (!t) return;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${t}` }
+    });
+    if (res.ok) {
+      const user = await res.json();
+      if (user.email === ADMIN_EMAIL) {
+        adminToken = t;
+        document.getElementById('adminLogin').style.display = 'none';
+        document.getElementById('mainLayout').style.display = 'flex';
+        loadAllData();
+      }
+    }
+  } catch (e) {}
+})();
+
+// ===== DATA LOADING =====
+function supa(path) {
+  return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${adminToken}` }
+  }).then(r => r.json());
+}
+
+async function loadAllData() {
+  const [vendors, users, leads, images, notifs, memberships] = await Promise.all([
+    supa('vendors?select=*&order=created_at.desc'),
+    supa('users?select=*&order=created_at.desc'),
+    supa('leads?select=*,vendors(business_name)&order=received_at.desc'),
+    supa('vendor_images?status=eq.pending&select=*,vendors(business_name)&order=uploaded_at.desc'),
+    supa('admin_notifications?select=*&order=created_at.desc&limit=50'),
+    supa('vendor_memberships?plan_status=eq.active&select=*')
+  ]);
+
+  // Stats
+  document.getElementById('totalVendors').textContent = vendors.length || 0;
+  document.getElementById('totalUsers').textContent = users.length || 0;
+  document.getElementById('totalLeads').textContent = leads.length || 0;
+  document.getElementById('pendingImages').textContent = images.length || 0;
+  document.getElementById('activePlans').textContent = memberships.length || 0;
+
+  // Badges
+  document.getElementById('vendorCountBadge').textContent = vendors.length || 0;
+  document.getElementById('userCountBadge').textContent = users.length || 0;
+  document.getElementById('imageCountBadge').textContent = images.length || 0;
+
+  const unreadNotifs = (notifs || []).filter(n => !n.is_read).length;
+  document.getElementById('notifCount').textContent = `${unreadNotifs} new`;
+
+  renderNotifications(notifs || [], 'notifList', 10);
+  renderNotifications(notifs || [], 'allNotifsList', 50);
+  renderVendors(vendors || []);
+  renderUsers(users || []);
+  renderLeadsAdmin(leads || []);
+  renderImageReview(images || []);
+}
+
+// ===== RENDER FUNCTIONS =====
+function timeAgo(dateStr) {
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diff = Math.floor((now - d) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  return Math.floor(diff/86400) + 'd ago';
+}
+
+function renderNotifications(notifs, containerId, limit) {
+  const el = document.getElementById(containerId);
+  if (!notifs.length) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--gray)">No notifications yet</div>'; return; }
+
+  el.innerHTML = notifs.slice(0, limit).map(n => {
+    const iconClass = n.type === 'new_vendor' ? 'vendor' : n.type === 'new_user' ? 'user' : n.type === 'image_upload' ? 'image' : 'lead';
+    const icon = n.type === 'new_vendor' ? 'ð¢' : n.type === 'new_user' ? 'ð¤' : n.type === 'image_upload' ? 'ð¼' : 'ð';
+    return `<div class="notif-item ${n.is_read ? '' : 'unread'}">
+      <div class="notif-icon ${iconClass}">${icon}</div>
+      <div class="notif-body">
+        <div class="notif-title">${n.title}</div>
+        <div class="notif-msg">${n.message || ''}</div>
+        <div class="notif-time">${timeAgo(n.created_at)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderVendors(vendors) {
+  const tbody = document.getElementById('vendorsTableBody');
+  if (!vendors.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--gray)">No vendors yet</td></tr>'; return; }
+
+  tbody.innerHTML = vendors.map(v => {
+    const date = new Date(v.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const types = (v.care_types || []).join(', ') || 'â';
+    return `<tr>
+      <td style="font-weight:600">${v.business_name}</td>
+      <td>${v.contact_name || 'â'}<br><span style="font-size:12px;color:var(--gray)">${v.email || ''}</span></td>
+      <td>${v.city || ''}, ${v.state || ''}</td>
+      <td style="font-size:13px">${types}</td>
+      <td><span class="badge badge-orange">Upsell</span></td>
+      <td style="font-size:13px">${date}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderUsers(users) {
+  const tbody = document.getElementById('usersTableBody');
+  if (!users.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--gray)">No users yet</td></tr>'; return; }
+
+  tbody.innerHTML = users.map(u => {
+    const date = new Date(u.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return `<tr>
+      <td style="font-weight:600">${u.first_name} ${u.last_name}</td>
+      <td>${u.email}</td>
+      <td>${u.phone || 'â'}</td>
+      <td>${u.city || ''}, ${u.state || ''}</td>
+      <td>${u.care_for || 'â'}</td>
+      <td style="font-size:13px">${date}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderLeadsAdmin(leads) {
+  const tbody = document.getElementById('leadsTableBody');
+  if (!leads.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray)">No leads yet</td></tr>'; return; }
+
+  tbody.innerHTML = leads.map(l => {
+    const date = new Date(l.received_at || l.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const vendorName = l.vendors ? l.vendors.business_name : (l.vendor_assigned || 'â');
+    const sentVia = l.sent_via || 'email';
+    const sentClass = sentVia === 'both' ? 'badge-green' : sentVia === 'phone' ? 'badge-orange' : 'badge-blue';
+    const statusClass = l.vendor_closed ? 'badge-green' : l.vendor_contacted ? 'badge-blue' : 'badge-teal';
+    const statusText = l.vendor_closed ? 'Closed' : l.vendor_contacted ? 'Contacted' : 'New';
+    return `<tr>
+      <td style="font-size:13px">${date}</td>
+      <td style="font-weight:600">${l.first_name} ${l.last_name}</td>
+      <td style="font-size:13px">${l.email}</td>
+      <td style="font-size:13px">${vendorName}</td>
+      <td><span class="badge ${sentClass}">${sentVia}</span></td>
+      <td><span class="badge ${statusClass}">${statusText}</span></td>
+      <td>${l.vendor_contacted ? 'Yes' : 'No'}</td>
+      <td>${l.vendor_closed ? 'Yes' : 'No'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderImageReview(images) {
+  const grid = document.getElementById('imageReviewGrid');
+  if (!images.length) { grid.innerHTML = '<div style="text-align:center;color:var(--gray);grid-column:1/-1;padding:40px">No images pending review</div>'; return; }
+
+  grid.innerHTML = images.map(img => {
+    const vendorName = img.vendors ? img.vendors.business_name : 'Unknown Vendor';
+    const time = timeAgo(img.uploaded_at);
+    return `<div style="border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff">
+      <img src="${img.image_url}" style="width:100%;height:180px;object-fit:cover" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22><rect fill=%22%23E5E7EB%22 width=%22280%22 height=%22180%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%239AA0A6%22>No Preview</text></svg>'"/>
+      <div style="padding:16px">
+        <div style="font-weight:600;font-size:14px">${vendorName}</div>
+        <div style="font-size:12px;color:var(--gray);margin:4px 0">${img.image_type || 'facility'} - ${time}</div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn-sm btn-approve" onclick="approveImage('${img.id}',this)">Approve</button>
+          <button class="btn-sm btn-deny" onclick="denyImage('${img.id}',this)">Deny</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== ACTIONS =====
+async function approveImage(imageId, btn) {
+  btn.textContent = '...';
+  await fetch(`${SUPABASE_URL}/rest/v1/vendor_images?id=eq.${imageId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${adminToken}`,
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify({ status: 'approved', reviewed_by: ADMIN_EMAIL, reviewed_at: new Date().toISOString() })
+  });
+  loadAllData();
+}
+
+async function denyImage(imageId, btn) {
+  const reason = prompt('Reason for denial (optional):');
+  btn.textContent = '...';
+  await fetch(`${SUPABASE_URL}/rest/v1/vendor_images?id=eq.${imageId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${adminToken}`,
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify({ status: 'denied', reviewed_by: ADMIN_EMAIL, reviewed_at: new Date().toISOString(), deny_reason: reason || null })
+  });
+  loadAllData();
+}
+
+async function markAllRead() {
+  await fetch(`${SUPABASE_URL}/rest/v1/admin_notifications?is_read=eq.false`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${adminToken}`,
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify({ is_read: true })
+  });
+  loadAllData();
+}
+
+// ===== NAVIGATION =====
+function showSection(section, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.section-page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + section).classList.add('active');
+}
+</script>
+</body>
+</html>
