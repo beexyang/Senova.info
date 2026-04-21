@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Admin Dashboard â Senova</title>
+<title>Admin Dashboard — Senova</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -425,10 +425,10 @@ function renderVendors(vendors) {
 
   tbody.innerHTML = vendors.map(v => {
     const date = new Date(v.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    const types = (v.care_types || []).join(', ') || 'â';
+    const types = (v.care_types || []).join(', ') || '—';
     return `<tr>
       <td style="font-weight:600">${v.business_name}</td>
-      <td>${v.contact_name || 'â'}<br><span style="font-size:12px;color:var(--gray)">${v.email || ''}</span></td>
+      <td>${v.contact_name || '—'}<br><span style="font-size:12px;color:var(--gray)">${v.email || ''}</span></td>
       <td>${v.city || ''}, ${v.state || ''}</td>
       <td style="font-size:13px">${types}</td>
       <td><span class="badge badge-orange">Upsell</span></td>
@@ -446,9 +446,9 @@ function renderUsers(users) {
     return `<tr>
       <td style="font-weight:600">${u.first_name} ${u.last_name}</td>
       <td>${u.email}</td>
-      <td>${u.phone || 'â'}</td>
+      <td>${u.phone || '—'}</td>
       <td>${u.city || ''}, ${u.state || ''}</td>
-      <td>${u.care_for || 'â'}</td>
+      <td>${u.care_for || '—'}</td>
       <td style="font-size:13px">${date}</td>
     </tr>`;
   }).join('');
@@ -460,7 +460,7 @@ function renderLeadsAdmin(leads) {
 
   tbody.innerHTML = leads.map(l => {
     const date = new Date(l.received_at || l.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const vendorName = l.vendors ? l.vendors.business_name : (l.vendor_assigned || 'â');
+    const vendorName = l.vendors ? l.vendors.business_name : (l.vendor_assigned || '—');
     const sentVia = l.sent_via || 'email';
     const sentClass = sentVia === 'both' ? 'badge-green' : sentVia === 'phone' ? 'badge-orange' : 'badge-blue';
     const statusClass = l.vendor_closed ? 'badge-green' : l.vendor_contacted ? 'badge-blue' : 'badge-teal';
