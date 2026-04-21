@@ -141,12 +141,12 @@ tbody tr:hover{background:#F9FAFB}
       <small>Admin Dashboard</small>
     </div>
     <div class="sidebar-nav">
-      <div class="nav-item active" onclick="showSection('overview',this)">ð Overview</div>
-      <div class="nav-item" onclick="showSection('vendors',this)">ð¢ Vendors <span class="badge" id="vendorCountBadge">0</span></div>
-      <div class="nav-item" onclick="showSection('users',this)">ð¤ Users <span class="badge" id="userCountBadge">0</span></div>
-      <div class="nav-item" onclick="showSection('leads',this)">ð Leads</div>
-      <div class="nav-item" onclick="showSection('images',this)">ð¼ Image Approvals <span class="badge" id="imageCountBadge">0</span></div>
-      <div class="nav-item" onclick="showSection('notifications',this)">ð Notifications</div>
+      <div class="nav-item active" onclick="showSection('overview',this)">📊 Overview</div>
+      <div class="nav-item" onclick="showSection('vendors',this)">🏢 Vendors <span class="badge" id="vendorCountBadge">0</span></div>
+      <div class="nav-item" onclick="showSection('users',this)">👤 Users <span class="badge" id="userCountBadge">0</span></div>
+      <div class="nav-item" onclick="showSection('leads',this)">📋 Leads</div>
+      <div class="nav-item" onclick="showSection('images',this)">🖼 Image Approvals <span class="badge" id="imageCountBadge">0</span></div>
+      <div class="nav-item" onclick="showSection('notifications',this)">🔔 Notifications</div>
     </div>
   </nav>
 
@@ -164,27 +164,27 @@ tbody tr:hover{background:#F9FAFB}
 
       <div class="stats-grid" id="overviewStats">
         <div class="stat-card">
-          <div class="stat-icon" style="background:var(--teal-light)">ð¢</div>
+          <div class="stat-icon" style="background:var(--teal-light)">🏢</div>
           <div class="stat-label">Total Vendors</div>
           <div class="stat-value" id="totalVendors">0</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background:#EFF6FF">ð¤</div>
+          <div class="stat-icon" style="background:#EFF6FF">👤</div>
           <div class="stat-label">Total Users</div>
           <div class="stat-value" id="totalUsers">0</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background:#F0FDF4">ð</div>
+          <div class="stat-icon" style="background:#F0FDF4">📋</div>
           <div class="stat-label">Total Leads</div>
           <div class="stat-value" id="totalLeads">0</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background:#FFF7ED">ð¼</div>
+          <div class="stat-icon" style="background:#FFF7ED">🖼</div>
           <div class="stat-label">Pending Images</div>
           <div class="stat-value" id="pendingImages">0</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background:#FEF2F2">ð°</div>
+          <div class="stat-icon" style="background:#FEF2F2">💰</div>
           <div class="stat-label">Active Plans</div>
           <div class="stat-value" id="activePlans">0</div>
         </div>
@@ -407,7 +407,7 @@ function renderNotifications(notifs, containerId, limit) {
 
   el.innerHTML = notifs.slice(0, limit).map(n => {
     const iconClass = n.type === 'new_vendor' ? 'vendor' : n.type === 'new_user' ? 'user' : n.type === 'image_upload' ? 'image' : 'lead';
-    const icon = n.type === 'new_vendor' ? 'ð¢' : n.type === 'new_user' ? 'ð¤' : n.type === 'image_upload' ? 'ð¼' : 'ð';
+    const icon = n.type === 'new_vendor' ? '🏢' : n.type === 'new_user' ? '👤' : n.type === 'image_upload' ? '🖼' : '📋';
     return `<div class="notif-item ${n.is_read ? '' : 'unread'}">
       <div class="notif-icon ${iconClass}">${icon}</div>
       <div class="notif-body">
