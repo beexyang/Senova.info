@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Vendor Portal â Senova</title>
+<title>Vendor Portal — Senova</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -38,7 +38,7 @@ h1,h2,h3,h4{font-family:'Poppins',sans-serif;font-weight:600}
 .login-sub{font-size:16px;opacity:.85;line-height:1.6;max-width:400px;position:relative;z-index:1;margin-bottom:32px}
 .login-features{list-style:none;position:relative;z-index:1}
 .login-features li{display:flex;align-items:center;gap:12px;font-size:15px;padding:8px 0}
-.login-features li::before{content:'â';display:flex;align-items:center;justify-content:center;width:28px;height:28px;background:rgba(255,255,255,.15);border-radius:50%;font-size:14px;flex-shrink:0}
+.login-features li::before{content:'✓';display:flex;align-items:center;justify-content:center;width:28px;height:28px;background:rgba(255,255,255,.15);border-radius:50%;font-size:14px;flex-shrink:0}
 
 .login-right{width:55%;display:flex;align-items:center;justify-content:center;padding:40px}
 .login-card{width:100%;max-width:420px}
@@ -241,7 +241,7 @@ tbody tr:last-child td{border-bottom:none}
     <!-- No Membership CTA (shown if no active plan) -->
     <div class="no-membership" id="noMembershipCTA" style="display:none">
       <h3>Start Receiving Leads Today</h3>
-      <p>Sign up for a leads membership plan to have qualified families sent directly to your facility. No junk leads â only pre-qualified families ready for care.</p>
+      <p>Sign up for a leads membership plan to have qualified families sent directly to your facility. No junk leads — only pre-qualified families ready for care.</p>
       <button class="btn-upgrade" onclick="window.location='/for-providers#pricing'">View Lead Plans &rarr;</button>
     </div>
 
@@ -326,7 +326,7 @@ tbody tr:last-child td{border-bottom:none}
         </div>
         <div class="upload-area" id="uploadArea" onclick="document.getElementById('photoInput').click()">
           <input type="file" id="photoInput" accept="image/*" multiple onchange="handlePhotoUpload(event)"/>
-          <div style="font-size:40px;margin-bottom:12px">ð·</div>
+          <div style="font-size:40px;margin-bottom:12px">📷</div>
           <div style="font-weight:600;margin-bottom:4px">Click to upload photos</div>
           <div style="font-size:13px;color:var(--gray)">JPG, PNG up to 5MB each. Photos will be reviewed before publishing.</div>
         </div>
@@ -515,7 +515,7 @@ function renderLeads(leads) {
       <td><div class="lead-date">${dateStr}</div><div class="lead-time">${timeStr}</div></td>
       <td class="lead-name">${lead.first_name} ${lead.last_name}</td>
       <td class="lead-email">${lead.email}</td>
-      <td>${lead.phone || 'â'}</td>
+      <td>${lead.phone || '—'}</td>
       <td><span class="sent-badge ${sentClass}">${sentLabel}</span></td>
       <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
       <td>
