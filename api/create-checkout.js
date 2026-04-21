@@ -13,10 +13,21 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { vendor_id, price_id, plan_name } = req.body;
+    const { vendor_id, plan_name } = req.body;
 
-    if (!vendor_id || !price_id || !plan_name) {
-      return res.status(400).json({ error: 'vendor_id, price_id, and plan_name are required' });
+    if (!vendor_id || !plan_name) {
+      return res.status(400).json({ error: 'vendor_id and plan_name are required' });
+    }
+
+    // Map plan names to Stripe Price IDs from environment variables
+    const PRICE_MAP = {
+      starter: process.env.STRIPE_STARTER_PRICE_ID,
+      growth: process.env.STRIPE_GROWTH_PRICE_ID,
+      premium: process.env.STRIPE_PREMIUM_PRICE_ID
+    };
+    const price_id = PRICE_MAP[plan_name];
+    if (!price_id) {
+      return res.status(400).json({ error: 'Invalid plan name or price not configured' });
     }
 
     // Look up vendor info for Stripe metadata
