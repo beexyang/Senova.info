@@ -98,6 +98,7 @@ tbody tr:hover{background:#F9FAFB}
 .btn-sm{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
 .btn-approve{background:#DCFCE7;color:var(--green)}.btn-approve:hover{background:var(--green);color:#fff}
 .btn-deny{background:#FEF2F2;color:var(--red)}.btn-deny:hover{background:var(--red);color:#fff}
+.btn-delete{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--red);background:#fff;color:var(--red);font-family:inherit;transition:all .15s}.btn-delete:hover{background:var(--red);color:#fff}
 
 /* Section pages (hidden by default) */
 .section-page{display:none}
@@ -212,8 +213,8 @@ tbody tr:hover{background:#F9FAFB}
           <h3>All Vendors</h3>
         </div>
         <table>
-          <thead><tr><th>Business Name</th><th>Contact</th><th>Location</th><th>Care Types</th><th>Membership</th><th>Joined</th></tr></thead>
-          <tbody id="vendorsTableBody"><tr><td colspan="6" style="text-align:center;padding:40px;color:var(--gray)">Loading...</td></tr></tbody>
+          <thead><tr><th>Business Name</th><th>Contact</th><th>Location</th><th>Care Types</th><th>Membership</th><th>Joined</th><th>Actions</th></tr></thead>
+          <tbody id="vendorsTableBody"><tr><td colspan="7" style="text-align:center;padding:40px;color:var(--gray)">Loading...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -228,8 +229,8 @@ tbody tr:hover{background:#F9FAFB}
           <h3>All Users</h3>
         </div>
         <table>
-          <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Location</th><th>Care For</th><th>Joined</th></tr></thead>
-          <tbody id="usersTableBody"><tr><td colspan="6" style="text-align:center;padding:40px;color:var(--gray)">Loading...</td></tr></tbody>
+          <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Location</th><th>Care For</th><th>Joined</th><th>Actions</th></tr></thead>
+          <tbody id="usersTableBody"><tr><td colspan="7" style="text-align:center;padding:40px;color:var(--gray)">Loading...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -359,8 +360,8 @@ function supa(path) {
 
 async function loadAllData() {
   const [vendors, users, leads, images, notifs, memberships] = await Promise.all([
-    supa('vendors?select=*&order=created_at.desc'),
-    supa('users?select=*&order=created_at.desc'),
+    supa('vendors?select=*,vendor_auth(auth_user_id)&order=created_at.desc'),
+    supa('users?select=*,user_auth(auth_user_id)&order=created_at.desc'),
     supa('leads?select=*,vendors(business_name)&order=received_at.desc'),
     supa('vendor_images?status=eq.pending&select=*,vendors(business_name)&order=uploaded_at.desc'),
     supa('admin_notifications?select=*&order=created_at.desc&limit=50'),
@@ -421,11 +422,12 @@ function renderNotifications(notifs, containerId, limit) {
 
 function renderVendors(vendors) {
   const tbody = document.getElementById('vendorsTableBody');
-  if (!vendors.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--gray)">No vendors yet</td></tr>'; return; }
+  if (!vendors.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--gray)">No vendors yet</td></tr>'; return; }
 
   tbody.innerHTML = vendors.map(v => {
     const date = new Date(v.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const types = (v.care_types || []).join(', ') || '—';
+    const authId = v.vendor_auth?.[0]?.auth_user_id || '';
     return `<tr>
       <td style="font-weight:600">${v.business_name}</td>
       <td>${v.contact_name || '—'}<br><span style="font-size:12px;color:var(--gray)">${v.email || ''}</span></td>
@@ -433,16 +435,18 @@ function renderVendors(vendors) {
       <td style="font-size:13px">${types}</td>
       <td><span class="badge badge-orange">Upsell</span></td>
       <td style="font-size:13px">${date}</td>
+      <td><button class="btn-delete" onclick="deleteRecord('vendor','${v.id}','${authId}','${v.business_name}')">Delete</button></td>
     </tr>`;
   }).join('');
 }
 
 function renderUsers(users) {
   const tbody = document.getElementById('usersTableBody');
-  if (!users.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--gray)">No users yet</td></tr>'; return; }
+  if (!users.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--gray)">No users yet</td></tr>'; return; }
 
   tbody.innerHTML = users.map(u => {
     const date = new Date(u.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const authId = u.user_auth?.[0]?.auth_user_id || '';
     return `<tr>
       <td style="font-weight:600">${u.first_name} ${u.last_name}</td>
       <td>${u.email}</td>
@@ -450,6 +454,7 @@ function renderUsers(users) {
       <td>${u.city || ''}, ${u.state || ''}</td>
       <td>${u.care_for || '—'}</td>
       <td style="font-size:13px">${date}</td>
+      <td><button class="btn-delete" onclick="deleteRecord('user','${u.id}','${authId}','${u.first_name} ${u.last_name}')">Delete</button></td>
     </tr>`;
   }).join('');
 }
@@ -500,6 +505,27 @@ function renderImageReview(images) {
 }
 
 // ===== ACTIONS =====
+async function deleteRecord(type, id, authUserId, name) {
+  const label = type === 'vendor' ? 'vendor' : 'user';
+  if (!confirm('Are you sure you want to permanently delete ' + label + ' "' + name + '"?\n\nThis will remove their account, all related data, and free up their email for re-registration.\n\nThis cannot be undone.')) return;
+  try {
+    const res = await fetch('/api/admin-delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, id, auth_user_id: authUserId || null })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert(label.charAt(0).toUpperCase() + label.slice(1) + ' "' + name + '" has been deleted. Their email is now available for re-registration.');
+      loadAllData();
+    } else {
+      alert('Delete failed: ' + (data.error || 'Unknown error'));
+    }
+  } catch (err) {
+    alert('Delete failed: ' + err.message);
+  }
+}
+
 async function approveImage(imageId, btn) {
   btn.textContent = '...';
   await fetch(`${SUPABASE_URL}/rest/v1/vendor_images?id=eq.${imageId}`, {
