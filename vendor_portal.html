@@ -242,7 +242,7 @@ tbody tr:last-child td{border-bottom:none}
     <div class="no-membership" id="noMembershipCTA" style="display:none">
       <h3>Start Receiving Leads Today</h3>
       <p>Sign up for a leads membership plan to have qualified families sent directly to your facility. No junk leads — only pre-qualified families ready for care.</p>
-      <button class="btn-upgrade" onclick="window.location='/for-providers#pricing'">View Lead Plans &rarr;</button>
+      <button class="btn-upgrade" onclick="window.location='/lead_plans.html'">View Lead Plans &rarr;</button>
     </div>
 
     <!-- Stats Row -->
@@ -410,6 +410,7 @@ async function loadVendorData(token, authUserId) {
   }
 
   currentVendor = authData[0].vendors;
+  localStorage.setItem('vendor_id', currentVendor.id);
 
   // Get membership
   const memRes = await fetch(
