@@ -47,8 +47,7 @@ a{text-decoration:none;color:inherit}
   font-family:'Poppins',sans-serif;font-size:32px;font-weight:700;
   line-height:1.3;margin-bottom:16px;position:relative;z-index:1;
 }
-.left-sub{
-  font-size:16px;line-height:1.7;opacity:.85;margin-bottom:36px;position:relative;z-index:1;
+.left-sub{  font-size:16px;line-height:1.7;opacity:.85;margin-bottom:36px;position:relative;z-index:1;
 }
 .left-features{list-style:none;display:flex;flex-direction:column;gap:16px;position:relative;z-index:1}
 .left-features li{
@@ -128,6 +127,17 @@ a{text-decoration:none;color:inherit}
 
 .care-for-select{width:100%}
 
+/* ROLE TOGGLE */
+.role-toggle{display:flex;gap:0;margin-bottom:24px;background:var(--bg);border-radius:10px;padding:4px;border:1.5px solid var(--border)}
+.role-btn{
+  flex:1;padding:12px 16px;text-align:center;font-size:14px;font-weight:600;
+  color:var(--gray);cursor:pointer;border-radius:8px;transition:all .2s;
+}
+.role-btn:hover{color:var(--navy)}
+.role-btn.active{background:var(--teal);color:#fff;box-shadow:0 2px 8px rgba(13,148,136,.25)}
+.role-btn small{display:block;font-size:11px;font-weight:400;margin-top:2px;opacity:.7}
+.role-btn.active small{opacity:.85}
+
 /* BUTTONS */
 .btn-primary{
   width:100%;height:50px;background:var(--teal);color:#fff;border:none;
@@ -163,7 +173,7 @@ a{text-decoration:none;color:inherit}
 .remember-row{
   display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;
 }
-.remember-row label{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--navy);cursor:pointer}
+.remember-row label{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--navy);cursor:pointer}:center;gap:8px;font-size:14px;color:var(--navy);cursor:pointer}
 .remember-row input{width:16px;height:16px;accent-color:var(--teal)}
 .remember-row a{font-size:13px;color:var(--teal);font-weight:500}
 
@@ -261,110 +271,207 @@ a{text-decoration:none;color:inherit}
         </div>
       </div>
 
-      <!-- CREATE ACCOUNT FORM -->
+      <!-- CREATE ACCOUNT â ROLE TOGGLE + FORMS -->
       <div class="form-section active" id="signupForm">
-        <div class="field-row">
-          <div class="field">
-            <label>First Name<span class="req">*</span></label>
-            <input type="text" id="su_first" placeholder="First name" required/>
-            <div class="error-msg">First name is required</div>
-          </div>
-          <div class="field">
-            <label>Last Name<span class="req">*</span></label>
-            <input type="text" id="su_last" placeholder="Last name" required/>
-            <div class="error-msg">Last name is required</div>
-          </div>
-        </div>
-        <div class="field">
-          <label>Email Address<span class="req">*</span></label>
-          <input type="email" id="su_email" placeholder="you@example.com" required/>
-          <div class="error-msg">Enter a valid email address</div>
-        </div>
-        <div class="field">
-          <label>Phone Number<span class="req">*</span></label>
-          <input type="tel" id="su_phone" placeholder="(555) 123-4567" required oninput="formatPhone(this)"/>
-          <div class="error-msg">Phone number is required</div>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label>Password<span class="req">*</span></label>
-            <div class="pw-wrap">
-              <input type="password" id="su_pass" placeholder="Min 8 characters" required/>
-              <button class="pw-toggle" onclick="togglePw('su_pass',this)" type="button">&#128065;</button>
-            </div>
-            <div class="error-msg">Min 8 characters required</div>
-          </div>
-          <div class="field">
-            <label>Confirm Password<span class="req">*</span></label>
-            <div class="pw-wrap">
-              <input type="password" id="su_pass2" placeholder="Re-enter password" required/>
-              <button class="pw-toggle" onclick="togglePw('su_pass2',this)" type="button">&#128065;</button>
-            </div>
-            <div class="error-msg">Passwords must match</div>
-          </div>
+        <div class="role-toggle">
+          <div class="role-btn active" onclick="switchRole('user')">I Need Care<small>Looking for a provider</small></div>
+          <div class="role-btn" onclick="switchRole('vendor')">I'm a Provider<small>List my business</small></div>
         </div>
 
-        <div class="field">
-          <label>Street Address<span class="req">*</span></label>
-          <input type="text" id="su_street" placeholder="123 Main Street" required/>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label>City<span class="req">*</span></label>
-            <input type="text" id="su_city" placeholder="Houston" required/>
+        <!-- ===== USER SIGNUP FORM ===== -->
+        <div id="userSignupFields">
+          <div class="field-row">
+            <div class="field">
+              <label>First Name<span class="req">*</span></label>
+              <input type="text" id="su_first" placeholder="First name" required/>
+              <div class="error-msg">First name is required</div>
+            </div>
+            <div class="field">
+              <label>Last Name<span class="req">*</span></label>
+              <input type="text" id="su_last" placeholder="Last name" required/>
+              <div class="error-msg">Last name is required</div>
+            </div>
           </div>
-          <div class="field" style="max-width:140px">
-            <label>State<span class="req">*</span></label>
-            <select id="su_state" required>
-              <option value="">State</option>
-              <option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option>
-              <option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option>
-              <option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option>
-              <option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option>
-              <option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option>
-              <option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option>
-              <option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option>
-              <option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option>
-              <option>SD</option><option>TN</option><option selected>TX</option><option>UT</option><option>VT</option>
-              <option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option>
+          <div class="field">
+            <label>Email Address<span class="req">*</span></label>
+            <input type="email" id="su_email" placeholder="you@example.com" required/>
+            <div class="error-msg">Enter a valid email address</div>
+          </div>
+          <div class="field">
+            <label>Phone Number<span class="req">*</span></label>
+            <input type="tel" id="su_phone" placeholder="(555) 123-4567" required oninput="formatPhone(this)"/>
+            <div class="error-msg">Phone number is required</div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Password<span class="req">*</span></label>
+              <div class="pw-wrap">
+                <input type="password" id="su_pass" placeholder="Min 8 characters" required/>
+                <button class="pw-toggle" onclick="togglePw('su_pass',this)" type="button">&#128065;</button>
+              </div>
+              <div class="error-msg">Min 8 characters required</div>
+            </div>
+            <div class="field">
+              <label>Confirm Password<span class="req">*</span></label>
+              <div class="pw-wrap">
+                <input type="password" id="su_pass2" placeholder="Re-enter password" required/>
+                <button class="pw-toggle" onclick="togglePw('su_pass2',this)" type="button">&#128065;</button>
+              </div>
+              <div class="error-msg">Passwords must match</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Street Address<span class="req">*</span></label>
+            <input type="text" id="su_street" placeholder="123 Main Street" required/>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>City<span class="req">*</span></label>
+              <input type="text" id="su_city" placeholder="Houston" required/>
+            </div>
+            <div class="field" style="max-width:140px">
+              <label>State<span class="req">*</span></label>
+              <select id="su_state" required>
+                <option value="">State</option>
+                <option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option>
+                <option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option>
+                <option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option>
+                <option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+                <option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option>
+                <option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option>
+                <option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option>
+                <option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+                <option>SD</option><option>TN</option><option selected>TX</option><option>UT</option><option>VT</option>
+                <option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option>
+              </select>
+            </div>
+            <div class="field" style="max-width:120px">
+              <label>Zip<span class="req">*</span></label>
+              <input type="text" id="su_zip" placeholder="77001" maxlength="5" required/>
+            </div>
+          </div>
+          <div class="field">
+            <label>Who is this care for?<span class="req">*</span></label>
+            <select id="su_carefor" class="care-for-select" required>
+              <option value="">Select one...</option>
+              <option>Myself</option>
+              <option>Spouse</option>
+              <option>Mother</option>
+              <option>Father</option>
+              <option>Child</option>
+              <option>Other</option>
             </select>
           </div>
-          <div class="field" style="max-width:120px">
-            <label>Zip<span class="req">*</span></label>
-            <input type="text" id="su_zip" placeholder="77001" maxlength="5" required/>
+          <div class="field">
+            <label>What type of care are you looking for?</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" value="home_health"/> Home Health Care</label>
+              <label class="check-item"><input type="checkbox" value="adult_day"/> Adult Day Program</label>
+              <label class="check-item"><input type="checkbox" value="hospice"/> Hospice Care</label>
+              <label class="check-item"><input type="checkbox" value="assisted_living"/> Assisted Living</label>
+              <label class="check-item"><input type="checkbox" value="rehab"/> Drug &amp; Alcohol Rehab</label>
+            </div>
           </div>
-        </div>
-
-        <div class="field">
-          <label>Who is this care for?<span class="req">*</span></label>
-          <select id="su_carefor" class="care-for-select" required>
-            <option value="">Select one...</option>
-            <option>Myself</option>
-            <option>Spouse</option>
-            <option>Mother</option>
-            <option>Father</option>
-            <option>Child</option>
-            <option>Other</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>What type of care are you looking for?</label>
-          <div class="check-group">
-            <label class="check-item"><input type="checkbox" value="home_health"/> Home Health Care</label>
-            <label class="check-item"><input type="checkbox" value="adult_day"/> Adult Day Program</label>
-            <label class="check-item"><input type="checkbox" value="hospice"/> Hospice Care</label>
-            <label class="check-item"><input type="checkbox" value="assisted_living"/> Assisted Living</label>
-            <label class="check-item"><input type="checkbox" value="rehab"/> Drug &amp; Alcohol Rehab</label>
+          <div class="terms">
+            <input type="checkbox" id="su_terms"/>
+            <span>I agree to Senova's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
           </div>
+          <button class="btn-primary" onclick="handleSignUp()">Create Free Account</button>
         </div>
 
-        <div class="terms">
-          <input type="checkbox" id="su_terms"/>
-          <span>I agree to Senova's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+        <!-- ===== VENDOR SIGNUP FORM ===== -->
+        <div id="vendorSignupFields" style="display:none">
+          <div class="field">
+            <label>Business Name<span class="req">*</span></label>
+            <input type="text" id="vu_business" placeholder="e.g. Sunrise Home Health" required/>
+            <div class="error-msg">Business name is required</div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Contact Name<span class="req">*</span></label>
+              <input type="text" id="vu_contact" placeholder="Full name" required/>
+              <div class="error-msg">Contact name is required</div>
+            </div>
+            <div class="field">
+              <label>Phone Number<span class="req">*</span></label>
+              <input type="tel" id="vu_phone" placeholder="(555) 123-4567" required oninput="formatPhone(this)"/>
+              <div class="error-msg">Phone number is required</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Business Email<span class="req">*</span></label>
+            <input type="email" id="vu_email" placeholder="you@yourbusiness.com" required/>
+            <div class="error-msg">Enter a valid email address</div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Password<span class="req">*</span></label>
+              <div class="pw-wrap">
+                <input type="password" id="vu_pass" placeholder="Min 8 characters" required/>
+                <button class="pw-toggle" onclick="togglePw('vu_pass',this)" type="button">&#128065;</button>
+              </div>
+              <div class="error-msg">Min 8 characters required</div>
+            </div>
+            <div class="field">
+              <label>Confirm Password<span class="req">*</span></label>
+              <div class="pw-wrap">
+                <input type="password" id="vu_pass2" placeholder="Re-enter password" required/>
+                <button class="pw-toggle" onclick="togglePw('vu_pass2',this)" type="button">&#128065;</button>
+              </div>
+              <div class="error-msg">Passwords must match</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Business Address<span class="req">*</span></label>
+            <input type="text" id="vu_address" placeholder="123 Business Ave" required/>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>City<span class="req">*</span></label>
+              <input type="text" id="vu_city" placeholder="Houston" required/>
+            </div>
+            <div class="field" style="max-width:140px">
+              <label>State<span class="req">*</span></label>
+              <select id="vu_state" required>
+                <option value="">State</option>
+                <option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option>
+                <option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option>
+                <option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option>
+                <option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+                <option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option>
+                <option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option>
+                <option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option>
+                <option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+                <option>SD</option><option>TN</option><option selected>TX</option><option>UT</option><option>VT</option>
+                <option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option>
+              </select>
+            </div>
+            <div class="field" style="max-width:120px">
+              <label>Zip<span class="req">*</span></label>
+              <input type="text" id="vu_zip" placeholder="77001" maxlength="5" required/>
+            </div>
+          </div>
+          <div class="field">
+            <label>Business Website<span class="req">*</span></label>
+            <input type="url" id="vu_website" placeholder="https://www.yourbusiness.com" required/>
+            <div class="error-msg">Website URL is required</div>
+          </div>
+          <div class="field">
+            <label>What types of care do you provide?</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" value="home_health"/> Home Health Care</label>
+              <label class="check-item"><input type="checkbox" value="adult_day"/> Adult Day Program</label>
+              <label class="check-item"><input type="checkbox" value="hospice"/> Hospice Care</label>
+              <label class="check-item"><input type="checkbox" value="assisted_living"/> Assisted Living</label>
+              <label class="check-item"><input type="checkbox" value="rehab"/> Drug &amp; Alcohol Rehab</label>
+            </div>
+          </div>
+          <div class="terms">
+            <input type="checkbox" id="vu_terms"/>
+            <span>I agree to Senova's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+          </div>
+          <button class="btn-primary" onclick="handleVendorSignUp()">Create Provider Account</button>
         </div>
-
-        <button class="btn-primary" onclick="handleSignUp()">Create Free Account</button>
 
         <div class="form-footer">
           Already have an account? <a onclick="switchTab('signin')">Sign in</a>
@@ -384,11 +491,21 @@ a{text-decoration:none;color:inherit}
 </div>
 
 <script>
+let currentRole = 'user';
+
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
   document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
   document.getElementById(tab === 'signin' ? 'signinForm' : 'signupForm').classList.add('active');
+}
+
+function switchRole(role) {
+  currentRole = role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('userSignupFields').style.display = role === 'user' ? 'block' : 'none';
+  document.getElementById('vendorSignupFields').style.display = role === 'vendor' ? 'block' : 'none';
 }
 
 function togglePw(id, btn) {
@@ -481,6 +598,72 @@ async function handleSignUp() {
     // Success
     document.getElementById('successOverlay').classList.add('show');
     setTimeout(() => { window.location = '/'; }, 2000);
+  } catch (err) {
+    alert(err.message || 'Something went wrong. Please try again.');
+  }
+}
+
+async function handleVendorSignUp() {
+  let valid = true;
+  const fields = [
+    {id:'vu_business'}, {id:'vu_contact'}, {id:'vu_email', type:'email'},
+    {id:'vu_phone'}, {id:'vu_pass', min:8}, {id:'vu_pass2'},
+    {id:'vu_address'}, {id:'vu_city'}, {id:'vu_state'}, {id:'vu_zip'}, {id:'vu_website'}
+  ];
+
+  document.querySelectorAll('#vendorSignupFields input, #vendorSignupFields select').forEach(el => el.classList.remove('error'));
+
+  for (const f of fields) {
+    const el = document.getElementById(f.id);
+    const val = el.value.trim();
+    if (!val) { el.classList.add('error'); valid = false; continue; }
+    if (f.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { el.classList.add('error'); valid = false; }
+    if (f.min && val.length < f.min) { el.classList.add('error'); valid = false; }
+  }
+
+  if (document.getElementById('vu_pass').value !== document.getElementById('vu_pass2').value) {
+    document.getElementById('vu_pass2').classList.add('error');
+    valid = false;
+  }
+
+  if (!document.getElementById('vu_terms').checked) {
+    alert('Please agree to the Terms of Service and Privacy Policy.');
+    return;
+  }
+
+  if (!valid) { alert('Please fill in all required fields correctly.'); return; }
+
+  const careTypes = [];
+  document.querySelectorAll('#vendorSignupFields .check-item input[type="checkbox"]:checked').forEach(cb => {
+    careTypes.push(cb.value);
+  });
+
+  try {
+    const res = await fetch('/api/vendor-signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: document.getElementById('vu_email').value.trim(),
+        password: document.getElementById('vu_pass').value,
+        business_name: document.getElementById('vu_business').value.trim(),
+        contact_name: document.getElementById('vu_contact').value.trim(),
+        phone: document.getElementById('vu_phone').value.trim(),
+        address: document.getElementById('vu_address').value.trim(),
+        city: document.getElementById('vu_city').value.trim(),
+        state: document.getElementById('vu_state').value,
+        zip_code: document.getElementById('vu_zip').value.trim(),
+        website_url: document.getElementById('vu_website').value.trim(),
+        care_types: careTypes
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Signup failed');
+
+    document.getElementById('successOverlay').classList.add('show');
+    document.querySelector('.success-box h3').textContent = 'Welcome to Senova!';
+    document.querySelector('.success-box p').textContent = 'Your provider account has been created. Redirecting to your portal...';
+    setTimeout(() => { window.location = '/vendor_portal.html'; }, 2000);
   } catch (err) {
     alert(err.message || 'Something went wrong. Please try again.');
   }
