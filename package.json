@@ -1,0 +1,9 @@
+{
+  "name": "senova-info",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "stripe": "^14.0.0",
+    "raw-body": "^2.5.2"
+  }
+}
