@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lead Membership Plans â Senova</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;color:#202124;background:#F8FAFB;min-height:100vh}
+a{text-decoration:none;color:inherit}
+h1,h2,h3,h4{font-family:'Poppins',sans-serif}
+
+:root{
+  --teal:#0D9488;--teal-dark:#0B7A6E;--teal-light:#F0FDFA;
+  --orange:#F97316;--orange-dark:#EA6C0A;
+  --navy:#202124;--gray:#5F6368;--light-gray:#9AA0A6;
+  --bg:#F8FAFB;--border:#E5E7EB;--green:#16A34A;--red:#DC2626;
+  --shadow:0 1px 6px rgba(32,33,36,.12);
+  --shadow-lg:0 4px 24px rgba(32,33,36,.14);
+}
+
+/* NAV */
+.nav{
+  background:#fff;border-bottom:1px solid var(--border);
+  padding:14px 24px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+.nav-logo{font-family:'Poppins',sans-serif;font-weight:800;font-size:28px;color:var(--teal);cursor:pointer}
+.nav-logo em{color:var(--orange);font-style:normal}
+.nav-links{display:flex;align-items:center;gap:6px}
+.nl{font-size:13px;font-weight:500;color:var(--gray);padding:8px 14px;border-radius:6px;cursor:pointer}
+.nl:hover{background:rgba(0,0,0,.04)}
+.nl-btn{font-size:13px;font-weight:700;color:#fff;background:var(--teal);padding:8px 20px;border-radius:6px;border:none;cursor:pointer;font-family:'Inter',sans-serif}
+
+/* HERO */
+.plans-hero{
+  background:linear-gradient(135deg,#0D9488 0%,#0B7A6E 60%,#065F46 100%);
+  padding:60px 24px 48px;text-align:center;color:#fff;position:relative;overflow:hidden;
+}
+.plans-hero::before{content:'';position:absolute;top:-120px;right:-100px;width:400px;height:400px;border-radius:50%;background:rgba(255,255,255,.04)}
+.plans-hero::after{content:'';position:absolute;bottom:-80px;left:-60px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.03)}
+.plans-hero h1{font-size:40px;font-weight:800;margin-bottom:12px;position:relative;z-index:1}
+.plans-hero p{font-size:18px;opacity:.85;max-width:600px;margin:0 auto;line-height:1.6;position:relative;z-index:1}
+
+/* PRICING GRID */
+.pricing-section{max-width:1100px;margin:-40px auto 60px;padding:0 24px;position:relative;z-index:10}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+
+.plan-card{
+  background:#fff;border-radius:20px;padding:36px 28px;box-shadow:var(--shadow-lg);
+  display:flex;flex-direction:column;position:relative;border:2px solid transparent;
+  transition:transform .2s,box-shadow .2s;
+}
+.plan-card:hover{transform:translateY(-4px);box-shadow:0 8px 40px rgba(32,33,36,.18)}
+.plan-card.featured{border-color:var(--orange);transform:scale(1.04)}
+.plan-card.featured:hover{transform:scale(1.04) translateY(-4px)}
+
+.plan-badge{
+  position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+  background:var(--orange);color:#fff;padding:6px 20px;border-radius:20px;
+  font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  white-space:nowrap;
+}
+
+.plan-name{font-size:22px;font-weight:700;margin-bottom:8px;color:var(--navy)}
+.plan-desc{font-size:14px;color:var(--gray);margin-bottom:20px;line-height:1.5}
+
+.plan-price{margin-bottom:24px}
+.plan-price .amount{font-family:'Poppins',sans-serif;font-size:48px;font-weight:800;color:var(--navy)}
+.plan-price .amount sup{font-size:22px;font-weight:700;top:-16px}
+.plan-price .period{font-size:15px;color:var(--gray);margin-left:4px}
+.plan-price .per-lead{font-size:13px;color:var(--teal);font-weight:600;margin-top:4px}
+
+.plan-features{list-style:none;flex:1;margin-bottom:28px}
+.plan-features li{
+  display:flex;align-items:flex-start;gap:10px;padding:10px 0;
+  font-size:14px;color:var(--navy);border-bottom:1px solid #F3F4F6;
+}
+.plan-features li:last-child{border-bottom:none}
+.plan-features li .check{
+  width:22px;height:22px;border-radius:50%;background:var(--teal-light);
+  color:var(--teal);display:flex;align-items:center;justify-content:center;
+  font-size:13px;flex-shrink:0;margin-top:1px;font-weight:700;
+}
+
+.btn-plan{
+  width:100%;padding:16px;border:none;border-radius:12px;font-size:16px;
+  font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;
+  transition:all .15s;text-align:center;
+}
+.btn-starter{background:#fff;color:var(--teal);border:2px solid var(--teal)}
+.btn-starter:hover{background:var(--teal);color:#fff}
+.btn-growth{background:var(--orange);color:#fff}
+.btn-growth:hover{background:var(--orange-dark);box-shadow:0 4px 20px rgba(249,115,22,.3)}
+.btn-premium{background:var(--teal);color:#fff}
+.btn-premium:hover{background:var(--teal-dark);box-shadow:0 4px 20px rgba(13,148,136,.3)}
+.btn-plan:disabled{opacity:.6;cursor:not-allowed}
+
+/* FAQ */
+.faq-section{max-width:800px;margin:0 auto 80px;padding:0 24px}
+.faq-section h2{text-align:center;font-size:28px;font-weight:700;margin-bottom:32px}
+.faq-item{background:#fff;border-radius:12px;margin-bottom:12px;box-shadow:var(--shadow);overflow:hidden}
+.faq-q{padding:20px 24px;font-weight:600;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
+.faq-q:hover{background:#FAFBFC}
+.faq-q .arrow{font-size:18px;color:var(--gray);transition:transform .2s}
+.faq-item.open .arrow{transform:rotate(180deg)}
+.faq-a{padding:0 24px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s}
+.faq-item.open .faq-a{max-height:200px;padding:0 24px 20px}
+.faq-a p{font-size:14px;color:var(--gray);line-height:1.7}
+
+/* GUARANTEE */
+.guarantee{text-align:center;padding:40px 24px 60px;max-width:600px;margin:0 auto}
+.guarantee-icon{font-size:48px;margin-bottom:12px}
+.guarantee h3{font-size:20px;font-weight:700;margin-bottom:8px}
+.guarantee p{font-size:14px;color:var(--gray);line-height:1.7}
+
+/* TOAST */
+.toast{
+  position:fixed;top:20px;right:20px;padding:16px 24px;border-radius:12px;
+  font-size:14px;font-weight:600;z-index:999;transform:translateX(120%);
+  transition:transform .3s ease;box-shadow:var(--shadow-lg);
+}
+.toast.show{transform:translateX(0)}
+.toast-success{background:#DCFCE7;color:var(--green);border:1px solid #BBF7D0}
+.toast-error{background:#FEF2F2;color:var(--red);border:1px solid #FECACA}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .pricing-grid{grid-template-columns:1fr;max-width:420px;margin-left:auto;margin-right:auto}
+  .plan-card.featured{transform:none}
+  .plan-card.featured:hover{transform:translateY(-4px)}
+  .plans-hero h1{font-size:28px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo" onclick="window.location='/'">Sen<em>ova</em></div>
+  <div class="nav-links">
+    <a class="nl" href="/">Home</a>
+    <a class="nl" href="/for_providers.html">For Providers</a>
+    <a class="nl" href="/vendor_portal.html">Vendor Portal</a>
+    <a class="nl-btn" href="/auth.html">Sign In</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="plans-hero">
+  <h1>Choose Your Lead Plan</h1>
+  <p>Get pre-qualified families sent directly to your facility every month. Cancel anytime â no contracts, no commitments.</p>
+</div>
+
+<!-- PRICING CARDS -->
+<div class="pricing-section">
+  <div class="pricing-grid">
+
+    <!-- STARTER -->
+    <div class="plan-card" id="starterCard">
+      <div class="plan-name">Starter</div>
+      <div class="plan-desc">Perfect for new facilities just getting started with lead generation.</div>
+      <div class="plan-price">
+        <span class="amount"><sup>$</sup>49</span>
+        <span class="period">/month</span>
+        <div class="per-lead">$4.90 per lead</div>
+      </div>
+      <ul class="plan-features">
+        <li><span class="check">&#10003;</span> Up to 10 qualified leads per month</li>
+        <li><span class="check">&#10003;</span> Lead details: name, email, phone</li>
+        <li><span class="check">&#10003;</span> Email + SMS lead delivery</li>
+        <li><span class="check">&#10003;</span> Basic facility listing on Senova</li>
+        <li><span class="check">&#10003;</span> Cancel anytime</li>
+      </ul>
+      <button class="btn-plan btn-starter" onclick="subscribe('starter')" id="btnStarter">
+        Get Started â $49/mo
+      </button>
+    </div>
+
+    <!-- GROWTH (FEATURED) -->
+    <div class="plan-card featured" id="growthCard">
+      <div class="plan-badge">Most Popular</div>
+      <div class="plan-name">Growth</div>
+      <div class="plan-desc">Our best value plan for facilities ready to grow their census quickly.</div>
+      <div class="plan-price">
+        <span class="amount"><sup>$</sup>99</span>
+        <span class="period">/month</span>
+        <div class="per-lead">$3.30 per lead</div>
+      </div>
+      <ul class="plan-features">
+        <li><span class="check">&#10003;</span> Up to 30 qualified leads per month</li>
+        <li><span class="check">&#10003;</span> Lead details: name, email, phone</li>
+        <li><span class="check">&#10003;</span> Email + SMS lead delivery</li>
+        <li><span class="check">&#10003;</span> Featured listing with photos</li>
+        <li><span class="check">&#10003;</span> Priority lead matching</li>
+        <li><span class="check">&#10003;</span> Cancel anytime</li>
+      </ul>
+      <button class="btn-plan btn-growth" onclick="subscribe('growth')" id="btnGrowth">
+        Choose Growth â $99/mo
+      </button>
+    </div>
+
+    <!-- PREMIUM -->
+    <div class="plan-card" id="premiumCard">
+      <div class="plan-name">Premium</div>
+      <div class="plan-desc">Unlimited leads and maximum exposure for high-volume facilities.</div>
+      <div class="plan-price">
+        <span class="amount"><sup>$</sup>199</span>
+        <span class="period">/month</span>
+        <div class="per-lead">Unlimited leads</div>
+      </div>
+      <ul class="plan-features">
+        <li><span class="check">&#10003;</span> Unlimited qualified leads per month</li>
+        <li><span class="check">&#10003;</span> Lead details: name, email, phone</li>
+        <li><span class="check">&#10003;</span> Email + SMS lead delivery</li>
+        <li><span class="check">&#10003;</span> Premium listing with photos + badge</li>
+        <li><span class="check">&#10003;</span> Priority lead matching</li>
+        <li><span class="check">&#10003;</span> Dedicated account support</li>
+        <li><span class="check">&#10003;</span> Cancel anytime</li>
+      </ul>
+      <button class="btn-plan btn-premium" onclick="subscribe('premium')" id="btnPremium">
+        Go Premium â $199/mo
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- GUARANTEE -->
+<div class="guarantee">
+  <div class="guarantee-icon">&#128170;</div>
+  <h3>30-Day Money-Back Guarantee</h3>
+  <p>Not satisfied with the quality of your leads? Contact us within 30 days of your first payment and we'll issue a full refund. No questions asked.</p>
+</div>
+
+<!-- FAQ -->
+<div class="faq-section">
+  <h2>Frequently Asked Questions</h2>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">What counts as a "qualified lead"?<span class="arrow">&#9660;</span></div>
+    <div class="faq-a"><p>A qualified lead is a real person or family member actively searching for care services in your area. We verify every inquiry before sending it to your facility â no bots, no duplicates, no tire-kickers.</p></div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How are leads delivered?<span class="arrow">&#9660;</span></div>
+    <div class="faq-a"><p>Leads are delivered instantly via email and SMS to the contact information on your vendor profile. You'll also see all leads in your Vendor Portal dashboard with full contact details.</p></div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Can I cancel anytime?<span class="arrow">&#9660;</span></div>
+    <div class="faq-a"><p>Absolutely. There are no contracts or commitments. You can cancel your subscription at any time from your Vendor Portal or by contacting our support team. Your plan stays active until the end of the billing period.</p></div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">What if I run out of leads for the month?<span class="arrow">&#9660;</span></div>
+    <div class="faq-a"><p>If you reach your monthly lead limit, you can upgrade your plan at any time. The price difference is prorated. Premium plan members receive unlimited leads so you'll never hit a cap.</p></div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">What payment methods do you accept?<span class="arrow">&#9660;</span></div>
+    <div class="faq-a"><p>We accept all major credit and debit cards (Visa, Mastercard, American Express, Discover). Payments are processed securely through Stripe.</p></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== CONFIG =====
+// Stripe Price IDs â UPDATE THESE after creating products in Stripe Dashboard
+const PLAN_PRICES = {
+  starter: 'STRIPE_STARTER_PRICE_ID',
+  growth: 'STRIPE_GROWTH_PRICE_ID',
+  premium: 'STRIPE_PREMIUM_PRICE_ID'
+};
+
+// Get vendor_id from localStorage (set during vendor portal login)
+function getVendorId() {
+  try {
+    const token = localStorage.getItem('vendor_token');
+    if (!token) return null;
+    // Decode JWT to get user id, then look up vendor
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return localStorage.getItem('vendor_id') || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+// ===== SUBSCRIBE =====
+async function subscribe(planName) {
+  const vendorId = getVendorId();
+
+  if (!vendorId) {
+    showToast('Please log in to your Vendor Portal first, then come back to choose a plan.', 'error');
+    setTimeout(() => { window.location = '/vendor_portal.html'; }, 2000);
+    return;
+  }
+
+  const priceId = PLAN_PRICES[planName];
+  if (!priceId || priceId.startsWith('STRIPE_')) {
+    showToast('Plans are being set up. Please check back shortly!', 'error');
+    return;
+  }
+
+  // Disable button and show loading
+  const btn = document.getElementById('btn' + planName.charAt(0).toUpperCase() + planName.slice(1));
+  const originalText = btn.textContent;
+  btn.textContent = 'Redirecting to checkout...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        vendor_id: vendorId,
+        price_id: priceId,
+        plan_name: planName
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to create checkout session');
+
+    // Redirect to Stripe Checkout
+    window.location = data.url;
+  } catch (err) {
+    showToast(err.message || 'Something went wrong. Please try again.', 'error');
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
+}
+
+// ===== FAQ TOGGLE =====
+function toggleFaq(el) {
+  const item = el.parentElement;
+  item.classList.toggle('open');
+}
+
+// ===== TOAST =====
+function showToast(message, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.className = 'toast toast-' + (type || 'success') + ' show';
+  setTimeout(() => { toast.classList.remove('show'); }, 4000);
+}
+
+// ===== CHECK FOR CANCELLED CHECKOUT =====
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('checkout') === 'cancelled') {
+    showToast('Checkout was cancelled. Choose a plan when you\'re ready!', 'error');
+    window.history.replaceState({}, '', '/lead_plans.html');
+  }
+})();
+</script>
+</body>
+</html>
