@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Sign In or Create Account â Senova</title>
+<title>Sign In or Create Account — Senova</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -47,7 +47,8 @@ a{text-decoration:none;color:inherit}
   font-family:'Poppins',sans-serif;font-size:32px;font-weight:700;
   line-height:1.3;margin-bottom:16px;position:relative;z-index:1;
 }
-.left-sub{  font-size:16px;line-height:1.7;opacity:.85;margin-bottom:36px;position:relative;z-index:1;
+.left-sub{
+  font-size:16px;line-height:1.7;opacity:.85;margin-bottom:36px;position:relative;z-index:1;
 }
 .left-features{list-style:none;display:flex;flex-direction:column;gap:16px;position:relative;z-index:1}
 .left-features li{
@@ -173,7 +174,7 @@ a{text-decoration:none;color:inherit}
 .remember-row{
   display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;
 }
-.remember-row label{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--navy);cursor:pointer}:center;gap:8px;font-size:14px;color:var(--navy);cursor:pointer}
+.remember-row label{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--navy);cursor:pointer}
 .remember-row input{width:16px;height:16px;accent-color:var(--teal)}
 .remember-row a{font-size:13px;color:var(--teal);font-weight:500}
 
@@ -227,11 +228,11 @@ a{text-decoration:none;color:inherit}
       <li><span class="check">&#10003;</span> Access detailed provider profiles and photos</li>
       <li><span class="check">&#10003;</span> Compare facilities side by side</li>
       <li><span class="check">&#10003;</span> Request callbacks directly from providers</li>
-      <li><span class="check">&#10003;</span> 100% free â no credit card required</li>
+      <li><span class="check">&#10003;</span> 100% free — no credit card required</li>
     </ul>
     <div class="left-quote">
       <p>"Senova helped me find the perfect home health aide for my mother in just two days. The provider profiles made it so easy to compare options."</p>
-      <div class="author">â Maria G., Houston TX</div>
+      <div class="author">— Maria G., Houston TX</div>
     </div>
   </div>
 
@@ -271,7 +272,7 @@ a{text-decoration:none;color:inherit}
         </div>
       </div>
 
-      <!-- CREATE ACCOUNT â ROLE TOGGLE + FORMS -->
+      <!-- CREATE ACCOUNT — ROLE TOGGLE + FORMS -->
       <div class="form-section active" id="signupForm">
         <div class="role-toggle">
           <div class="role-btn active" onclick="switchRole('user')">I Need Care<small>Looking for a provider</small></div>
@@ -348,6 +349,13 @@ a{text-decoration:none;color:inherit}
             <div class="field" style="max-width:120px">
               <label>Zip<span class="req">*</span></label>
               <input type="text" id="su_zip" placeholder="77001" maxlength="5" required/>
+            </div>
+          </div>
+          <div class="field" style="background:#F0FDFA;border:2px solid #0D9488;padding:14px;border-radius:8px;margin-bottom:14px">
+            <label style="color:#0F766E;font-weight:700">What ZIP code are you looking for care services in?<span class="req">*</span></label>
+            <input type="text" id="su_service_zip" placeholder="e.g. 77001" maxlength="5" required style="margin-top:8px"/>
+            <div style="color:#0F766E;font-size:12px;margin-top:6px">
+              This can be different from your home ZIP. We use this to match you with the right local provider.
             </div>
           </div>
           <div class="field">
@@ -538,7 +546,7 @@ async function handleSignUp() {
   const fields = [
     {id:'su_first'}, {id:'su_last'}, {id:'su_email', type:'email'},
     {id:'su_phone'}, {id:'su_pass', min:8}, {id:'su_pass2'},
-    {id:'su_street'}, {id:'su_city'}, {id:'su_state'}, {id:'su_zip'}, {id:'su_carefor'}
+    {id:'su_street'}, {id:'su_city'}, {id:'su_state'}, {id:'su_zip'}, {id:'su_service_zip'}, {id:'su_carefor'}
   ];
 
   // Clear errors
@@ -587,6 +595,7 @@ async function handleSignUp() {
         city: document.getElementById('su_city').value.trim(),
         state: document.getElementById('su_state').value,
         zip_code: document.getElementById('su_zip').value.trim(),
+        service_zip: document.getElementById('su_service_zip').value.trim(),
         care_for: document.getElementById('su_carefor').value,
         care_types: careTypes
       })
