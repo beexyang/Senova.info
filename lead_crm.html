@@ -1,1 +1,1916 @@
-,2�,R�,r�,��
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senova Lead Management CRM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --teal: #0D9488;
+            --teal-dark: #0B7A6E;
+            --teal-light: #F0FDFA;
+            --orange: #F97316;
+            --orange-dark: #EA6C0A;
+            --navy: #202124;
+            --gray: #5F6368;
+            --light-gray: #9AA0A6;
+            --bg: #F8FAFB;
+            --border: #E5E7EB;
+            --green: #16A34A;
+            --gold: #F59E0B;
+            --red: #DC2626;
+            --blue: #2563EB;
+            --shadow: 0 1px 6px rgba(32,33,36,.12);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--navy);
+            overflow: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 240px;
+            background-color: white;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .logo-sen {
+            color: var(--teal);
+        }
+
+        .logo-ova {
+            color: var(--orange);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--gray);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background-color: var(--teal-light);
+            color: var(--teal);
+        }
+
+        .nav-item.active {
+            background-color: var(--teal-light);
+            color: var(--teal);
+            font-weight: 600;
+        }
+
+        .nav-item span {
+            font-size: 18px;
+        }
+
+        .sidebar-bottom {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--orange);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--light-gray);
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            margin-left: 240px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* HEADER BAR */
+        .header {
+            background-color: white;
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            flex: 1;
+        }
+
+        .header-title {
+            font-size: 20px;
+            color: var(--navy);
+            white-space: nowrap;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 300px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 8px 12px 8px 36px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+        }
+
+        .search-bar::before {
+            content: "🔍";
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .date-filter {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background-color: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-secondary {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background-color: white;
+            color: var(--navy);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--bg);
+            border-color: var(--gray);
+        }
+
+        .notification-bell {
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        /* STATS ROW */
+        .stats-row {
+            padding: 24px 32px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .stat-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--light-gray);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--navy);
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .stat-badge {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .stat-badge.green {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--green);
+        }
+
+        .stat-badge.orange {
+            background-color: rgba(249, 115, 22, 0.1);
+            color: var(--orange);
+        }
+
+        .stat-badge.teal {
+            background-color: rgba(13, 148, 136, 0.1);
+            color: var(--teal);
+        }
+
+        /* CONTENT AREA */
+        .content {
+            flex: 1;
+            padding: 24px 32px;
+            overflow-y: auto;
+        }
+
+        /* SECTION TABS */
+        .section-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-tab {
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            margin-bottom: -1px;
+        }
+
+        .section-tab:hover {
+            color: var(--navy);
+        }
+
+        .section-tab.active {
+            color: var(--teal);
+            border-bottom-color: var(--teal);
+        }
+
+        .section-content {
+            display: none;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        /* BULK ACTIONS BAR */
+        .bulk-actions-bar {
+            display: none;
+            background-color: var(--teal-light);
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--navy);
+        }
+
+        .bulk-actions-bar.visible {
+            display: flex;
+        }
+
+        .bulk-actions-bar span {
+            font-weight: 600;
+            flex: 1;
+        }
+
+        /* TABLE */
+        .table-container {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background-color: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--navy);
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        th:hover {
+            background-color: #F0F1F3;
+        }
+
+        th.sortable::after {
+            content: " ↕";
+            opacity: 0;
+            font-size: 11px;
+            transition: opacity 0.3s ease;
+        }
+
+        th.sortable:hover::after {
+            opacity: 0.5;
+        }
+
+        th.sort-asc::after {
+            content: " ↑";
+            opacity: 1;
+        }
+
+        th.sort-desc::after {
+            content: " ↓";
+            opacity: 1;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background-color 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background-color: #FAFBFC;
+        }
+
+        tbody tr.selected {
+            background-color: rgba(13, 148, 136, 0.08);
+        }
+
+        td {
+            padding: 12px 16px;
+            color: var(--navy);
+        }
+
+        .checkbox {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .lead-id {
+            font-weight: 600;
+            color: var(--teal);
+        }
+
+        .timestamp {
+            color: var(--light-gray);
+            font-size: 12px;
+        }
+
+        /* STATUS BADGE */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .status-new {
+            background-color: rgba(249, 115, 22, 0.1);
+            color: var(--orange);
+        }
+
+        .status-assigned {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: var(--blue);
+        }
+
+        .status-sent {
+            background-color: rgba(13, 148, 136, 0.1);
+            color: var(--teal);
+        }
+
+        .status-contacted {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--green);
+        }
+
+        .status-closed {
+            background-color: rgba(95, 99, 104, 0.1);
+            color: var(--gray);
+        }
+
+        /* ACTION BUTTONS */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            background-color: var(--teal);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-action:hover {
+            background-color: var(--teal-dark);
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-icon:hover {
+            background-color: var(--teal-light);
+            color: var(--teal);
+            border-color: var(--teal);
+        }
+
+        /* PAGINATION */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+            padding-top: 16px;
+        }
+
+        .pagination button,
+        .pagination span {
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            background-color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background-color: var(--teal-light);
+            border-color: var(--teal);
+            color: var(--teal);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination .active {
+            background-color: var(--teal);
+            color: white;
+            border-color: var(--teal);
+        }
+
+        /* MODALS */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 200;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.visible {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal {
+            background-color: white;
+            border-radius: 8px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            color: var(--navy);
+        }
+
+        .modal-content {
+            margin-bottom: 24px;
+        }
+
+        .modal-field {
+            margin-bottom: 16px;
+        }
+
+        .modal-field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 6px;
+        }
+
+        .modal-field input,
+        .modal-field select,
+        .modal-field textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-field input:focus,
+        .modal-field select:focus,
+        .modal-field textarea:focus {
+            outline: none;
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+        }
+
+        .modal-field textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .modal-checkbox input {
+            width: auto;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-primary {
+            padding: 10px 24px;
+            background-color: var(--teal);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--teal-dark);
+        }
+
+        .btn-cancel {
+            padding: 10px 24px;
+            background-color: white;
+            color: var(--navy);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background-color: var(--bg);
+        }
+
+        /* SIDE PANEL */
+        .side-panel {
+            position: fixed;
+            right: -500px;
+            top: 0;
+            width: 500px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: -2px 0 12px rgba(0, 0, 0, 0.15);
+            z-index: 150;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .side-panel.open {
+            right: 0;
+        }
+
+        .panel-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-header h2 {
+            font-size: 18px;
+            color: var(--navy);
+        }
+
+        .close-panel {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+            transition: color 0.3s ease;
+        }
+
+        .close-panel:hover {
+            color: var(--navy);
+        }
+
+        .panel-content {
+            padding: 24px;
+        }
+
+        .detail-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--light-gray);
+        }
+
+        .detail-field {
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .detail-label {
+            font-size: 13px;
+            color: var(--light-gray);
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-size: 13px;
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        .timeline {
+            margin-top: 12px;
+        }
+
+        .timeline-item {
+            padding-left: 20px;
+            margin-bottom: 12px;
+            position: relative;
+            font-size: 13px;
+        }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 3px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--teal);
+        }
+
+        .timeline-time {
+            color: var(--light-gray);
+            font-size: 12px;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .panel-actions button {
+            flex: 1;
+        }
+
+        /* VENDORS PAGE */
+        .vendors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .vendor-card {
+            background-color: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .vendor-card:hover {
+            box-shadow: var(--shadow);
+            border-color: var(--teal);
+        }
+
+        .vendor-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 12px;
+        }
+
+        .vendor-info {
+            font-size: 13px;
+            color: var(--light-gray);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vendor-leads {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--teal);
+            font-weight: 600;
+        }
+
+        .add-vendor-btn {
+            grid-column: 1 / -1;
+            padding: 20px;
+            border: 2px dashed var(--border);
+            background-color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .add-vendor-btn:hover {
+            border-color: var(--teal);
+            background-color: var(--teal-light);
+        }
+
+        .add-vendor-btn span {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--teal);
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--green);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideInUp 0.3s ease;
+            z-index: 300;
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1400px) {
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .header-left {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .search-bar {
+                max-width: 100%;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+                padding: 12px;
+            }
+
+            .side-panel {
+                width: 100%;
+                right: -100%;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            td, th {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <span class="logo-sen">Sen</span><span class="logo-ova">ova</span>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="dashboard">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-tab="leads">
+                    <span>👥</span>
+                    <span>All Leads</span>
+                </button>
+                <button class="nav-item" data-tab="sent">
+                    <span>📤</span>
+                    <span>Sent to Vendor</span>
+                </button>
+                <button class="nav-item" data-tab="vendors">
+                    <span>🏢</span>
+                    <span>Vendors</span>
+                </button>
+                <button class="nav-item" data-tab="settings">
+                    <span>⚙️</span>
+                    <span>Settings</span>
+                </button>
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="user-avatar">B</div>
+                <div class="user-info">
+                    <div class="user-name">Admin</div>
+                    <div class="user-role">Founder</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- HEADER -->
+            <header class="header">
+                <div class="header-left">
+                    <h1 class="header-title">Lead Management</h1>
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" placeholder="Search leads by name, email, phone...">
+                    </div>
+                </div>
+                <div class="header-right">
+                    <select class="date-filter" id="dateFilter">
+                        <option>Last 30 days</option>
+                        <option>Last 7 days</option>
+                        <option>Today</option>
+                        <option>Custom</option>
+                    </select>
+                    <button class="btn-secondary" id="exportBtn">📥 Export CSV</button>
+                    <span class="notification-bell">🔔</span>
+                </div>
+            </header>
+
+            <!-- CONTENT AREA -->
+            <div class="content">
+                <!-- STATS ROW -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Leads</div>
+                        <div class="stat-value">
+                            247
+                            <span class="stat-badge green">+12 today</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">New (Unassigned)</div>
+                        <div class="stat-value">
+                            18
+                            <span class="stat-badge orange">Action needed</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Sent to Vendor</div>
+                        <div class="stat-value">
+                            194
+                            <span class="stat-badge teal">This month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Conversion Rate</div>
+                        <div class="stat-value">
+                            34%
+                            <span class="stat-badge green">↑ 5%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DASHBOARD SECTION -->
+                <div id="dashboard" class="section-content active">
+                    <!-- Auto-pilot banner -->
+                    <div style="background:linear-gradient(135deg,#F0FDFA,#CCFBF1);border:2px solid #0D9488;padding:16px 20px;border-radius:12px;margin-bottom:20px;display:flex;align-items:center;gap:14px">
+                        <span style="font-size:28px">&#128640;</span>
+                        <div>
+                            <div style="font-weight:700;color:#0F766E;font-size:15px">Auto-pilot is ON</div>
+                            <div style="font-size:13px;color:#0F766E;margin-top:2px">
+                                New leads are automatically routed to the best paid vendor within their service ZIP radius, prioritized by plan tier (Premium &rarr; Growth &rarr; Starter). If no paid vendor matches, top-rated local vendors are emailed and invited to sign up.
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Bulk Actions Bar (manual assign removed; auto-pilot handles routing) -->
+                    <div class="bulk-actions-bar" id="bulkActionsBar">
+                        <span id="selectedCount">0 leads selected</span>
+                        <button class="btn-secondary" id="exportSelectedBtn">Export Selected</button>
+                        <button class="btn-secondary" id="markContactedBtn">Mark as Contacted</button>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-container">
+                        <table id="leadsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30px;">
+                                        <input type="checkbox" id="selectAllCheckbox" class="checkbox">
+                                    </th>
+                                    <th class="sortable" data-sort="leadId">Lead #</th>
+                                    <th class="sortable" data-sort="dateReceived">Date Received</th>
+                                    <th class="sortable" data-sort="firstName">First Name</th>
+                                    <th class="sortable" data-sort="lastName">Last Name</th>
+                                    <th class="sortable" data-sort="phone">Phone</th>
+                                    <th class="sortable" data-sort="email">Email</th>
+                                    <th>Address</th>
+                                    <th class="sortable" data-sort="careFor">Care For</th>
+                                    <th class="sortable" data-sort="careType">Care Type</th>
+                                    <th class="sortable" data-sort="status">Status</th>
+                                    <th>Vendor Assigned</th>
+                                    <th>Date Sent</th>
+                                    <th style="width: 100px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leadsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" id="pagination"></div>
+                </div>
+
+                <!-- SENT TO VENDOR SECTION -->
+                <div id="sent" class="section-content">
+                    <div class="table-container">
+                        <table id="sentTable">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-sort="leadId">Lead #</th>
+                                    <th class="sortable" data-sort="firstName">First Name</th>
+                                    <th class="sortable" data-sort="lastName">Last Name</th>
+                                    <th class="sortable" data-sort="phone">Phone</th>
+                                    <th class="sortable" data-sort="email">Email</th>
+                                    <th>Care Type</th>
+                                    <th>Vendor</th>
+                                    <th>Date Sent</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sentTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VENDORS SECTION -->
+                <div id="vendors" class="section-content">
+                    <div style="margin-bottom: 24px;">
+                        <h2 style="font-size: 18px; margin-bottom: 16px;">Vendors</h2>
+                        <div class="vendors-grid" id="vendorsGrid">
+                            <div class="add-vendor-btn" id="addVendorBtn">
+                                <span>+ Add New Vendor</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SETTINGS SECTION -->
+                <div id="settings" class="section-content">
+                    <div style="max-width: 600px;">
+                        <h2 style="font-size: 18px; margin-bottom: 16px;">Settings</h2>
+                        <div style="background-color: white; padding: 24px; border-radius: 8px; box-shadow: var(--shadow);">
+                            <div style="margin-bottom: 24px;">
+                                <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--navy);">Email Notifications</h3>
+                                <label class="modal-checkbox">
+                                    <input type="checkbox" checked>
+                                    <span>Email me when a new lead is received</span>
+                                </label>
+                            </div>
+                            <div style="margin-bottom: 24px;">
+                                <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--navy);">Lead Assignment</h3>
+                                <label class="modal-checkbox">
+                                    <input type="checkbox" checked>
+                                    <span>Automatically assign leads to vendors based on rules</span>
+                                </label>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--navy);">Data Retention</h3>
+                                <select class="date-filter" style="width: 100%;">
+                                    <option>Keep all data</option>
+                                    <option>Delete after 1 year</option>
+                                    <option>Delete after 2 years</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEND TO VENDOR MODAL -->
+    <div class="modal-overlay" id="sendVendorModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Send Lead to Vendor</h2>
+            </div>
+            <div class="modal-content">
+                <div id="leadSummary"></div>
+                <div class="modal-field">
+                    <label>Select Vendor *</label>
+                    <select id="vendorSelect" required>
+                        <option value="">Choose a vendor...</option>
+                    </select>
+                </div>
+                <div class="modal-checkbox">
+                    <input type="checkbox" id="emailCheckbox" checked>
+                    <label for="emailCheckbox" style="margin: 0;">Send via Email</label>
+                </div>
+                <div class="modal-field">
+                    <label>Add Note (Optional)</label>
+                    <textarea id="noteTextarea" placeholder="Add any notes about this lead..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeSendVendorModal()">Cancel</button>
+                <button class="btn-primary" id="sendLeadBtn">Send Lead</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LEAD DETAIL PANEL -->
+    <div class="side-panel" id="leadDetailPanel">
+        <div class="panel-header">
+            <h2>Lead Details</h2>
+            <button class="close-panel" onclick="closeDetailPanel()">✕</button>
+        </div>
+        <div class="panel-content" id="panelContent">
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast" id="toast" style="display: none;"></div>
+
+    <script>
+        // SAMPLE DATA
+        const leads = [
+            { leadId: 'L-001', dateReceived: '2026-04-07 14:32', firstName: 'James', lastName: 'Martinez', phone: '(713) 555-0142', email: 'james.martinez@email.com', address: 'Houston, TX 77002', careFor: 'Myself', careType: 'Home Health', status: 'new', vendor: null, dateSent: null },
+            { leadId: 'L-002', dateReceived: '2026-04-07 13:15', firstName: 'Maria', lastName: 'Garcia', phone: '(713) 555-0189', email: 'maria.g@email.com', address: 'Houston, TX 77003', careFor: 'Mother', careType: 'Hospice', status: 'sent', vendor: 'Gulf Coast Hospice', dateSent: '2026-04-06 09:45' },
+            { leadId: 'L-003', dateReceived: '2026-04-07 12:00', firstName: 'Robert', lastName: 'Johnson', phone: '(281) 555-0234', email: 'r.johnson@email.com', address: 'Spring, TX 77380', careFor: 'Spouse', careType: 'Assisted Living', status: 'contacted', vendor: 'Premier Living Communities', dateSent: '2026-04-05 11:30' },
+            { leadId: 'L-004', dateReceived: '2026-04-07 11:45', firstName: 'Sarah', lastName: 'Chen', phone: '(713) 555-0456', email: 'sarah.chen@email.com', address: 'The Woodlands, TX 77380', careFor: 'Myself', careType: 'Adult Day', status: 'assigned', vendor: 'Metro Adult Day Center', dateSent: null },
+            { leadId: 'L-005', dateReceived: '2026-04-07 10:20', firstName: 'Michael', lastName: 'Davis', phone: '(713) 555-0567', email: 'mdavis@email.com', address: 'Pearland, TX 77581', careFor: 'Father', careType: 'Rehab', status: 'sent', vendor: 'Texas Recovery Center', dateSent: '2026-04-06 14:00' },
+            { leadId: 'L-006', dateReceived: '2026-04-07 09:30', firstName: 'Jennifer', lastName: 'Thompson', phone: '(281) 555-0678', email: 'jen.thompson@email.com', address: 'Sugar Land, TX 77479', careFor: 'Myself', careType: 'Home Health', status: 'new', vendor: null, dateSent: null },
+            { leadId: 'L-007', dateReceived: '2026-04-06 16:45', firstName: 'David', lastName: 'Rodriguez', phone: '(713) 555-0789', email: 'david.r@email.com', address: 'Bellaire, TX 77401', careFor: 'Child', careType: 'Home Health', status: 'closed', vendor: 'Sunshine Home Health', dateSent: '2026-04-03 10:15' },
+            { leadId: 'L-008', dateReceived: '2026-04-06 15:30', firstName: 'Patricia', lastName: 'Wilson', phone: '(713) 555-0890', email: 'p.wilson@email.com', address: 'Katy, TX 77450', careFor: 'Spouse', careType: 'Hospice', status: 'sent', vendor: 'Gulf Coast Hospice', dateSent: '2026-04-05 08:20' },
+            { leadId: 'L-009', dateReceived: '2026-04-06 14:15', firstName: 'Christopher', lastName: 'Anderson', phone: '(281) 555-0901', email: 'c.anderson@email.com', address: 'Tomball, TX 77375', careFor: 'Mother', careType: 'Assisted Living', status: 'new', vendor: null, dateSent: null },
+            { leadId: 'L-010', dateReceived: '2026-04-06 13:00', firstName: 'Linda', lastName: 'Taylor', phone: '(713) 555-1012', email: 'linda.taylor@email.com', address: 'Missouri City, TX 77459', careFor: 'Myself', careType: 'Adult Day', status: 'assigned', vendor: 'Metro Adult Day Center', dateSent: null },
+            { leadId: 'L-011', dateReceived: '2026-04-06 11:45', firstName: 'William', lastName: 'Brown', phone: '(713) 555-1123', email: 'w.brown@email.com', address: 'Houston, TX 77004', careFor: 'Father', careType: 'Rehab', status: 'contacted', vendor: 'Texas Recovery Center', dateSent: '2026-04-04 12:00' },
+            { leadId: 'L-012', dateReceived: '2026-04-06 10:30', firstName: 'Elizabeth', lastName: 'Moore', phone: '(713) 555-1234', email: 'e.moore@email.com', address: 'Houston, TX 77005', careFor: 'Myself', careType: 'Home Health', status: 'sent', vendor: 'Sunshine Home Health', dateSent: '2026-04-04 09:00' },
+            { leadId: 'L-013', dateReceived: '2026-04-06 09:15', firstName: 'Joseph', lastName: 'Jackson', phone: '(281) 555-1345', email: 'j.jackson@email.com', address: 'League City, TX 77573', careFor: 'Spouse', careType: 'Hospice', status: 'new', vendor: null, dateSent: null },
+            { leadId: 'L-014', dateReceived: '2026-04-05 16:00', firstName: 'Barbara', lastName: 'White', phone: '(713) 555-1456', email: 'b.white@email.com', address: 'Houston, TX 77006', careFor: 'Myself', careType: 'Assisted Living', status: 'assigned', vendor: 'Premier Living Communities', dateSent: null },
+            { leadId: 'L-015', dateReceived: '2026-04-05 14:30', firstName: 'Richard', lastName: 'Harris', phone: '(713) 555-1567', email: 'r.harris@email.com', address: 'Pasadena, TX 77505', careFor: 'Child', careType: 'Adult Day', status: 'sent', vendor: 'Metro Adult Day Center', dateSent: '2026-04-03 15:30' }
+        ];
+
+        const vendors = [
+            { id: 1, name: 'Sunshine Home Health', phone: '(713) 555-2000', email: 'info@sunshinehh.com', address: 'Houston, TX', leadsAssigned: 28 },
+            { id: 2, name: 'Gulf Coast Hospice', phone: '(713) 555-2100', email: 'admissions@gulfcoasthospice.com', address: 'Houston, TX', leadsAssigned: 34 },
+            { id: 3, name: 'Premier Living Communities', phone: '(713) 555-2200', email: 'info@premierliving.com', address: 'Houston, TX', leadsAssigned: 22 },
+            { id: 4, name: 'Metro Adult Day Center', phone: '(713) 555-2300', email: 'admin@metroadultday.com', address: 'Houston, TX', leadsAssigned: 18 },
+            { id: 5, name: 'Texas Recovery Center', phone: '(713) 555-2400', email: 'admissions@texasrecovery.com', address: 'Houston, TX', leadsAssigned: 15 }
+        ];
+
+        let currentPage = 1;
+        const leadsPerPage = 10;
+        let filteredLeads = [...leads];
+        let selectedLeads = new Set();
+        let sortColumn = null;
+        let sortDirection = 'asc';
+
+        // INITIALIZATION
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            populateVendorDropdown();
+            renderLeadsTable();
+            renderVendors();
+            setupEventListeners();
+        }
+
+        // EVENT LISTENERS
+        function setupEventListeners() {
+            // Tab switching
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchTab(this.dataset.tab);
+                });
+            });
+
+            // Search
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+
+            // Checkboxes
+            document.getElementById('selectAllCheckbox').addEventListener('change', toggleSelectAll);
+            document.addEventListener('change', function(e) {
+                if (e.target.classList.contains('lead-checkbox')) {
+                    updateBulkActionsBar();
+                }
+            });
+
+            // Table sorting
+            document.querySelectorAll('th.sortable').forEach(th => {
+                th.addEventListener('click', function() {
+                    handleSort(this.dataset.sort);
+                });
+            });
+
+            // Modal actions
+            const sendLeadBtnEl = document.getElementById('sendLeadBtn');
+            if (sendLeadBtnEl) sendLeadBtnEl.addEventListener('click', handleSendLead);
+            document.getElementById('exportBtn').addEventListener('click', handleExportCSV);
+            document.getElementById('exportSelectedBtn').addEventListener('click', handleExportSelected);
+            const assignBtnEl = document.getElementById('assignBtn');
+            if (assignBtnEl) assignBtnEl.addEventListener('click', handleBulkAssign);
+            document.getElementById('markContactedBtn').addEventListener('click', handleMarkContacted);
+
+            // Add vendor
+            document.getElementById('addVendorBtn').addEventListener('click', function() {
+                showAddVendorModal();
+            });
+        }
+
+        function switchTab(tabName) {
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+
+            // Update active section
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+
+            // Reset pagination for non-dashboard tabs
+            if (tabName === 'sent') {
+                renderSentTable();
+            }
+        }
+
+        // TABLE RENDERING
+        function renderLeadsTable() {
+            const tbody = document.getElementById('leadsTableBody');
+            tbody.innerHTML = '';
+
+            const start = (currentPage - 1) * leadsPerPage;
+            const end = start + leadsPerPage;
+            const pageLeads = filteredLeads.slice(start, end);
+
+            pageLeads.forEach(lead => {
+                const row = document.createElement('tr');
+                if (selectedLeads.has(lead.leadId)) row.classList.add('selected');
+
+                const statusClass = `status-${lead.status}`;
+                const statusText = lead.status.charAt(0).toUpperCase() + lead.status.slice(1);
+
+                row.innerHTML = `
+                    <td><input type="checkbox" class="checkbox lead-checkbox" value="${lead.leadId}" ${selectedLeads.has(lead.leadId) ? 'checked' : ''}></td>
+                    <td><span class="lead-id">${lead.leadId}</span></td>
+                    <td><span class="timestamp">${lead.dateReceived}</span></td>
+                    <td>${lead.firstName}</td>
+                    <td>${lead.lastName}</td>
+                    <td>${lead.phone}</td>
+                    <td>${lead.email}</td>
+                    <td>${lead.address}</td>
+                    <td>${lead.careFor}</td>
+                    <td>${lead.careType}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${lead.vendor || '—'}</td>
+                    <td>${lead.dateSent ? `<span class="timestamp">${lead.dateSent}</span>` : '—'}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" onclick="openDetailPanel('${lead.leadId}')" title="View">👁️</button>
+                        </div>
+                    </td>
+                `;
+
+                tbody.appendChild(row);
+
+                row.querySelector('.lead-checkbox').addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        selectedLeads.add(lead.leadId);
+                    } else {
+                        selectedLeads.delete(lead.leadId);
+                    }
+                    updateBulkActionsBar();
+                });
+            });
+
+            renderPagination();
+        }
+
+        function renderSentTable() {
+            const tbody = document.getElementById('sentTableBody');
+            tbody.innerHTML = '';
+
+            const sentLeads = leads.filter(l => l.status === 'sent' || l.status === 'contacted' || l.status === 'closed');
+
+            sentLeads.forEach(lead => {
+                const row = document.createElement('tr');
+                const statusClass = `status-${lead.status}`;
+                const statusText = lead.status.charAt(0).toUpperCase() + lead.status.slice(1);
+
+                row.innerHTML = `
+                    <td><span class="lead-id">${lead.leadId}</span></td>
+                    <td>${lead.firstName}</td>
+                    <td>${lead.lastName}</td>
+                    <td>${lead.phone}</td>
+                    <td>${lead.email}</td>
+                    <td>${lead.careType}</td>
+                    <td>${lead.vendor || '—'}</td>
+                    <td>${lead.dateSent ? `<span class="timestamp">${lead.dateSent}</span>` : '—'}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderPagination() {
+            const paginationDiv = document.getElementById('pagination');
+            paginationDiv.innerHTML = '';
+
+            const totalPages = Math.ceil(filteredLeads.length / leadsPerPage);
+
+            if (totalPages <= 1) return;
+
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.textContent = '← Previous';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderLeadsTable();
+                    window.scrollTo(0, 0);
+                }
+            });
+            paginationDiv.appendChild(prevBtn);
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.textContent = i;
+                    if (i === currentPage) pageBtn.classList.add('active');
+                    pageBtn.addEventListener('click', () => {
+                        currentPage = i;
+                        renderLeadsTable();
+                        window.scrollTo(0, 0);
+                    });
+                    paginationDiv.appendChild(pageBtn);
+                } else if (i === 2 || i === totalPages - 1) {
+                    const dots = document.createElement('span');
+                    dots.textContent = '...';
+                    paginationDiv.appendChild(dots);
+                }
+            }
+
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.textContent = 'Next →';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderLeadsTable();
+                    window.scrollTo(0, 0);
+                }
+            });
+            paginationDiv.appendChild(nextBtn);
+        }
+
+        // SEARCH AND FILTER
+        function handleSearch(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            currentPage = 1;
+
+            filteredLeads = leads.filter(lead => {
+                return lead.firstName.toLowerCase().includes(searchTerm) ||
+                       lead.lastName.toLowerCase().includes(searchTerm) ||
+                       lead.email.toLowerCase().includes(searchTerm) ||
+                       lead.phone.includes(searchTerm) ||
+                       lead.leadId.toLowerCase().includes(searchTerm);
+            });
+
+            renderLeadsTable();
+        }
+
+        // SORTING
+        function handleSort(column) {
+            const th = event.target;
+
+            if (sortColumn === column) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortDirection = 'asc';
+                if (sortColumn) {
+                    document.querySelector(`th[data-sort="${sortColumn}"]`).classList.remove('sort-asc', 'sort-desc');
+                }
+                sortColumn = column;
+            }
+
+            filteredLeads.sort((a, b) => {
+                let valA = a[column];
+                let valB = b[column];
+
+                if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                }
+
+                if (sortDirection === 'asc') {
+                    return valA > valB ? 1 : -1;
+                } else {
+                    return valA < valB ? 1 : -1;
+                }
+            });
+
+            document.querySelectorAll('th.sortable').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+            });
+            th.classList.add(sortDirection === 'asc' ? 'sort-asc' : 'sort-desc');
+
+            currentPage = 1;
+            renderLeadsTable();
+        }
+
+        // BULK ACTIONS
+        function toggleSelectAll(e) {
+            if (e.target.checked) {
+                const start = (currentPage - 1) * leadsPerPage;
+                const end = start + leadsPerPage;
+                const pageLeads = filteredLeads.slice(start, end);
+                pageLeads.forEach(lead => selectedLeads.add(lead.leadId));
+            } else {
+                const start = (currentPage - 1) * leadsPerPage;
+                const end = start + leadsPerPage;
+                const pageLeads = filteredLeads.slice(start, end);
+                pageLeads.forEach(lead => selectedLeads.delete(lead.leadId));
+            }
+            updateBulkActionsBar();
+            renderLeadsTable();
+        }
+
+        function updateBulkActionsBar() {
+            const bar = document.getElementById('bulkActionsBar');
+            const count = selectedLeads.size;
+            document.getElementById('selectedCount').textContent = `${count} lead${count !== 1 ? 's' : ''} selected`;
+
+            if (count > 0) {
+                bar.classList.add('visible');
+            } else {
+                bar.classList.remove('visible');
+            }
+        }
+
+        function handleBulkAssign() {
+            if (selectedLeads.size === 0) return;
+            showToast(`Bulk assignment for ${selectedLeads.size} leads would be processed`);
+        }
+
+        function handleExportSelected() {
+            if (selectedLeads.size === 0) return;
+            showToast(`Exporting ${selectedLeads.size} selected leads...`);
+        }
+
+        function handleMarkContacted() {
+            if (selectedLeads.size === 0) return;
+            const selectedArray = Array.from(selectedLeads);
+            selectedArray.forEach(leadId => {
+                const lead = leads.find(l => l.leadId === leadId);
+                if (lead && lead.status === 'sent') {
+                    lead.status = 'contacted';
+                }
+            });
+            selectedLeads.clear();
+            updateBulkActionsBar();
+            renderLeadsTable();
+            showToast(`${selectedArray.length} leads marked as contacted`);
+        }
+
+        // VENDOR MODAL
+        function openSendVendorModal(leadId) {
+            const lead = leads.find(l => l.leadId === leadId);
+            if (!lead) return;
+
+            const summary = document.getElementById('leadSummary');
+            summary.innerHTML = `
+                <div class="detail-section">
+                    <div class="detail-field">
+                        <span class="detail-label">Lead ID</span>
+                        <span class="detail-value">${lead.leadId}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Name</span>
+                        <span class="detail-value">${lead.firstName} ${lead.lastName}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Phone</span>
+                        <span class="detail-value">${lead.phone}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Care Type</span>
+                        <span class="detail-value">${lead.careType}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Location</span>
+                        <span class="detail-value">${lead.address}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('sendVendorModal').classList.add('visible');
+            document.getElementById('sendLeadBtn').dataset.leadId = leadId;
+
+            // Focus on vendor select
+            document.getElementById('vendorSelect').focus();
+        }
+
+        function closeSendVendorModal() {
+            document.getElementById('sendVendorModal').classList.remove('visible');
+            document.getElementById('vendorSelect').value = '';
+            document.getElementById('emailCheckbox').checked = true;
+            document.getElementById('noteTextarea').value = '';
+        }
+
+        function handleSendLead() {
+            const leadId = this.dataset.leadId;
+            const vendorId = document.getElementById('vendorSelect').value;
+            const note = document.getElementById('noteTextarea').value;
+            const sendEmail = document.getElementById('emailCheckbox').checked;
+
+            if (!vendorId) {
+                showToast('Please select a vendor', 'error');
+                return;
+            }
+
+            const vendor = vendors.find(v => v.id == vendorId);
+            const lead = leads.find(l => l.leadId === leadId);
+
+            if (lead && vendor) {
+                lead.status = 'sent';
+                lead.vendor = vendor.name;
+                lead.dateSent = new Date().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                }) + ' · ' + new Date().toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                closeSendVendorModal();
+                renderLeadsTable();
+                showToast(`Lead ${leadId} sent to ${vendor.name}`);
+            }
+        }
+
+        // DETAIL PANEL
+        function openDetailPanel(leadId) {
+            const lead = leads.find(l => l.leadId === leadId);
+            if (!lead) return;
+
+            const panelContent = document.getElementById('panelContent');
+            const statusClass = `status-${lead.status}`;
+            const statusText = lead.status.charAt(0).toUpperCase() + lead.status.slice(1);
+
+            let timeline = `
+                <div class="timeline-item">
+                    <div>Lead received from website</div>
+                    <div class="timeline-time">${lead.dateReceived}</div>
+                </div>
+            `;
+
+            if (lead.vendor) {
+                timeline += `
+                    <div class="timeline-item">
+                        <div>Assigned to ${lead.vendor}</div>
+                        <div class="timeline-time">${lead.dateSent}</div>
+                    </div>
+                `;
+            }
+
+            if (lead.status === 'contacted') {
+                timeline += `
+                    <div class="timeline-item">
+                        <div>Vendor contacted lead</div>
+                        <div class="timeline-time">${new Date(lead.dateSent).getTime() + 86400000}</div>
+                    </div>
+                `;
+            }
+
+            panelContent.innerHTML = `
+                <div class="detail-section">
+                    <div class="detail-section-title">Lead Information</div>
+                    <div class="detail-field">
+                        <span class="detail-label">Lead ID</span>
+                        <span class="detail-value">${lead.leadId}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Status</span>
+                        <span style="display: inline-block;"><span class="status-badge ${statusClass}">${statusText}</span></span>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">Personal Details</div>
+                    <div class="detail-field">
+                        <span class="detail-label">First Name</span>
+                        <span class="detail-value">${lead.firstName}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Last Name</span>
+                        <span class="detail-value">${lead.lastName}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Phone</span>
+                        <span class="detail-value">${lead.phone}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value">${lead.email}</span>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">Care Information</div>
+                    <div class="detail-field">
+                        <span class="detail-label">Care For</span>
+                        <span class="detail-value">${lead.careFor}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Care Type</span>
+                        <span class="detail-value">${lead.careType}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">Address</span>
+                        <span class="detail-value">${lead.address}</span>
+                    </div>
+                </div>
+
+                ${lead.vendor ? `
+                    <div class="detail-section">
+                        <div class="detail-section-title">Vendor Assignment</div>
+                        <div class="detail-field">
+                            <span class="detail-label">Vendor</span>
+                            <span class="detail-value">${lead.vendor}</span>
+                        </div>
+                        <div class="detail-field">
+                            <span class="detail-label">Date Sent</span>
+                            <span class="detail-value">${lead.dateSent}</span>
+                        </div>
+                    </div>
+                ` : ''}
+
+                <div class="detail-section">
+                    <div class="detail-section-title">Activity Timeline</div>
+                    <div class="timeline">
+                        ${timeline}
+                    </div>
+                </div>
+
+                <div class="panel-actions">
+                    ${lead.status !== 'sent' && lead.status !== 'closed' ? `
+                        <div style="padding:12px;background:#F0FDFA;border-radius:8px;font-size:13px;color:#0F766E">
+                            Leads are auto-assigned by the system. Manual routing is disabled.
+                        </div>
+                    ` : ''}
+                    ${lead.status !== 'closed' ? `
+                        <button class="btn-secondary" onclick="closeLeadFromPanel('${lead.leadId}');">Close Lead</button>
+                    ` : ''}
+                </div>
+            `;
+
+            document.getElementById('leadDetailPanel').classList.add('open');
+        }
+
+        function closeDetailPanel() {
+            document.getElementById('leadDetailPanel').classList.remove('open');
+        }
+
+        function closeLeadFromPanel(leadId) {
+            const lead = leads.find(l => l.leadId === leadId);
+            if (lead) {
+                lead.status = 'closed';
+                closeDetailPanel();
+                renderLeadsTable();
+                showToast(`Lead ${leadId} closed`);
+            }
+        }
+
+        // VENDORS
+        function populateVendorDropdown() {
+            const select = document.getElementById('vendorSelect');
+            select.innerHTML = '<option value="">Choose a vendor...</option>';
+            vendors.forEach(vendor => {
+                const option = document.createElement('option');
+                option.value = vendor.id;
+                option.textContent = vendor.name;
+                select.appendChild(option);
+            });
+        }
+
+        function renderVendors() {
+            const grid = document.getElementById('vendorsGrid');
+            grid.innerHTML = '';
+
+            vendors.forEach(vendor => {
+                const card = document.createElement('div');
+                card.className = 'vendor-card';
+                card.innerHTML = `
+                    <div class="vendor-name">${vendor.name}</div>
+                    <div class="vendor-info">
+                        <span>📞</span>
+                        <span>${vendor.phone}</span>
+                    </div>
+                    <div class="vendor-info">
+                        <span>✉️</span>
+                        <span>${vendor.email}</span>
+                    </div>
+                    <div class="vendor-info">
+                        <span>📍</span>
+                        <span>${vendor.address}</span>
+                    </div>
+                    <div class="vendor-leads">${vendor.leadsAssigned} leads assigned</div>
+                `;
+                grid.appendChild(card);
+            });
+
+            const addBtn = document.createElement('div');
+            addBtn.className = 'add-vendor-btn';
+            addBtn.id = 'addVendorBtn';
+            addBtn.innerHTML = '<span>+ Add New Vendor</span>';
+            addBtn.addEventListener('click', showAddVendorModal);
+            grid.appendChild(addBtn);
+        }
+
+        function showAddVendorModal() {
+            showToast('Add vendor functionality would open a new form');
+        }
+
+        // EXPORT
+        function handleExportCSV() {
+            const csvContent = [
+                ['Lead ID', 'Date Received', 'First Name', 'Last Name', 'Phone', 'Email', 'Address', 'Care For', 'Care Type', 'Status', 'Vendor', 'Date Sent'],
+                ...filteredLeads.map(lead => [
+                    lead.leadId,
+                    lead.dateReceived,
+                    lead.firstName,
+                    lead.lastName,
+                    lead.phone,
+                    lead.email,
+                    lead.address,
+                    lead.careFor,
+                    lead.careType,
+                    lead.status,
+                    lead.vendor || '',
+                    lead.dateSent || ''
+                ])
+            ];
+
+            const csv = csvContent.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `senova_leads_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            showToast('Export complete');
+        }
+
+        // TOAST
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            toast.style.backgroundColor = type === 'error' ? 'var(--red)' : 'var(--green)';
+
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('sendVendorModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSendVendorModal();
+            }
+        });
+    </script>
+</body>
+</html>
