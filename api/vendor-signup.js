@@ -15,7 +15,11 @@ module.exports = async (req, res) => {
     const {
       email, password, business_name, contact_name, phone,
       address, city, state, zip_code, care_types,
-      description, license_number, website_url
+      description, license_number, website_url,
+      // new optional fields populated from the expanded signup form
+      accepts_medicaid, accepts_medicare, accepts_private_insurance,
+      accepts_private_pay, hcbs_waiver,
+      languages, meal_options
     } = req.body;
 
     if (!email || !password || !business_name) {
@@ -67,6 +71,16 @@ module.exports = async (req, res) => {
         description: description || null,
         license_number: license_number || null,
         website_url: website_url || null,
+        // payment methods (defaults match previous behaviour)
+        accepts_medicaid:          accepts_medicaid !== undefined ? !!accepts_medicaid : true,
+        accepts_title19:           accepts_medicaid !== undefined ? !!accepts_medicaid : true,
+        accepts_medicare:          !!accepts_medicare,
+        accepts_private_insurance: !!accepts_private_insurance,
+        accepts_private_pay:       !!accepts_private_pay,
+        hcbs_waiver:               !!hcbs_waiver,
+        // profile-enriching fields
+        languages:                 Array.isArray(languages)    && languages.length    ? languages    : ['English'],
+        meal_options:              Array.isArray(meal_options) && meal_options.length ? meal_options : [],
         status: 'active'
       })
     });
@@ -85,7 +99,7 @@ module.exports = async (req, res) => {
       return res.status(500).json({ error: 'Vendor profile was not created. Check database schema.' });
     }
 
-    // 3. Link auth user to vendor (best effort â don't block signup if this fails)
+    // 3. Link auth user to vendor (best effort — don't block signup if this fails)
     try {
       const linkRes = await fetch(`${SUPABASE_URL}/rest/v1/vendor_auth`, {
         method: 'POST',
