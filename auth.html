@@ -466,7 +466,7 @@ a{text-decoration:none;color:inherit}
           </div>
           <div class="field">
             <label>What types of care do you provide?</label>
-            <div class="check-group">
+            <div class="check-group" id="vu_caretypes_group">
               <label class="check-item"><input type="checkbox" value="home_health"/> Home Health Care</label>
               <label class="check-item"><input type="checkbox" value="adult_day"/> Adult Day Program</label>
               <label class="check-item"><input type="checkbox" value="hospice"/> Hospice Care</label>
@@ -474,6 +474,66 @@ a{text-decoration:none;color:inherit}
               <label class="check-item"><input type="checkbox" value="rehab"/> Drug &amp; Alcohol Rehab</label>
             </div>
           </div>
+
+          <!-- ── Payment methods ─────────────────────────── -->
+          <div class="field">
+            <label>Which payment methods do you accept? <span style="font-weight:400;color:#64748B;font-size:12px">(check all that apply)</span></label>
+            <div class="check-group" id="vu_payments_group">
+              <label class="check-item"><input type="checkbox" value="medicaid"/> Medicaid / Title 19</label>
+              <label class="check-item"><input type="checkbox" value="medicare"/> Medicare</label>
+              <label class="check-item"><input type="checkbox" value="private_insurance"/> Private Insurance</label>
+              <label class="check-item"><input type="checkbox" value="private_pay"/> Private Pay / Self-Pay</label>
+              <label class="check-item"><input type="checkbox" value="hcbs_waiver"/> HCBS Waiver</label>
+            </div>
+          </div>
+
+          <!-- ── Languages spoken ───────────────────────── -->
+          <div class="field">
+            <label>Languages spoken by your staff <span style="font-weight:400;color:#64748B;font-size:12px">(check all that apply)</span></label>
+            <div class="check-group" id="vu_languages_group">
+              <label class="check-item"><input type="checkbox" value="English" checked/> English</label>
+              <label class="check-item"><input type="checkbox" value="Spanish"/> Spanish</label>
+              <label class="check-item"><input type="checkbox" value="Hmong"/> Hmong</label>
+              <label class="check-item"><input type="checkbox" value="Vietnamese"/> Vietnamese</label>
+              <label class="check-item"><input type="checkbox" value="Chinese (Mandarin)"/> Chinese (Mandarin)</label>
+              <label class="check-item"><input type="checkbox" value="Chinese (Cantonese)"/> Chinese (Cantonese)</label>
+              <label class="check-item"><input type="checkbox" value="Korean"/> Korean</label>
+              <label class="check-item"><input type="checkbox" value="Tagalog"/> Tagalog / Filipino</label>
+              <label class="check-item"><input type="checkbox" value="Hindi"/> Hindi</label>
+              <label class="check-item"><input type="checkbox" value="Arabic"/> Arabic</label>
+              <label class="check-item"><input type="checkbox" value="Somali"/> Somali</label>
+              <label class="check-item"><input type="checkbox" value="Russian"/> Russian</label>
+              <label class="check-item"><input type="checkbox" value="French"/> French / Haitian Creole</label>
+              <label class="check-item"><input type="checkbox" value="Portuguese"/> Portuguese</label>
+              <label class="check-item"><input type="checkbox" value="Japanese"/> Japanese</label>
+              <label class="check-item"><input type="checkbox" value="Swahili"/> Swahili</label>
+              <label class="check-item"><input type="checkbox" value="ASL"/> American Sign Language (ASL)</label>
+            </div>
+          </div>
+
+          <!-- ── Meals / cuisine ────────────────────────── -->
+          <div class="field">
+            <label>Meals and cuisine offered <span style="font-weight:400;color:#64748B;font-size:12px">(check all that apply &mdash; skip if you don't provide meals)</span></label>
+            <div class="check-group" id="vu_meals_group">
+              <label class="check-item"><input type="checkbox" value="Meals Provided"/> Meals Provided</label>
+              <label class="check-item"><input type="checkbox" value="Hmong Cuisine"/> Hmong Cuisine</label>
+              <label class="check-item"><input type="checkbox" value="Asian / East Asian"/> Asian / East Asian</label>
+              <label class="check-item"><input type="checkbox" value="Hispanic / Latin American"/> Hispanic / Latin American</label>
+              <label class="check-item"><input type="checkbox" value="Soul Food / Southern"/> Soul Food / Southern</label>
+              <label class="check-item"><input type="checkbox" value="Caribbean"/> Caribbean</label>
+              <label class="check-item"><input type="checkbox" value="Middle Eastern / Halal"/> Middle Eastern / Halal</label>
+              <label class="check-item"><input type="checkbox" value="Indian / South Asian"/> Indian / South Asian</label>
+              <label class="check-item"><input type="checkbox" value="Kosher"/> Kosher</label>
+              <label class="check-item"><input type="checkbox" value="Vegetarian / Vegan"/> Vegetarian / Vegan</label>
+              <label class="check-item"><input type="checkbox" value="Diabetic-Friendly"/> Diabetic-Friendly</label>
+              <label class="check-item"><input type="checkbox" value="Low-Sodium / Heart Healthy"/> Low-Sodium / Heart Healthy</label>
+              <label class="check-item"><input type="checkbox" value="Pureed / Soft Diet"/> Pureed / Soft Diet</label>
+              <label class="check-item"><input type="checkbox" value="African / West African"/> African / West African</label>
+              <label class="check-item"><input type="checkbox" value="Filipino"/> Filipino</label>
+              <label class="check-item"><input type="checkbox" value="Ethiopian / East African"/> Ethiopian / East African</label>
+            </div>
+          </div>
+
           <div class="terms">
             <input type="checkbox" id="vu_terms"/>
             <span>I agree to Senova's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
@@ -642,10 +702,16 @@ async function handleVendorSignUp() {
 
   if (!valid) { alert('Please fill in all required fields correctly.'); return; }
 
-  const careTypes = [];
-  document.querySelectorAll('#vendorSignupFields .check-item input[type="checkbox"]:checked').forEach(cb => {
-    careTypes.push(cb.value);
-  });
+  // Scope each group to its container to avoid cross-contamination
+  const collectChecked = (containerId) => {
+    const out = [];
+    document.querySelectorAll('#' + containerId + ' input[type="checkbox"]:checked').forEach(cb => out.push(cb.value));
+    return out;
+  };
+  const careTypes = collectChecked('vu_caretypes_group');
+  const payments  = collectChecked('vu_payments_group');
+  const languages = collectChecked('vu_languages_group');
+  const meals     = collectChecked('vu_meals_group');
 
   try {
     const res = await fetch('/api/vendor-signup', {
@@ -662,7 +728,15 @@ async function handleVendorSignUp() {
         state: document.getElementById('vu_state').value,
         zip_code: document.getElementById('vu_zip').value.trim(),
         website_url: document.getElementById('vu_website').value.trim(),
-        care_types: careTypes
+        care_types: careTypes,
+        // ── new fields (from signup form checkboxes) ──────
+        accepts_medicaid:           payments.includes('medicaid'),
+        accepts_medicare:           payments.includes('medicare'),
+        accepts_private_insurance:  payments.includes('private_insurance'),
+        accepts_private_pay:        payments.includes('private_pay'),
+        hcbs_waiver:                payments.includes('hcbs_waiver'),
+        languages: languages,
+        meal_options: meals
       })
     });
 
