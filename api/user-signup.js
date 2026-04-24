@@ -51,6 +51,23 @@ function sbHeaders(SUPABASE_SERVICE_KEY, extra = {}) {
   };
 }
 
+// Append an event to the lead_activity table. Best-effort; logs and swallows errors.
+async function logActivity(SUPABASE_URL, SUPABASE_SERVICE_KEY, leadId, action, description, performedBy = 'system') {
+  if (!leadId) return;
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/lead_activity`, {
+      method: 'POST',
+      headers: sbHeaders(SUPABASE_SERVICE_KEY, {
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      }),
+      body: JSON.stringify({ lead_id: leadId, action, description, performed_by: performedBy })
+    });
+  } catch (e) {
+    console.error('logActivity error:', e.message);
+  }
+}
+
 // Find the paid vendor that should get this lead, or null if none.
 // Side-effect: will geocode and persist lat/lng for any vendor that
 // doesn't have them yet (self-healing).
@@ -367,6 +384,16 @@ module.exports = async (req, res) => {
     const leadBody = leadRes.ok ? await leadRes.json() : [];
     const lead = leadBody[0] || null;
 
+    // Log: lead was received.
+    if (lead) {
+      await logActivity(
+        SUPABASE_URL, SUPABASE_SERVICE_KEY, lead.id,
+        'lead_received',
+        `Lead created from user signup. Care for: ${care_for || 'N/A'}. Care type: ${primaryCareType || 'N/A'}. Service ZIP: ${effectiveServiceZip || 'N/A'}.`,
+        'system'
+      );
+    }
+
     // 5. Auto-assign the lead to a paid vendor (if possible).
     let assigned = null;
     let assignmentReason = 'no service_zip provided';
@@ -397,6 +424,12 @@ module.exports = async (req, res) => {
             status: 'assigned'
           })
         });
+        await logActivity(
+          SUPABASE_URL, SUPABASE_SERVICE_KEY, lead.id,
+          'auto_assigned',
+          `Auto-assigned to ${pick.vendor.business_name} (${pick.vendor.plan_name} plan, ${pick.vendor.distance.toFixed(1)}mi away).`,
+          'system'
+        );
       } else {
         assignmentReason = pick.reason || 'no paid vendor in radius';
         // No paid match — try to invite prospect vendors.
@@ -417,6 +450,12 @@ module.exports = async (req, res) => {
             status: 'awaiting_vendor'
           })
         });
+        await logActivity(
+          SUPABASE_URL, SUPABASE_SERVICE_KEY, lead.id,
+          'no_match',
+          `No paid vendor within radius. ${prospectEmails} prospect vendor(s) emailed with an invitation to sign up.`,
+          'system'
+        );
       }
     }
 
