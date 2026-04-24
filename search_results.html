@@ -693,41 +693,84 @@ function applyFilters() {
       if (isNaN(r) || r < effectiveMinRating) return false;
     }
 
-    // ── Service filter (AND: all selected must be offered) ──
+    // ── Service filter (AND: all selected services must be offered) ──
+    // For services the provider explicitly flags "Yes"/"No", honor that.
+    // For services with NO data for this provider, pass-through (don't exclude).
     if (services.length > 0 && (p._type === 'home_health' || !p._type)) {
-      const allMatch = services.every(function(svc) {
-        if (svc === 'Skilled Nursing')    return p.offers_nursing_care_services === 'Yes';
-        if (svc === 'Physical Therapy')   return p.offers_physical_therapy_services === 'Yes';
-        if (svc === 'Home Health Aide')   return p.offers_home_health_aide_services === 'Yes';
-        // CMS data doesn't flag these — only include if Senova vendor profile has them.
-        if (svc === 'Personal Care')      return p.offers_personal_care === true  || (p.services_offered||[]).includes('personal_care');
-        if (svc === 'Respite Care')       return p.offers_respite_care === true   || (p.services_offered||[]).includes('respite_care');
-        if (svc === 'HCBS Waiver')        return p.hcbs_waiver === true           || p.accepts_hcbs_waiver === true;
-        return false;
-      });
-      if (!allMatch) return false;
-    }
-
-    // ── Payment-accepted filter (AND: all selected must be accepted) ──
-    if (payments.length > 0) {
-      const accepts = {
-        Medicare: true, // every CMS-certified provider accepts Medicare by definition
-        Medicaid: p.accepts_medicaid === true || p.accepts_medicaid === 'Yes' || p.medicaid_certified === true,
-        PrivateInsurance: p.accepts_private_insurance === true || p.accepts_private_insurance === 'Yes',
-        PrivatePay: p.accepts_private_pay === true || p.accepts_private_pay === 'Yes'
+      const svcCheck = function(svc) {
+        // Returns: true = provider offers it, false = explicit no, null = unknown
+        if (svc === 'Skilled Nursing') {
+          if (p.offers_nursing_care_services === 'Yes') return true;
+          if (p.offers_nursing_care_services === 'No')  return false;
+          return null;
+        }
+        if (svc === 'Physical Therapy') {
+          if (p.offers_physical_therapy_services === 'Yes') return true;
+          if (p.offers_physical_therapy_services === 'No')  return false;
+          return null;
+        }
+        if (svc === 'Home Health Aide') {
+          if (p.offers_home_health_aide_services === 'Yes') return true;
+          if (p.offers_home_health_aide_services === 'No')  return false;
+          return null;
+        }
+        // The ones below aren't in CMS — pass-through unless Senova vendor data flags them.
+        if (svc === 'Personal Care') {
+          if (p.offers_personal_care === true || (p.services_offered||[]).includes('personal_care')) return true;
+          return null;
+        }
+        if (svc === 'Respite Care') {
+          if (p.offers_respite_care === true || (p.services_offered||[]).includes('respite_care')) return true;
+          return null;
+        }
+        if (svc === 'HCBS Waiver') {
+          if (p.hcbs_waiver === true || p.accepts_hcbs_waiver === true) return true;
+          return null;
+        }
+        return null;
       };
-      for (let i = 0; i < payments.length; i++) {
-        if (!accepts[payments[i]]) return false;
+      for (let i = 0; i < services.length; i++) {
+        if (svcCheck(services[i]) === false) return false; // explicit no
+        // true and null both pass
       }
     }
 
-    // ── Language filter (OR: at least one selected language is spoken) ──
+    // ── Payment-accepted filter ─────────────────────────────
+    // Three-state logic: `true` = accepts, `false` = explicit no,
+    // `null`/undefined = unknown. We only EXCLUDE on an explicit "no".
+    // Unknowns pass through — CMS data doesn't flag payment methods, so
+    // CMS-sourced providers are treated as "unknown" (not excluded).
+    if (payments.length > 0) {
+      const triState = function(v) {
+        if (v === true || v === 'Yes' || v === 'yes' || v === 'Y') return true;
+        if (v === false || v === 'No' || v === 'no' || v === 'N') return false;
+        return null;
+      };
+      const status = {
+        Medicare: true, // all CMS-certified providers accept Medicare by definition
+        Medicaid: triState(p.accepts_medicaid) === true || triState(p.medicaid_certified) === true
+                  ? true
+                  : (triState(p.accepts_medicaid) === false ? false : null),
+        PrivateInsurance: triState(p.accepts_private_insurance),
+        PrivatePay: triState(p.accepts_private_pay)
+      };
+      for (let i = 0; i < payments.length; i++) {
+        // only exclude on explicit false; unknown (null) passes.
+        if (status[payments[i]] === false) return false;
+      }
+    }
+
+    // ── Language filter (pass-through on missing data) ──
+    // If provider has no language array at all, we don't exclude them
+    // (CMS doesn't publish languages). Only exclude if provider has a
+    // language list AND none of them match.
     if (languages.length > 0) {
-      const provLangs = (Array.isArray(p.languages) ? p.languages : [])
-        .map(function(l){ return (l||'').toLowerCase(); });
-      if (provLangs.length === 0) return false; // no language data on this provider
-      const anyMatch = languages.some(function(l){ return provLangs.indexOf(l) !== -1; });
-      if (!anyMatch) return false;
+      if (Array.isArray(p.languages) && p.languages.length > 0) {
+        const provLangs = p.languages.map(function(l){ return (l||'').toLowerCase(); });
+        const anyMatch = languages.some(function(l){ return provLangs.indexOf(l) !== -1; });
+        if (!anyMatch) return false;
+      }
+      // else: no language data for this provider → do not exclude
     }
 
     // ── Distance filter (client-side, when both coords are known) ──
