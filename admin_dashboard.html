@@ -386,7 +386,7 @@ async function loadAllData() {
   renderNotifications(notifs || [], 'notifList', 10);
   renderNotifications(notifs || [], 'allNotifsList', 50);
   renderVendors(vendors || []);
-  renderUsers(users || []);
+  renderUsers(users || [], leads || []);
   renderLeadsAdmin(leads || []);
   renderImageReview(images || []);
 }
@@ -428,8 +428,9 @@ function renderVendors(vendors) {
     const date = new Date(v.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const types = (v.care_types || []).join(', ') || '—';
     const authId = v.vendor_auth?.[0]?.auth_user_id || '';
+    const nameLink = `<a href="/admin_vendor_profile.html?id=${v.id}" style="color:var(--teal);text-decoration:none;font-weight:600">${v.business_name}</a>`;
     return `<tr>
-      <td style="font-weight:600">${v.business_name}</td>
+      <td>${nameLink}</td>
       <td>${v.contact_name || '—'}<br><span style="font-size:12px;color:var(--gray)">${v.email || ''}</span></td>
       <td>${v.city || ''}, ${v.state || ''}</td>
       <td style="font-size:13px">${types}</td>
@@ -440,21 +441,32 @@ function renderVendors(vendors) {
   }).join('');
 }
 
-function renderUsers(users) {
+function renderUsers(users, leads) {
   const tbody = document.getElementById('usersTableBody');
   if (!users.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--gray)">No users yet</td></tr>'; return; }
+
+  // Build a user_id -> most recent lead_id map so we can link each user to their lead profile.
+  const leadByUser = {};
+  for (const l of (leads || [])) {
+    if (l.user_id && !leadByUser[l.user_id]) leadByUser[l.user_id] = l.id;
+  }
 
   tbody.innerHTML = users.map(u => {
     const date = new Date(u.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const authId = u.user_auth?.[0]?.auth_user_id || '';
+    const fullName = `${u.first_name} ${u.last_name}`;
+    const leadId = leadByUser[u.id];
+    const nameHtml = leadId
+      ? `<a href="/admin_lead_profile.html?id=${leadId}" style="color:var(--teal);text-decoration:none;font-weight:600">${fullName}</a>`
+      : `<span style="font-weight:600">${fullName}</span>`;
     return `<tr>
-      <td style="font-weight:600">${u.first_name} ${u.last_name}</td>
+      <td>${nameHtml}</td>
       <td>${u.email}</td>
       <td>${u.phone || '—'}</td>
       <td>${u.city || ''}, ${u.state || ''}</td>
       <td>${u.care_for || '—'}</td>
       <td style="font-size:13px">${date}</td>
-      <td><button class="btn-delete" onclick="deleteRecord('user','${u.id}','${authId}','${u.first_name} ${u.last_name}')">Delete</button></td>
+      <td><button class="btn-delete" onclick="deleteRecord('user','${u.id}','${authId}','${fullName}')">Delete</button></td>
     </tr>`;
   }).join('');
 }
@@ -507,7 +519,8 @@ function renderImageReview(images) {
 // ===== ACTIONS =====
 async function deleteRecord(type, id, authUserId, name) {
   const label = type === 'vendor' ? 'vendor' : 'user';
-  if (!confirm('Are you sure you want to permanently delete ' + label + ' "' + name + '"?\n\nThis will remove their account, all related data, and free up their email for re-registration.\n\nThis cannot be undone.')) return;
+  if (!confirm(`Are you sure you want to permanently delete ${label} "${name}"?\n\nThis will remove their account, all related data, and free up their email for re-registration.\n\nThis cannot be undone.`)) return;
+
   try {
     const res = await fetch('/api/admin-delete', {
       method: 'POST',
@@ -516,7 +529,7 @@ async function deleteRecord(type, id, authUserId, name) {
     });
     const data = await res.json();
     if (res.ok) {
-      alert(label.charAt(0).toUpperCase() + label.slice(1) + ' "' + name + '" has been deleted. Their email is now available for re-registration.');
+      alert(`${label.charAt(0).toUpperCase() + label.slice(1)} "${name}" has been deleted. Their email is now available for re-registration.`);
       loadAllData();
     } else {
       alert('Delete failed: ' + (data.error || 'Unknown error'));

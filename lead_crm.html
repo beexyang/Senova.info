@@ -1253,8 +1253,41 @@
     <div class="toast" id="toast" style="display: none;"></div>
 
     <script>
-        // SAMPLE DATA
-        const leads = [
+        // LIVE DATA from Supabase — fetched on page load. See fetchLeads() below.
+        const SUPABASE_URL = 'https://nzinorhyoxifmthyvsbb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56aW5vcmh5b3hpZm10aHl2c2JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTI2MjMsImV4cCI6MjA5MDkyODYyM30._7RjAOyhOISw6Nh3qjt8cwJspQrGe2Zw2aBgWu8u4ro';
+        const SB_HEADERS = { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY };
+
+        let leads = [];
+
+        async function fetchLeads() {
+            try {
+                const r = await fetch(`${SUPABASE_URL}/rest/v1/leads?select=id,lead_number,first_name,last_name,phone,email,city,state,zip_code,service_zip,care_for,care_type,status,received_at,sent_to_vendor_at,vendor_id,auto_assigned,vendors(business_name)&order=received_at.desc`, { headers: SB_HEADERS });
+                const data = r.ok ? await r.json() : [];
+                leads = data.map(l => ({
+                    leadId: l.id, // real UUID (used for profile link)
+                    displayId: l.lead_number ? ('L-' + String(l.lead_number).padStart(3,'0')) : '—',
+                    dateReceived: l.received_at ? new Date(l.received_at).toLocaleString('en-US', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) : '',
+                    firstName: l.first_name || '',
+                    lastName: l.last_name || '',
+                    phone: l.phone || '',
+                    email: l.email || '',
+                    address: [l.city, l.state, l.service_zip || l.zip_code].filter(Boolean).join(', '),
+                    careFor: l.care_for || '',
+                    careType: l.care_type || '',
+                    status: l.status || 'new',
+                    vendor: l.vendors ? l.vendors.business_name : null,
+                    dateSent: l.sent_to_vendor_at ? new Date(l.sent_to_vendor_at).toLocaleString('en-US', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) : null,
+                    autoAssigned: !!l.auto_assigned
+                }));
+                filteredLeads = [...leads];
+                if (typeof renderLeadsTable === 'function') renderLeadsTable();
+                if (typeof updateStats === 'function') updateStats();
+            } catch(e) { console.error('fetchLeads error:', e); }
+        }
+
+        // Kept for backward compatibility (unused now that manual assign is removed)
+        const _mockLeads_DEPRECATED = [
             { leadId: 'L-001', dateReceived: '2026-04-07 14:32', firstName: 'James', lastName: 'Martinez', phone: '(713) 555-0142', email: 'james.martinez@email.com', address: 'Houston, TX 77002', careFor: 'Myself', careType: 'Home Health', status: 'new', vendor: null, dateSent: null },
             { leadId: 'L-002', dateReceived: '2026-04-07 13:15', firstName: 'Maria', lastName: 'Garcia', phone: '(713) 555-0189', email: 'maria.g@email.com', address: 'Houston, TX 77003', careFor: 'Mother', careType: 'Hospice', status: 'sent', vendor: 'Gulf Coast Hospice', dateSent: '2026-04-06 09:45' },
             { leadId: 'L-003', dateReceived: '2026-04-07 12:00', firstName: 'Robert', lastName: 'Johnson', phone: '(281) 555-0234', email: 'r.johnson@email.com', address: 'Spring, TX 77380', careFor: 'Spouse', careType: 'Assisted Living', status: 'contacted', vendor: 'Premier Living Communities', dateSent: '2026-04-05 11:30' },
@@ -1297,6 +1330,10 @@
             renderLeadsTable();
             renderVendors();
             setupEventListeners();
+            // Load real leads from Supabase (replaces the mock data above)
+            fetchLeads();
+            // Refresh every 30 seconds so new leads appear without manual reload
+            setInterval(fetchLeads, 30000);
         }
 
         // EVENT LISTENERS
@@ -1378,7 +1415,7 @@
 
                 row.innerHTML = `
                     <td><input type="checkbox" class="checkbox lead-checkbox" value="${lead.leadId}" ${selectedLeads.has(lead.leadId) ? 'checked' : ''}></td>
-                    <td><span class="lead-id">${lead.leadId}</span></td>
+                    <td><span class="lead-id">${lead.displayId || lead.leadId}</span></td>
                     <td><span class="timestamp">${lead.dateReceived}</span></td>
                     <td>${lead.firstName}</td>
                     <td>${lead.lastName}</td>
@@ -1392,7 +1429,7 @@
                     <td>${lead.dateSent ? `<span class="timestamp">${lead.dateSent}</span>` : '—'}</td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn-icon" onclick="openDetailPanel('${lead.leadId}')" title="View">👁️</button>
+                            <a class="btn-action" href="/admin_lead_profile.html?id=${lead.leadId}" title="Open full profile" style="text-decoration:none">Open</a>
                         </div>
                     </td>
                 `;
