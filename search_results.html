@@ -263,7 +263,7 @@ a{text-decoration:none;color:inherit}
       </svg>
     </span>
     <input type="text" value="Home Health Care in Houston, TX" />
-    <button class="clear-btn">✕</button>
+    <button class="clear-btn" onclick="this.previousElementSibling.value=''; this.previousElementSibling.focus();">&#10005;</button>
   </div>
   <div class="nav-right">
     <a class="nav-link" href="/for-providers">For Providers</a>
@@ -628,39 +628,117 @@ function getCheckedServices() {
   return svcs;
 }
 
+// Get checked payment methods
+function getCheckedPayments() {
+  const pays = [];
+  if (document.getElementById('p1')?.checked) pays.push('Medicaid');
+  if (document.getElementById('p2')?.checked) pays.push('Medicare');
+  if (document.getElementById('p3')?.checked) pays.push('PrivateInsurance');
+  if (document.getElementById('p4')?.checked) pays.push('PrivatePay');
+  return pays;
+}
+
+// Get checked languages (reads label text so it works regardless of language list length)
+function getCheckedLanguages() {
+  const langs = [];
+  document.querySelectorAll('.sidebar input[type="checkbox"][id^="lang"]').forEach(function(cb){
+    if (cb.checked) {
+      var lbl = document.querySelector('label[for="' + cb.id + '"]');
+      if (lbl) langs.push(lbl.textContent.trim().toLowerCase());
+    }
+  });
+  return langs;
+}
+
+// Return the effective service radius (miles) from the slider, default 25.
+function getSelectedRadiusMiles() {
+  var r = document.querySelector('.sb-range');
+  return r ? parseInt(r.value, 10) || 25 : 25;
+}
+
+// Haversine distance in miles (used for client-side distance filter when
+// both lead ZIP coords and provider ZIP coords are known).
+function haversineMiles(lat1, lng1, lat2, lng2) {
+  var R = 3958.8;
+  var toRad = function(d) { return (d * Math.PI) / 180; };
+  var dLat = toRad(lat2 - lat1);
+  var dLng = toRad(lng2 - lng1);
+  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+          Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
 // Apply all filters to the loaded results
 function applyFilters() {
   const careTypes = getCheckedCareTypes();
   const minRating = getMinRating();
   const services = getCheckedServices();
+  const payments = getCheckedPayments();
+  const languages = getCheckedLanguages();
+  const radiusMiles = getSelectedRadiusMiles();
   const fourPlusStars = document.querySelector('.filter-pill[data-filter="stars"]')?.classList.contains('active');
   const effectiveMinRating = fourPlusStars ? Math.max(minRating, 4) : minRating;
 
   filteredResults = allResults.filter(function(p) {
-    // Care type filter
+    // ── Care type filter ──────────────────────────────
     if (careTypes.length > 0) {
       const pType = p._type || p.provider_type || 'home_health';
       if (!careTypes.includes(pType)) return false;
     }
 
-    // Rating filter
+    // ── Rating filter ─────────────────────────────────
     if (effectiveMinRating > 0) {
       const r = parseFloat(p.quality_of_patient_care_star_rating || 0);
       if (isNaN(r) || r < effectiveMinRating) return false;
     }
 
-    // Service filter (only applies to home health, hospice always passes)
+    // ── Service filter (AND: all selected must be offered) ──
     if (services.length > 0 && (p._type === 'home_health' || !p._type)) {
-      const hasService = services.some(function(svc) {
-        if (svc === 'Skilled Nursing') return p.offers_nursing_care_services === 'Yes';
-        if (svc === 'Physical Therapy') return p.offers_physical_therapy_services === 'Yes';
-        if (svc === 'Home Health Aide') return p.offers_home_health_aide_services === 'Yes';
-        if (svc === 'Personal Care') return true; // not in CMS data, pass through
-        if (svc === 'Respite Care') return true;
-        if (svc === 'HCBS Waiver') return true;
-        return true;
+      const allMatch = services.every(function(svc) {
+        if (svc === 'Skilled Nursing')    return p.offers_nursing_care_services === 'Yes';
+        if (svc === 'Physical Therapy')   return p.offers_physical_therapy_services === 'Yes';
+        if (svc === 'Home Health Aide')   return p.offers_home_health_aide_services === 'Yes';
+        // CMS data doesn't flag these — only include if Senova vendor profile has them.
+        if (svc === 'Personal Care')      return p.offers_personal_care === true  || (p.services_offered||[]).includes('personal_care');
+        if (svc === 'Respite Care')       return p.offers_respite_care === true   || (p.services_offered||[]).includes('respite_care');
+        if (svc === 'HCBS Waiver')        return p.hcbs_waiver === true           || p.accepts_hcbs_waiver === true;
+        return false;
       });
-      if (!hasService) return false;
+      if (!allMatch) return false;
+    }
+
+    // ── Payment-accepted filter (AND: all selected must be accepted) ──
+    if (payments.length > 0) {
+      const accepts = {
+        Medicare: true, // every CMS-certified provider accepts Medicare by definition
+        Medicaid: p.accepts_medicaid === true || p.accepts_medicaid === 'Yes' || p.medicaid_certified === true,
+        PrivateInsurance: p.accepts_private_insurance === true || p.accepts_private_insurance === 'Yes',
+        PrivatePay: p.accepts_private_pay === true || p.accepts_private_pay === 'Yes'
+      };
+      for (let i = 0; i < payments.length; i++) {
+        if (!accepts[payments[i]]) return false;
+      }
+    }
+
+    // ── Language filter (OR: at least one selected language is spoken) ──
+    if (languages.length > 0) {
+      const provLangs = (Array.isArray(p.languages) ? p.languages : [])
+        .map(function(l){ return (l||'').toLowerCase(); });
+      if (provLangs.length === 0) return false; // no language data on this provider
+      const anyMatch = languages.some(function(l){ return provLangs.indexOf(l) !== -1; });
+      if (!anyMatch) return false;
+    }
+
+    // ── Distance filter (client-side, when both coords are known) ──
+    // If the provider has lat/lng and the current user ZIP has been geocoded
+    // into window.__userCoords, enforce the radius.
+    if (window.__userCoords && p.latitude && p.longitude) {
+      const d = haversineMiles(
+        window.__userCoords.lat, window.__userCoords.lng,
+        parseFloat(p.latitude), parseFloat(p.longitude)
+      );
+      if (d > radiusMiles) return false;
     }
 
     return true;
@@ -869,9 +947,17 @@ function initSidebarFilters() {
     });
   }
 
-  // Distance slider - trigger re-fetch with broader/narrower ZIP
+  // Distance slider — live client-side radius filter via applyFilters,
+  // with a debounced server re-fetch on release so we pick up providers
+  // outside the initial result set if the radius widens.
   var rangeEl = document.querySelector('.sb-range');
   if (rangeEl) {
+    // 'input' fires continuously while dragging — instant re-filter
+    rangeEl.addEventListener('input', function() {
+      currentPage = 1;
+      applyFilters();
+    });
+    // 'change' fires on release — also refetch so we can broaden the pool
     rangeEl.addEventListener('change', function() {
       currentPage = 1;
       fetchProviders(currentState, currentZip, 1, currentCareType);
