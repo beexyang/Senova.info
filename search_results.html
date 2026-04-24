@@ -773,14 +773,16 @@ function applyFilters() {
       }
     }
 
-    // ── Language filter (STRICT when user checks a language) ──
-    // If a language is checked and the provider doesn't speak it,
-    // they're excluded. Providers with no language data are excluded
-    // too — that's the user's intent when they pick a specific language.
+    // ── Language filter ──────────────────────────────────
+    // US CMS-certified providers operate in English by default. If the
+    // provider has an explicit languages list (from their Senova profile),
+    // we use that. Otherwise we assume ['english'] — so the English filter
+    // works as users expect, but Spanish/Hmong/etc. correctly require
+    // explicit language data on the provider.
     if (languages.length > 0) {
-      const provLangs = (Array.isArray(p.languages) ? p.languages : [])
-        .map(function(l){ return (l||'').toLowerCase(); });
-      if (provLangs.length === 0) return false;
+      const provLangs = (Array.isArray(p.languages) && p.languages.length > 0)
+        ? p.languages.map(function(l){ return (l||'').toLowerCase(); })
+        : ['english']; // default assumption for CMS data
       const anyMatch = languages.some(function(l){ return provLangs.indexOf(l) !== -1; });
       if (!anyMatch) return false;
     }
