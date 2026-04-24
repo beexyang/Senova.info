@@ -650,6 +650,18 @@ function getCheckedLanguages() {
   return langs;
 }
 
+// Get checked meal/cuisine filters (reads label text)
+function getCheckedMeals() {
+  const meals = [];
+  document.querySelectorAll('.sidebar input[type="checkbox"][id^="meal"]').forEach(function(cb){
+    if (cb.checked) {
+      var lbl = document.querySelector('label[for="' + cb.id + '"]');
+      if (lbl) meals.push(lbl.textContent.trim().toLowerCase());
+    }
+  });
+  return meals;
+}
+
 // Return the effective service radius (miles) from the slider, default 25.
 function getSelectedRadiusMiles() {
   var r = document.querySelector('.sb-range');
@@ -676,6 +688,7 @@ function applyFilters() {
   const services = getCheckedServices();
   const payments = getCheckedPayments();
   const languages = getCheckedLanguages();
+  const meals = getCheckedMeals();
   const radiusMiles = getSelectedRadiusMiles();
   const fourPlusStars = document.querySelector('.filter-pill[data-filter="stars"]')?.classList.contains('active');
   const effectiveMinRating = fourPlusStars ? Math.max(minRating, 4) : minRating;
@@ -760,17 +773,29 @@ function applyFilters() {
       }
     }
 
-    // ── Language filter (pass-through on missing data) ──
-    // If provider has no language array at all, we don't exclude them
-    // (CMS doesn't publish languages). Only exclude if provider has a
-    // language list AND none of them match.
+    // ── Language filter (STRICT when user checks a language) ──
+    // If a language is checked and the provider doesn't speak it,
+    // they're excluded. Providers with no language data are excluded
+    // too — that's the user's intent when they pick a specific language.
     if (languages.length > 0) {
-      if (Array.isArray(p.languages) && p.languages.length > 0) {
-        const provLangs = p.languages.map(function(l){ return (l||'').toLowerCase(); });
-        const anyMatch = languages.some(function(l){ return provLangs.indexOf(l) !== -1; });
-        if (!anyMatch) return false;
-      }
-      // else: no language data for this provider → do not exclude
+      const provLangs = (Array.isArray(p.languages) ? p.languages : [])
+        .map(function(l){ return (l||'').toLowerCase(); });
+      if (provLangs.length === 0) return false;
+      const anyMatch = languages.some(function(l){ return provLangs.indexOf(l) !== -1; });
+      if (!anyMatch) return false;
+    }
+
+    // ── Meal / cuisine filter (STRICT when user checks one) ──
+    // Similar logic: providers without meal data are excluded when the
+    // user has selected a specific cuisine / meal-type filter.
+    if (meals.length > 0) {
+      const provMeals = (Array.isArray(p.meal_options) ? p.meal_options
+                       : Array.isArray(p.cuisines)    ? p.cuisines
+                       : Array.isArray(p.meals)       ? p.meals : [])
+        .map(function(m){ return (m||'').toLowerCase(); });
+      if (provMeals.length === 0) return false;
+      const anyMatch = meals.some(function(m){ return provMeals.indexOf(m) !== -1; });
+      if (!anyMatch) return false;
     }
 
     // ── Distance filter (client-side, when both coords are known) ──
