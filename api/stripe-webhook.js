@@ -17,6 +17,7 @@ module.exports = async (req, res) => {
   if (!STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET) {
     return res.status(500).json({ error: 'Stripe webhook not configured' });
   }
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 
   const stripe = require('stripe')(STRIPE_SECRET_KEY);
 
@@ -135,7 +136,7 @@ module.exports = async (req, res) => {
         } catch (e) { console.error('notification error:', e.message); }
 
         // Send admin email
-        if (RESEND_API_KEY) {
+        if (RESEND_API_KEY && ADMIN_EMAIL) {
           try {
             await fetch('https://api.resend.com/emails', {
               method: 'POST',
@@ -145,7 +146,7 @@ module.exports = async (req, res) => {
               },
               body: JSON.stringify({
                 from: 'Senova <notifications@senova.info>',
-                to: ['[ADMIN_EMAIL_REDACTED]'],
+                to: [process.env.ADMIN_EMAIL].filter(Boolean),
                 subject: `New Subscription: ${planName} plan - $${priceMonthly}/mo`,
                 html: `<h2>New Vendor Subscription</h2>
                   <p>A vendor just subscribed to the <strong>${planName}</strong> plan.</p>
@@ -214,7 +215,7 @@ module.exports = async (req, res) => {
             );
 
             // Notify admin
-            if (RESEND_API_KEY) {
+            if (RESEND_API_KEY && ADMIN_EMAIL) {
               try {
                 await fetch('https://api.resend.com/emails', {
                   method: 'POST',
@@ -224,7 +225,7 @@ module.exports = async (req, res) => {
                   },
                   body: JSON.stringify({
                     from: 'Senova <notifications@senova.info>',
-                    to: ['[ADMIN_EMAIL_REDACTED]'],
+                    to: [process.env.ADMIN_EMAIL].filter(Boolean),
                     subject: `Payment Failed: Vendor ${vendorId}`,
                     html: `<h2>Payment Failed</h2><p>Vendor ${vendorId} payment failed. Membership marked as past_due.</p>`
                   })

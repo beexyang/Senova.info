@@ -44,11 +44,20 @@ CREATE TABLE sync_log (
   error_message TEXT
 );
 
--- Allow public read access
+-- Row-level security: read-only for the public anon key.
+-- WRITES are intentionally NOT given a policy here. Server-side endpoints
+-- use SUPABASE_SERVICE_KEY (which bypasses RLS) for writes; without a
+-- policy granting INSERT/UPDATE/DELETE to anon or authenticated, the
+-- public anon key cannot tamper with provider data.
+--
+-- The previous version used `USING (true) WITH CHECK (true)` which let
+-- ANYONE with the anon key insert, update, or delete rows. See
+-- supabase-secure-rls.sql for the full hardened policy set covering
+-- every other table (leads, vendors, users, etc.).
 ALTER TABLE providers ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "public_read_providers" ON providers FOR SELECT USING (true);
-CREATE POLICY "service_write_providers" ON providers FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "providers_public_read" ON providers
+  FOR SELECT TO anon, authenticated USING (true);
 
 ALTER TABLE sync_log ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "public_read_sync_log" ON sync_log FOR SELECT USING (true);
-CREATE POLICY "service_write_sync_log" ON sync_log FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "sync_log_public_read" ON sync_log
+  FOR SELECT TO anon, authenticated USING (true);

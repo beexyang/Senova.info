@@ -1,94 +1,61 @@
-// api/providers.js — Fast provider search from Supabase (replaces slow CMS calls)
-// Returns results in ~50-200ms instead of 30-60 seconds
+// api/providers.js — Fast provider search from Supabase.
+// SECURITY: anon key (read-only) + strict input validation + tight CORS.
+const { applyCors, isUsState, isZip, isProviderType } = require('../lib/security');
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  if (req.method === 'OPTIONS') return res.status(200).end();
+module.exports = async function handler(req, res) {
+  if (applyCors(req, res, 'GET, OPTIONS')) return;
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  if (!SUPABASE_URL || !SUPABASE_KEY) {
-    return res.status(500).json({ error: 'Database not configured' });
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    return res.status(500).json({ error: 'Server misconfigured' });
   }
 
-  const { state, zip, type, page = 1, limit = 10 } = req.query;
+  const { state, zip, type } = req.query;
+  const pageNum = Math.max(1, parseInt(req.query.page, 10) || 1);
+  const limitNum = Math.min(50, Math.max(1, parseInt(req.query.limit, 10) || 10));
+  const offset = (pageNum - 1) * limitNum;
 
-  if (!state && !zip) {
-    return res.status(400).json({ error: 'Provide state or zip parameter' });
+  if (!state && !zip) return res.status(400).json({ error: 'Provide state or zip' });
+  if (state && !isUsState(state)) return res.status(400).json({ error: 'Invalid state' });
+  if (zip && !isZip(zip)) return res.status(400).json({ error: 'Invalid zip' });
+  if (type && type !== 'all' && !isProviderType(type)) {
+    return res.status(400).json({ error: 'Invalid provider type' });
   }
 
   try {
-    const pageNum = parseInt(page) || 1;
-    const limitNum = Math.min(parseInt(limit) || 10, 50);
-    const offset = (pageNum - 1) * limitNum;
-
-    // Build Supabase filter query
-    let filters = [];
-    let queryState = state;
-
-    // If ZIP provided, derive state from it (or use provided state)
-    if (zip && zip.length === 5) {
-      // Filter by ZIP prefix (first 3 digits) for nearby results
-      const prefix = zip.substring(0, 3);
-      filters.push('zip_code=like.' + prefix + '*');
-    }
-
-    if (queryState) {
-      filters.push('state=eq.' + queryState);
-    }
-
-    if (type && type !== 'all') {
-      filters.push('provider_type=eq.' + type);
-    }
-
-    // Build the Supabase REST URL
-    let url = SUPABASE_URL + '/rest/v1/providers?select=*';
-
-    // Add filters
-    for (const f of filters) {
-      url += '&' + f;
-    }
-
-    // Add ordering: exact ZIP match first, then by ZIP proximity
+    const filters = [];
     if (zip) {
-      url += '&order=zip_code.asc';
-    } else {
-      url += '&order=provider_name.asc';
+      const prefix = zip.substring(0, 3);
+      filters.push('zip_code=like.' + encodeURIComponent(prefix + '*'));
     }
+    if (state) filters.push('state=eq.' + encodeURIComponent(state.toUpperCase()));
+    if (type && type !== 'all') filters.push('provider_type=eq.' + encodeURIComponent(type));
 
-    // First: get total count
-    const countResp = await fetch(url, {
-      method: 'HEAD',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Prefer': 'count=exact'
-      }
-    });
+    let url = SUPABASE_URL + '/rest/v1/providers?select=*';
+    for (const f of filters) url += '&' + f;
+    url += zip ? '&order=zip_code.asc' : '&order=provider_name.asc';
 
-    const totalCount = parseInt(countResp.headers.get('content-range')?.split('/')[1]) || 0;
+    const headers = {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+      'Prefer': 'count=exact'
+    };
 
-    // Then: get paginated results
-    const dataUrl = url + '&offset=' + offset + '&limit=' + limitNum;
+    const countResp = await fetch(url, { method: 'HEAD', headers: headers });
+    const range = countResp.headers.get('content-range') || '';
+    const totalCount = parseInt(range.split('/')[1]) || 0;
 
-    const dataResp = await fetch(dataUrl, {
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Prefer': 'count=exact'
-      }
-    });
-
+    const dataResp = await fetch(url + '&offset=' + offset + '&limit=' + limitNum, { headers: headers });
     if (!dataResp.ok) {
       const errText = await dataResp.text();
-      return res.status(500).json({ error: 'Database query failed: ' + errText });
+      console.error('providers query failed:', dataResp.status, errText);
+      return res.status(502).json({ error: 'Upstream database query failed' });
     }
-
     const providers = await dataResp.json();
 
-    // Sort: exact ZIP match first, then same prefix, then by distance
     if (zip) {
       const prefix = zip.substring(0, 3);
       providers.sort((a, b) => {
@@ -104,7 +71,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // Map to frontend-expected format
     const mapped = providers.map(p => ({
       provider_name: p.provider_name,
       facility_name: p.provider_name,
@@ -130,9 +96,7 @@ export default async function handler(req, res) {
       _type: p.provider_type
     }));
 
-    // Cache for 5 minutes
     res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
-
     return res.status(200).json({
       providers: mapped,
       total: totalCount,
@@ -141,9 +105,8 @@ export default async function handler(req, res) {
       cached: true,
       source: 'supabase'
     });
-
   } catch (err) {
-    console.error('Provider query error:', err);
-    return res.status(500).json({ error: err.message });
+    console.error('providers handler error:', err);
+    return res.status(500).json({ error: 'Server error' });
   }
-}
+};

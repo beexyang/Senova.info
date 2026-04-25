@@ -155,12 +155,24 @@ async function logSync(dataset, status, count, error) {
   }
 }
 
-export default async function handler(req, res) {
-  // Simple secret protection
-  const secret = req.query.secret || req.headers['x-sync-secret'];
-  const expectedSecret = process.env.SYNC_SECRET || 'senova-sync-2024';
+function safeEqual(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string') return false;
+  if (a.length !== b.length) return false;
+  let m = 0;
+  for (let i = 0; i < a.length; i++) m |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return m === 0;
+}
 
-  if (secret !== expectedSecret) {
+export default async function handler(req, res) {
+  // SECURITY: SYNC_SECRET MUST be set in the environment. The previous
+  // hardcoded fallback ('senova-sync-2024') let anyone with that string
+  // trigger a full database upsert.
+  const expectedSecret = process.env.SYNC_SECRET;
+  if (!expectedSecret) {
+    return res.status(500).json({ error: 'Server misconfigured' });
+  }
+  const secret = req.query.secret || req.headers['x-sync-secret'] || '';
+  if (!safeEqual(String(secret), expectedSecret)) {
     return res.status(401).json({ error: 'Invalid secret' });
   }
 

@@ -293,9 +293,15 @@ async function subscribe(planName) {
   btn.disabled = true;
 
   try {
+    // Send the vendor's session token so the server can verify the caller
+    // actually owns the vendor_id they're paying for.
+    const vt = localStorage.getItem('vendor_token') || '';
     const res = await fetch('/api/create-checkout', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': vt ? ('Bearer ' + vt) : ''
+      },
       body: JSON.stringify({
         vendor_id: vendorId,
         plan_name: planName

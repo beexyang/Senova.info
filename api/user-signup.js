@@ -268,7 +268,11 @@ async function emailProspectVendors(SUPABASE_URL, SUPABASE_SERVICE_KEY, RESEND_A
 
 // ---------- main handler ----------
 
+const { applyCors, isEmail, isZip, bounded } = require('../lib/security');
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || '';
+
 module.exports = async (req, res) => {
+  if (applyCors(req, res, 'POST, OPTIONS')) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -276,18 +280,38 @@ module.exports = async (req, res) => {
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
-    return res.status(500).json({ error: 'Missing environment variables' });
+    return res.status(500).json({ error: 'Server misconfigured' });
   }
 
   try {
-    const {
-      email, password, first_name, last_name, phone,
-      street_address, city, state, zip_code, service_zip,
-      care_for, care_types
-    } = req.body;
+    const body = req.body || {};
+    const email = bounded(body.email, 254);
+    const password = typeof body.password === 'string' ? body.password : '';
+    const first_name = bounded(body.first_name, 80);
+    const last_name = bounded(body.last_name, 80);
+    const phone = bounded(body.phone, 30);
+    const street_address = bounded(body.street_address, 200);
+    const city = bounded(body.city, 100);
+    const state = bounded(body.state, 80);
+    const zip_code = bounded(body.zip_code, 10);
+    const service_zip = bounded(body.service_zip, 10);
+    const care_for = bounded(body.care_for, 80);
+    const care_types = Array.isArray(body.care_types) ? body.care_types.slice(0, 20) : [];
 
-    if (!email || !password || !first_name || !last_name) {
-      return res.status(400).json({ error: 'Email, password, first name, and last name are required' });
+    if (!email || !isEmail(email)) {
+      return res.status(400).json({ error: 'A valid email is required' });
+    }
+    if (!password || password.length < 8 || password.length > 200) {
+      return res.status(400).json({ error: 'Password must be 8-200 characters' });
+    }
+    if (!first_name || !last_name) {
+      return res.status(400).json({ error: 'First and last name are required' });
+    }
+    if (zip_code && !isZip(zip_code)) {
+      return res.status(400).json({ error: 'Invalid zip code' });
+    }
+    if (service_zip && !isZip(service_zip)) {
+      return res.status(400).json({ error: 'Invalid service zip' });
     }
 
     // Primary care type for matching. If none given, fall back to first entry in array.
@@ -540,31 +564,36 @@ module.exports = async (req, res) => {
         });
       } catch (_) { /* best effort */ }
 
-      // Admin alert email.
-      try {
-        await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${RESEND_API_KEY}`
-          },
-          body: JSON.stringify({
-            from: 'Senova <notifications@senova.info>',
-            to: ['[ADMIN_EMAIL_REDACTED]'],
-            subject: assigned
-              ? `Lead auto-assigned: ${first_name} ${last_name} → ${assigned.business_name}`
-              : `Unassigned lead: ${first_name} ${last_name}`,
-            html: `<h2>${assigned ? 'Lead auto-assigned' : 'Lead awaiting vendor'}</h2>
-              <p><strong>${first_name} ${last_name}</strong></p>
-              <p>Email: ${email}<br>Phone: ${phone || 'N/A'}<br>
-              Service ZIP: ${effectiveServiceZip}<br>
-              Care type: ${primaryCareType || 'N/A'}</p>
-              <p><strong>Routing:</strong> ${assignmentReason}</p>
-              ${!assigned && prospectEmails > 0 ? `<p>Sent invitation emails to ${prospectEmails} prospect vendor(s) in this ZIP.</p>` : ''}
-              <p><a href="https://senova.info/admin">View in Admin Dashboard</a></p>`
-          })
-        });
-      } catch (_) { /* best effort */ }
+      // Admin alert email. Inputs are HTML-escaped before interpolation.
+      const esc = (v) => v == null ? '' : String(v).replace(/[&<>"']/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[c]));
+      if (ADMIN_EMAIL) {
+        try {
+          await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${RESEND_API_KEY}`
+            },
+            body: JSON.stringify({
+              from: 'Senova <notifications@senova.info>',
+              to: [ADMIN_EMAIL],
+              subject: assigned
+                ? `Lead auto-assigned: ${first_name} ${last_name} → ${assigned.business_name}`
+                : `Unassigned lead: ${first_name} ${last_name}`,
+              html: `<h2>${assigned ? 'Lead auto-assigned' : 'Lead awaiting vendor'}</h2>
+                <p><strong>${esc(first_name)} ${esc(last_name)}</strong></p>
+                <p>Email: ${esc(email)}<br>Phone: ${esc(phone) || 'N/A'}<br>
+                Service ZIP: ${esc(effectiveServiceZip)}<br>
+                Care type: ${esc(primaryCareType) || 'N/A'}</p>
+                <p><strong>Routing:</strong> ${esc(assignmentReason)}</p>
+                ${!assigned && prospectEmails > 0 ? `<p>Sent invitation emails to ${prospectEmails} prospect vendor(s) in this ZIP.</p>` : ''}
+                <p><a href="https://senova.info/admin">View in Admin Dashboard</a></p>`
+            })
+          });
+        } catch (_) { /* best effort */ }
+      }
     }
 
     res.status(200).json({

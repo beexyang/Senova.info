@@ -712,14 +712,18 @@ async function handlePhotoUpload(e) {
         })
       });
 
-      // Notify admin (via API endpoint)
+      // Notify admin (via API endpoint). Send the vendor's session token
+      // so the server can verify the caller is actually this vendor.
       try {
+        const vt = localStorage.getItem('vendor_token') || '';
         await fetch('/api/notify-admin', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': vt ? ('Bearer ' + vt) : ''
+          },
           body: JSON.stringify({
             type: 'image_upload',
-            vendor_name: currentVendor.business_name,
             vendor_id: currentVendor.id,
             image_url: imageUrl
           })

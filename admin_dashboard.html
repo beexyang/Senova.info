@@ -286,6 +286,12 @@ const SUPABASE_URL = 'https://nzinorhyoxifmthyvsbb.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56aW5vcmh5b3hpZm10aHl2c2JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTI2MjMsImV4cCI6MjA5MDkyODYyM30._7RjAOyhOISw6Nh3qjt8cwJspQrGe2Zw2aBgWu8u4ro';
 const ADMIN_EMAIL = '[ADMIN_EMAIL_REDACTED]';
 
+// HTML-escape user-controlled values before placing them inside innerHTML.
+// Without this, a vendor or user with `<img src=x onerror=...>` in their
+// name/email/business_name could execute JS in the admin's browser and
+// steal the admin token from localStorage.
+function esc(v){ if(v==null) return ''; return String(v).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
 let adminToken = null;
 
 // ===== ADMIN AUTH =====
@@ -412,9 +418,9 @@ function renderNotifications(notifs, containerId, limit) {
     return `<div class="notif-item ${n.is_read ? '' : 'unread'}">
       <div class="notif-icon ${iconClass}">${icon}</div>
       <div class="notif-body">
-        <div class="notif-title">${n.title}</div>
-        <div class="notif-msg">${n.message || ''}</div>
-        <div class="notif-time">${timeAgo(n.created_at)}</div>
+        <div class="notif-title">${esc(n.title)}</div>
+        <div class="notif-msg">${esc(n.message || '')}</div>
+        <div class="notif-time">${esc(timeAgo(n.created_at))}</div>
       </div>
     </div>`;
   }).join('');
@@ -428,15 +434,17 @@ function renderVendors(vendors) {
     const date = new Date(v.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const types = (v.care_types || []).join(', ') || '—';
     const authId = v.vendor_auth?.[0]?.auth_user_id || '';
-    const nameLink = `<a href="/admin_vendor_profile.html?id=${v.id}" style="color:var(--teal);text-decoration:none;font-weight:600">${v.business_name}</a>`;
+    const nameLink = `<a href="/admin_vendor_profile.html?id=${esc(v.id)}" style="color:var(--teal);text-decoration:none;font-weight:600">${esc(v.business_name)}</a>`;
+    // For inline JS args we must escape both for HTML AND for being inside a single-quoted JS string.
+    const jsBn = String(v.business_name || '').replace(/[\\']/g, '\\$&').replace(/</g,'&lt;');
     return `<tr>
       <td>${nameLink}</td>
-      <td>${v.contact_name || '—'}<br><span style="font-size:12px;color:var(--gray)">${v.email || ''}</span></td>
-      <td>${v.city || ''}, ${v.state || ''}</td>
-      <td style="font-size:13px">${types}</td>
+      <td>${esc(v.contact_name || '—')}<br><span style="font-size:12px;color:var(--gray)">${esc(v.email || '')}</span></td>
+      <td>${esc(v.city || '')}, ${esc(v.state || '')}</td>
+      <td style="font-size:13px">${esc(types)}</td>
       <td><span class="badge badge-orange">Upsell</span></td>
-      <td style="font-size:13px">${date}</td>
-      <td><button class="btn-delete" onclick="deleteRecord('vendor','${v.id}','${authId}','${v.business_name}')">Delete</button></td>
+      <td style="font-size:13px">${esc(date)}</td>
+      <td><button class="btn-delete" onclick="deleteRecord('vendor','${esc(v.id)}','${esc(authId)}','${jsBn}')">Delete</button></td>
     </tr>`;
   }).join('');
 }
@@ -457,16 +465,17 @@ function renderUsers(users, leads) {
     const fullName = `${u.first_name} ${u.last_name}`;
     const leadId = leadByUser[u.id];
     const nameHtml = leadId
-      ? `<a href="/admin_lead_profile.html?id=${leadId}" style="color:var(--teal);text-decoration:none;font-weight:600">${fullName}</a>`
-      : `<span style="font-weight:600">${fullName}</span>`;
+      ? `<a href="/admin_lead_profile.html?id=${esc(leadId)}" style="color:var(--teal);text-decoration:none;font-weight:600">${esc(fullName)}</a>`
+      : `<span style="font-weight:600">${esc(fullName)}</span>`;
+    const jsName = String(fullName).replace(/[\\']/g, '\\$&').replace(/</g,'&lt;');
     return `<tr>
       <td>${nameHtml}</td>
-      <td>${u.email}</td>
-      <td>${u.phone || '—'}</td>
-      <td>${u.city || ''}, ${u.state || ''}</td>
-      <td>${u.care_for || '—'}</td>
-      <td style="font-size:13px">${date}</td>
-      <td><button class="btn-delete" onclick="deleteRecord('user','${u.id}','${authId}','${fullName}')">Delete</button></td>
+      <td>${esc(u.email)}</td>
+      <td>${esc(u.phone || '—')}</td>
+      <td>${esc(u.city || '')}, ${esc(u.state || '')}</td>
+      <td>${esc(u.care_for || '—')}</td>
+      <td style="font-size:13px">${esc(date)}</td>
+      <td><button class="btn-delete" onclick="deleteRecord('user','${esc(u.id)}','${esc(authId)}','${jsName}')">Delete</button></td>
     </tr>`;
   }).join('');
 }
@@ -483,11 +492,11 @@ function renderLeadsAdmin(leads) {
     const statusClass = l.vendor_closed ? 'badge-green' : l.vendor_contacted ? 'badge-blue' : 'badge-teal';
     const statusText = l.vendor_closed ? 'Closed' : l.vendor_contacted ? 'Contacted' : 'New';
     return `<tr>
-      <td style="font-size:13px">${date}</td>
-      <td style="font-weight:600">${l.first_name} ${l.last_name}</td>
-      <td style="font-size:13px">${l.email}</td>
-      <td style="font-size:13px">${vendorName}</td>
-      <td><span class="badge ${sentClass}">${sentVia}</span></td>
+      <td style="font-size:13px">${esc(date)}</td>
+      <td style="font-weight:600">${esc(l.first_name)} ${esc(l.last_name)}</td>
+      <td style="font-size:13px">${esc(l.email)}</td>
+      <td style="font-size:13px">${esc(vendorName)}</td>
+      <td><span class="badge ${sentClass}">${esc(sentVia)}</span></td>
       <td><span class="badge ${statusClass}">${statusText}</span></td>
       <td>${l.vendor_contacted ? 'Yes' : 'No'}</td>
       <td>${l.vendor_closed ? 'Yes' : 'No'}</td>
@@ -502,14 +511,20 @@ function renderImageReview(images) {
   grid.innerHTML = images.map(img => {
     const vendorName = img.vendors ? img.vendors.business_name : 'Unknown Vendor';
     const time = timeAgo(img.uploaded_at);
+    // Only render the image URL if it's a Supabase Storage URL on our project,
+    // so a malicious vendor can't smuggle a tracking pixel or javascript: URI.
+    const safeUrl = (typeof img.image_url === 'string'
+      && img.image_url.startsWith(SUPABASE_URL + '/storage/v1/object/public/')
+      && img.image_url.length < 2048)
+      ? img.image_url : '';
     return `<div style="border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff">
-      <img src="${img.image_url}" style="width:100%;height:180px;object-fit:cover" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22><rect fill=%22%23E5E7EB%22 width=%22280%22 height=%22180%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%239AA0A6%22>No Preview</text></svg>'"/>
+      <img src="${esc(safeUrl)}" style="width:100%;height:180px;object-fit:cover" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22><rect fill=%22%23E5E7EB%22 width=%22280%22 height=%22180%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%239AA0A6%22>No Preview</text></svg>'"/>
       <div style="padding:16px">
-        <div style="font-weight:600;font-size:14px">${vendorName}</div>
-        <div style="font-size:12px;color:var(--gray);margin:4px 0">${img.image_type || 'facility'} - ${time}</div>
+        <div style="font-weight:600;font-size:14px">${esc(vendorName)}</div>
+        <div style="font-size:12px;color:var(--gray);margin:4px 0">${esc(img.image_type || 'facility')} - ${esc(time)}</div>
         <div style="display:flex;gap:8px;margin-top:12px">
-          <button class="btn-sm btn-approve" onclick="approveImage('${img.id}',this)">Approve</button>
-          <button class="btn-sm btn-deny" onclick="denyImage('${img.id}',this)">Deny</button>
+          <button class="btn-sm btn-approve" onclick="approveImage('${esc(img.id)}',this)">Approve</button>
+          <button class="btn-sm btn-deny" onclick="denyImage('${esc(img.id)}',this)">Deny</button>
         </div>
       </div>
     </div>`;
@@ -522,9 +537,15 @@ async function deleteRecord(type, id, authUserId, name) {
   if (!confirm(`Are you sure you want to permanently delete ${label} "${name}"?\n\nThis will remove their account, all related data, and free up their email for re-registration.\n\nThis cannot be undone.`)) return;
 
   try {
+    // Send the admin's Supabase access token so the server can verify
+    // the caller is authorized (the /api/admin-delete endpoint refuses
+    // unauthenticated requests after the security hardening pass).
     const res = await fetch('/api/admin-delete', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': adminToken ? ('Bearer ' + adminToken) : ''
+      },
       body: JSON.stringify({ type, id, auth_user_id: authUserId || null })
     });
     const data = await res.json();

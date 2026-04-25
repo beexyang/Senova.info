@@ -1,6 +1,17 @@
 // POST /api/vendor-signup
-// Creates a vendor account: Supabase auth user + vendors row + vendor_auth link + admin notification
+// Creates a vendor account: Supabase auth user + vendors row + vendor_auth link + admin notification.
+// SECURITY: input length caps, password minimum length, CORS restricted,
+// admin email moved to env var, generic error responses, escape user input
+// before interpolating into admin notification HTML.
+const { applyCors, isEmail, bounded } = require('../lib/security');
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || '';
+
+const escHtml = (v) => v == null ? '' : String(v).replace(/[&<>"']/g, c => ({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+}[c]));
+
 module.exports = async (req, res) => {
+  if (applyCors(req, res, 'POST, OPTIONS')) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -8,22 +19,40 @@ module.exports = async (req, res) => {
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
-    return res.status(500).json({ error: 'Missing environment variables' });
+    return res.status(500).json({ error: 'Server misconfigured' });
   }
 
   try {
+    const body = req.body || {};
+    const email = bounded(body.email, 254);
+    const password = typeof body.password === 'string' ? body.password : '';
+    const business_name = bounded(body.business_name, 200);
+    const contact_name = bounded(body.contact_name, 120);
+    const phone = bounded(body.phone, 30);
+    const address = bounded(body.address, 200);
+    const city = bounded(body.city, 100);
+    const state = bounded(body.state, 80);
+    const zip_code = bounded(body.zip_code, 10);
+    const care_types = Array.isArray(body.care_types) ? body.care_types.slice(0, 20) : [];
+    const description = bounded(body.description, 2000);
+    const license_number = bounded(body.license_number, 60);
+    const website_url = bounded(body.website_url, 300);
     const {
-      email, password, business_name, contact_name, phone,
-      address, city, state, zip_code, care_types,
-      description, license_number, website_url,
-      // new optional fields populated from the expanded signup form
       accepts_medicaid, accepts_medicare, accepts_private_insurance,
-      accepts_private_pay, hcbs_waiver,
-      languages, meal_options
-    } = req.body;
+      accepts_private_pay, hcbs_waiver, languages, meal_options
+    } = body;
 
-    if (!email || !password || !business_name) {
-      return res.status(400).json({ error: 'Email, password, and business name are required' });
+    if (!email || !isEmail(email)) {
+      return res.status(400).json({ error: 'A valid email is required' });
+    }
+    if (!password || password.length < 8 || password.length > 200) {
+      return res.status(400).json({ error: 'Password must be 8-200 characters' });
+    }
+    if (!business_name) {
+      return res.status(400).json({ error: 'Business name is required' });
+    }
+    if (website_url && !/^https?:\/\//i.test(website_url)) {
+      return res.status(400).json({ error: 'website_url must start with http:// or https://' });
     }
 
     // 1. Create Supabase auth user
@@ -160,8 +189,8 @@ module.exports = async (req, res) => {
       if (!notifRes.ok) console.error('admin_notifications insert failed:', await notifRes.text());
     } catch (notifErr) { console.error('notification error:', notifErr.message); }
 
-    // 6. Send admin email via Resend (best effort)
-    if (RESEND_API_KEY) {
+    // 6. Send admin email via Resend (best effort). User input is HTML escaped.
+    if (RESEND_API_KEY && ADMIN_EMAIL) {
       try {
         await fetch('https://api.resend.com/emails', {
           method: 'POST',
@@ -171,14 +200,14 @@ module.exports = async (req, res) => {
           },
           body: JSON.stringify({
             from: 'Senova <notifications@senova.info>',
-            to: ['[ADMIN_EMAIL_REDACTED]'],
+            to: [ADMIN_EMAIL],
             subject: `New Vendor Signup: ${business_name}`,
             html: `<h2>New Vendor Profile Created</h2>
-              <p><strong>${business_name}</strong> just signed up on Senova.</p>
-              <p>Contact: ${contact_name || 'N/A'}<br>
-              Email: ${email}<br>
-              Phone: ${phone || 'N/A'}<br>
-              Location: ${city || ''}, ${state || ''}</p>
+              <p><strong>${escHtml(business_name)}</strong> just signed up on Senova.</p>
+              <p>Contact: ${escHtml(contact_name) || 'N/A'}<br>
+              Email: ${escHtml(email)}<br>
+              Phone: ${escHtml(phone) || 'N/A'}<br>
+              Location: ${escHtml(city) || ''}, ${escHtml(state) || ''}</p>
               <p><strong>Action:</strong> Follow up to upsell to a lead membership plan.</p>
               <p><a href="https://senova.info/admin">View in Admin Dashboard</a></p>`
           })
