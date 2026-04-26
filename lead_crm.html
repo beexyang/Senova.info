@@ -1256,8 +1256,8 @@
         // LIVE DATA from Supabase — fetched on page load. See fetchLeads() below.
         const SUPABASE_URL = 'https://nzinorhyoxifmthyvsbb.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56aW5vcmh5b3hpZm10aHl2c2JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTI2MjMsImV4cCI6MjA5MDkyODYyM30._7RjAOyhOISw6Nh3qjt8cwJspQrGe2Zw2aBgWu8u4ro';
-        // Admin pages require the admin's Supabase JWT (stored in localStorage by /admin login).
-        // With the new RLS, the bare anon key returns no rows. Redirect to login if missing.
+        // Admin pages need the admin's Supabase JWT (in localStorage). Without it,
+        // RLS rejects the queries and the table is empty. Redirect to /admin if missing.
         const ADMIN_TOKEN = localStorage.getItem('admin_token');
         if (!ADMIN_TOKEN) { location.replace('/admin'); }
         const SB_HEADERS = { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + (ADMIN_TOKEN || SUPABASE_ANON_KEY) };
@@ -1942,4 +1942,16 @@
             toast.style.backgroundColor = type === 'error' ? 'var(--red)' : 'var(--green)';
 
             setTimeout(() => {
-                
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('sendVendorModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSendVendorModal();
+            }
+        });
+    </script>
+</body>
+</html>
