@@ -269,11 +269,16 @@ async function emailProspectVendors(SUPABASE_URL, SUPABASE_SERVICE_KEY, RESEND_A
 // ---------- main handler ----------
 
 const { applyCors, isEmail, isZip, bounded } = require('../lib/security');
+const { rateLimit } = require('../lib/ratelimit');
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || '';
 
 module.exports = async (req, res) => {
   if (applyCors(req, res, 'POST, OPTIONS')) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  // 5 signups per IP per 10 minutes - prevents account-creation flooding.
+  if (rateLimit(req, 'user-signup', 5, 600_000)) {
+    return res.status(429).json({ error: 'Too many signup attempts. Please try again later.' });
+  }
 
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;

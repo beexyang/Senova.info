@@ -1,11 +1,16 @@
 // /api/save-lead — accepts a single lead form submission.
 // SECURITY: tight CORS, length caps on every field, generic error messages.
 const { applyCors, isEmail, isCcn, bounded } = require('../lib/security');
+const { rateLimit } = require('../lib/ratelimit');
 
 module.exports = async function handler(req, res) {
   if (applyCors(req, res, 'POST, OPTIONS')) return;
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
+  }
+  // 10 requests per IP per 60s — enough for legitimate retries, blocks flooding.
+  if (rateLimit(req, 'save-lead', 10, 60_000)) {
+    return res.status(429).json({ success: false, message: 'Too many requests. Please try again in a minute.' });
   }
 
   try {

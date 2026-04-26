@@ -4,6 +4,7 @@
 // admin email moved to env var, generic error responses, escape user input
 // before interpolating into admin notification HTML.
 const { applyCors, isEmail, bounded } = require('../lib/security');
+const { rateLimit } = require('../lib/ratelimit');
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || '';
 
 const escHtml = (v) => v == null ? '' : String(v).replace(/[&<>"']/g, c => ({
@@ -13,6 +14,10 @@ const escHtml = (v) => v == null ? '' : String(v).replace(/[&<>"']/g, c => ({
 module.exports = async (req, res) => {
   if (applyCors(req, res, 'POST, OPTIONS')) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  // 3 vendor signups per IP per 10 minutes.
+  if (rateLimit(req, 'vendor-signup', 3, 600_000)) {
+    return res.status(429).json({ error: 'Too many signup attempts. Please try again later.' });
+  }
 
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
