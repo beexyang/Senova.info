@@ -64,8 +64,7 @@
 <script>
 const SUPABASE_URL = 'https://nzinorhyoxifmthyvsbb.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56aW5vcmh5b3hpZm10aHl2c2JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTI2MjMsImV4cCI6MjA5MDkyODYyM30._7RjAOyhOISw6Nh3qjt8cwJspQrGe2Zw2aBgWu8u4ro';
-// Admin pages require the admin's Supabase JWT (stored in localStorage by /admin login).
-// With the new RLS, the bare anon key returns no rows. Redirect to login if missing.
+// Admin pages need the admin's Supabase JWT. RLS rejects bare anon-key reads.
 const ADMIN_TOKEN = localStorage.getItem('admin_token');
 if (!ADMIN_TOKEN) { location.replace('/admin'); }
 const H = { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + (ADMIN_TOKEN || SUPABASE_ANON_KEY) };
@@ -238,4 +237,17 @@ function render(lead, activity){
         body: JSON.stringify({
           lead_id: LEAD_ID,
           action: done ? 'follow_up_completed' : 'follow_up_scheduled',
-          description: done ? '
+          description: done ? 'Admin marked follow-up as completed' : (dueDate ? 'Follow-up scheduled for ' + dueDate : 'Follow-up cleared'),
+          performed_by:'admin'
+        })
+      });
+      toast('Follow-up saved'); load();
+    } else toast('Failed to save follow-up', 'err');
+  });
+}
+
+load();
+</script>
+
+</body>
+</html>
