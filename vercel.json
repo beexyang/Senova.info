@@ -9,7 +9,8 @@
     { "source": "/admin/crm", "destination": "/lead_crm.html" },
     { "source": "/vendor-login", "destination": "/vendor_portal.html" },
     { "source": "/vendor-portal", "destination": "/vendor_portal.html" },
-    { "source": "/admin", "destination": "/admin_dashboard.html" }
+    { "source": "/admin", "destination": "/admin_dashboard.html" },
+    { "source": "/reset-password", "destination": "/reset_password.html" }
   ],
   "headers": [
     {
@@ -40,7 +41,4 @@
     }
   ],
   "crons": [
-    { "path": "/api/cron-sync", "schedule": "0 3 1 * *" },
-    { "path": "/api/sync-samhsa", "schedule": "0 4 1 * *" }
-  ]
-}
+    { "path": "/api/cron-sync", "schedule": "0 3 

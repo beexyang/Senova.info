@@ -259,7 +259,7 @@ a{text-decoration:none;color:inherit}
         </div>
         <div class="remember-row">
           <label><input type="checkbox" checked/> Remember me</label>
-          <a href="#">Forgot password?</a>
+          <a href="#" onclick="forgotPassword(event)">Forgot password?</a>
         </div>
         <button class="btn-primary" onclick="handleSignIn()">Sign In</button>
         <div class="divider">or continue with</div>
@@ -591,6 +591,35 @@ function formatPhone(el) {
   else el.value = '';
 }
 
+// Self-service password reset for users and vendors. Uses Supabase Auth's
+// recover endpoint, which emails a one-time link to /reset-password.
+async function forgotPassword(ev) {
+  if (ev && ev.preventDefault) ev.preventDefault();
+  const SUPABASE_URL = 'https://nzinorhyoxifmthyvsbb.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56aW5vcmh5b3hpZm10aHl2c2JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTI2MjMsImV4cCI6MjA5MDkyODYyM30._7RjAOyhOISw6Nh3qjt8cwJspQrGe2Zw2aBgWu8u4ro';
+  const prefilled = (document.getElementById('si_email') || {}).value || '';
+  const email = (window.prompt('Enter the email on your Senova account and we\'ll send you a reset link:', prefilled) || '').trim();
+  if (!email) return;
+  // Basic format check
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert('That doesn\'t look like a valid email address.');
+    return;
+  }
+  try {
+    // Always treat the response as a success to prevent leaking which emails
+    // are registered (account-enumeration). Supabase itself does the same.
+    await fetch(SUPABASE_URL + '/auth/v1/recover', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+      body: JSON.stringify({
+        email: email,
+        redirect_to: window.location.origin + '/reset-password'
+      })
+    });
+  } catch (_) { /* swallowed for the same enumeration reason */ }
+  alert('If that email is registered, a password-reset link has been sent. Check your inbox (and spam folder).');
+}
+
 function handleSignIn() {
   const email = document.getElementById('si_email').value;
   const pass = document.getElementById('si_password').value;
@@ -723,42 +752,4 @@ async function handleVendorSignUp() {
         business_name: document.getElementById('vu_business').value.trim(),
         contact_name: document.getElementById('vu_contact').value.trim(),
         phone: document.getElementById('vu_phone').value.trim(),
-        address: document.getElementById('vu_address').value.trim(),
-        city: document.getElementById('vu_city').value.trim(),
-        state: document.getElementById('vu_state').value,
-        zip_code: document.getElementById('vu_zip').value.trim(),
-        website_url: document.getElementById('vu_website').value.trim(),
-        care_types: careTypes,
-        // ── new fields (from signup form checkboxes) ──────
-        accepts_medicaid:           payments.includes('medicaid'),
-        accepts_medicare:           payments.includes('medicare'),
-        accepts_private_insurance:  payments.includes('private_insurance'),
-        accepts_private_pay:        payments.includes('private_pay'),
-        hcbs_waiver:                payments.includes('hcbs_waiver'),
-        languages: languages,
-        meal_options: meals
-      })
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Signup failed');
-
-    document.getElementById('successOverlay').classList.add('show');
-    document.querySelector('.success-box h3').textContent = 'Welcome to Senova!';
-    document.querySelector('.success-box p').textContent = 'Your provider account has been created. Redirecting to your portal...';
-    setTimeout(() => { window.location = '/vendor_portal.html'; }, 2000);
-  } catch (err) {
-    alert(err.message || 'Something went wrong. Please try again.');
-  }
-}
-
-// Auto-detect which tab to show based on URL path
-(function() {
-  const path = window.location.pathname;
-  if (path === '/signin' || path === '/login') {
-    switchTab('signin');
-  }
-})();
-</script>
-</body>
-</html>
+        address: document.getElementById

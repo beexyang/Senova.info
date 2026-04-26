@@ -197,7 +197,7 @@ tbody tr:last-child td{border-bottom:none}
         </div>
         <div class="form-row">
           <label><input type="checkbox"/> Remember me</label>
-          <a href="#">Forgot password?</a>
+          <a href="#" onclick="forgotPassword(event)">Forgot password?</a>
         </div>
         <button type="submit" class="btn-login" id="loginBtn">Sign In</button>
       </form>
@@ -349,6 +349,31 @@ let allLeads = [];
 let hasMembership = false;
 
 // ===== AUTH =====
+// Self-service password reset for vendors. Uses Supabase Auth's recover
+// endpoint, which emails a one-time link to /reset-password.
+async function forgotPassword(ev) {
+  if (ev && ev.preventDefault) ev.preventDefault();
+  const prefilled = (document.getElementById('loginEmail') || {}).value || '';
+  const email = (window.prompt('Enter the email on your vendor account and we\'ll send you a reset link:', prefilled) || '').trim();
+  if (!email) return;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert('That doesn\'t look like a valid email address.');
+    return;
+  }
+  try {
+    // Always treat as success to prevent account-enumeration via the response.
+    await fetch(SUPABASE_URL + '/auth/v1/recover', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+      body: JSON.stringify({
+        email: email,
+        redirect_to: window.location.origin + '/reset-password'
+      })
+    });
+  } catch (_) { /* swallowed */ }
+  alert('If that email is registered, a password-reset link has been sent. Check your inbox (and spam folder).');
+}
+
 async function handleLogin(e) {
   e.preventDefault();
   const email = document.getElementById('loginEmail').value;
@@ -732,50 +757,4 @@ async function handlePhotoUpload(e) {
     }
   }
 
-  alert('Photos uploaded! They will be reviewed before being published to your profile.');
-  loadPhotos();
-  e.target.value = '';
-}
-
-// ===== LOGOUT =====
-function handleLogout() {
-  localStorage.removeItem('vendor_token');
-  localStorage.removeItem('vendor_refresh');
-  currentVendor = null;
-  currentUser = null;
-  allLeads = [];
-  document.getElementById('loginView').style.display = 'flex';
-  document.getElementById('dashboardView').style.display = 'none';
-}
-
-// ===== AUTO-LOGIN CHECK =====
-async function checkSession() {
-  const token = localStorage.getItem('vendor_token');
-  if (!token) return;
-
-  try {
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (res.ok) {
-      const user = await res.json();
-      currentUser = { user, access_token: token };
-      await loadVendorData(token, user.id);
-      showDashboard();
-    } else {
-      localStorage.removeItem('vendor_token');
-    }
-  } catch (err) {
-    localStorage.removeItem('vendor_token');
-  }
-}
-
-// Init
-checkSession();
-</script>
-</body>
-</html>
+  
