@@ -1059,23 +1059,44 @@ async function fetchProviders(state, zip, page, careType) {
     let dataSource = 'cached';
 
     // TRY 1: Our own secure cached API (Supabase backend)
+    // For careType='all' or any multi-type selection we fan out to all four
+    // care types in parallel so the sidebar checkboxes can filter cleanly
+    // client-side. Single-type selections do a single targeted fetch.
     try {
-      const params = new URLSearchParams();
-      if (state) params.set('state', state);
-      if (zip) params.set('zip', zip);
-      if (careType && careType !== 'all') params.set('type', careType);
-      params.set('page', page);
-      // Fetch more results for client-side filtering (up to 100)
-      params.set('limit', 100);
+      const buildUrl = function(t) {
+        const params = new URLSearchParams();
+        if (state) params.set('state', state);
+        if (zip) params.set('zip', zip);
+        params.set('type', t);
+        params.set('page', page);
+        params.set('limit', 100);
+        return API_BASE + '?' + params.toString();
+      };
+      const fetchOne = async function(t) {
+        try {
+          const r = await fetch(buildUrl(t));
+          if (!r.ok) return { rows: [], total: 0 };
+          const j = await r.json();
+          if (!j.providers || j.providers.length === 0) return { rows: [], total: 0 };
+          return {
+            rows: j.providers.map(function(p) { return Object.assign({}, p, { _type: p.provider_type || t }); }),
+            total: j.total || j.providers.length
+          };
+        } catch (_) { return { rows: [], total: 0 }; }
+      };
 
-      const apiResp = await fetch(API_BASE + '?' + params.toString());
-      if (apiResp.ok) {
-        const apiData = await apiResp.json();
-        if (apiData.providers && apiData.providers.length > 0) {
-          results = apiData.providers.map(function(p) { return Object.assign({}, p, {_type: p.provider_type || 'home_health'}); });
-          totalCount = apiData.total || results.length;
-          dataSource = apiData.cached ? 'cached' : 'live';
-        }
+      if (careType && careType !== 'all') {
+        const r = await fetchOne(careType);
+        results = r.rows;
+        totalCount = r.total;
+        dataSource = 'cached';
+      } else {
+        // All / multi-select: fan out across all loaded care types in parallel
+        const types = ['home_health', 'hospice', 'drug_rehab', 'mental_health'];
+        const all = await Promise.all(types.map(fetchOne));
+        results = all.reduce(function(acc, r) { return acc.concat(r.rows); }, []);
+        totalCount = all.reduce(function(acc, r) { return acc + (r.total || 0); }, 0);
+        dataSource = 'cached';
       }
     } catch(e) { /* Backend not available, fall through to CMS */ }
 
