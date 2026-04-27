@@ -26,9 +26,8 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    // Rehab & mental health live in the dedicated rehab_providers table
-    // (loaded from SAMHSA's FindTreatment.gov national directory). Everything
-    // else (home_health / hospice / 'all') still hits the legacy providers table.
+    // Rehab & mental health live in rehab_providers (loaded from SAMHSA's
+    // FindTreatment.gov directory). Home health / hospice / 'all' still hit providers.
     const isRehabType = type === 'drug_rehab' || type === 'mental_health';
     const tableName  = isRehabType ? 'rehab_providers' : 'providers';
 
@@ -40,7 +39,6 @@ module.exports = async function handler(req, res) {
     if (state) filters.push('state=eq.' + encodeURIComponent(state.toUpperCase()));
 
     if (isRehabType) {
-      // rehab_providers uses `category` ∈ {substance_use, mental_health}
       const cat = type === 'mental_health' ? 'mental_health' : 'substance_use';
       filters.push('category=eq.' + encodeURIComponent(cat));
     } else if (type && type !== 'all') {
@@ -90,10 +88,10 @@ module.exports = async function handler(req, res) {
 
     let mapped;
     if (isRehabType) {
-      // Map rehab_providers rows into the same shape the frontend renders.
       mapped = providers.map(p => {
         const ptype = p.category === 'mental_health' ? 'mental_health' : 'drug_rehab';
         const street = [p.street1, p.street2].filter(Boolean).join(' ').trim();
+        const pays = p.payment_options || [];
         return {
           provider_name: p.facility_name,
           facility_name: p.facility_name,
@@ -104,4 +102,67 @@ module.exports = async function handler(req, res) {
           state: p.state,
           zip_code: p.zip_code,
           telephone_number: p.phone || p.intake_phone || '',
-          type_of_ownership:
+          type_of_ownership: '',
+          ownership_type: '',
+          quality_of_patient_care_star_rating: '',
+          certification_date: '',
+          cms_certification_number_ccn: '',
+          external_id: p.external_id,
+          provider_type: ptype,
+          payment_options: pays,
+          levels_of_care: p.levels_of_care || [],
+          treatment_approaches: p.treatment_approaches || [],
+          populations_served: p.populations_served || [],
+          ages_served: p.ages_served || [],
+          service_settings: p.service_settings || [],
+          languages: p.languages || ['English'],
+          website: p.website || '',
+          intake_phone: p.intake_phone || '',
+          accepts_medicaid: pays.includes('medicaid'),
+          accepts_medicare: pays.includes('medicare'),
+          accepts_private_insurance: pays.includes('private_insurance'),
+          accepts_private_pay: pays.includes('cash'),
+          _type: ptype
+        };
+      });
+    } else {
+      mapped = providers.map(p => ({
+        provider_name: p.provider_name,
+        facility_name: p.provider_name,
+        address: p.address,
+        address_line_1: p.address,
+        citytown: p.city,
+        city_town: p.city,
+        state: p.state,
+        zip_code: p.zip_code,
+        telephone_number: p.telephone,
+        type_of_ownership: p.ownership_type,
+        ownership_type: p.ownership_type,
+        quality_of_patient_care_star_rating: p.quality_rating,
+        certification_date: p.certification_date,
+        cms_certification_number_ccn: p.ccn,
+        provider_type: p.provider_type,
+        offers_nursing_care_services: p.offers_nursing ? 'Yes' : 'No',
+        offers_physical_therapy_services: p.offers_pt ? 'Yes' : 'No',
+        offers_occupational_therapy_services: p.offers_ot ? 'Yes' : 'No',
+        offers_speech_pathology_services: p.offers_speech ? 'Yes' : 'No',
+        offers_medical_social_services: p.offers_medical_social ? 'Yes' : 'No',
+        offers_home_health_aide_services: p.offers_aide ? 'Yes' : 'No',
+        _type: p.provider_type
+      }));
+    }
+
+    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
+    return res.status(200).json({
+      providers: mapped,
+      total: totalCount,
+      page: pageNum,
+      limit: limitNum,
+      cached: true,
+      source: 'supabase'
+    });
+  } catch (err) {
+    console.error('providers handler error:', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+};

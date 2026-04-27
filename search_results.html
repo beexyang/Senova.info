@@ -444,7 +444,6 @@ function buildHospiceTags() {
   return ['Hospice Care', 'Palliative Care', 'Pain Management', 'Bereavement Support'];
 }
 
-// Human labels for rehab_providers facet enums (drug_rehab + mental_health rows).
 const REHAB_LEVEL_LABEL = {
   detox: 'Detox', MAT: 'Medication-Assisted', IOP: 'Intensive Outpatient',
   PHP: 'Partial Hospitalization', residential: 'Residential', sober_living: 'Sober Living',
@@ -493,20 +492,20 @@ function renderListing(provider, index, type) {
   const ownerBadge = ownership.toLowerCase().includes('non-profit') ? '<span class="badge" style="background:#DBEAFE;color:#1E40AF">Non-Profit</span>' : '';
   const govBadge = ownership.toLowerCase().includes('government') ? '<span class="badge" style="background:#DBEAFE;color:#1E40AF">Government</span>' : '';
   let typeBadge;
-  if (type === 'drug_rehab')        typeBadge = '<span class="badge" style="background:#FEF3C7;color:#92400E">Drug &amp; Alcohol Rehab</span>';
+  if (type === 'drug_rehab')         typeBadge = '<span class="badge" style="background:#FEF3C7;color:#92400E">Drug &amp; Alcohol Rehab</span>';
   else if (type === 'mental_health') typeBadge = '<span class="badge" style="background:#EDE9FE;color:#5B21B6">Mental Health</span>';
-  else if (type === 'hospice')      typeBadge = '<span class="badge" style="background:#FEE2E2;color:#991B1B">Hospice</span>';
-  else                              typeBadge = '<span class="badge badge-vf">Home Health</span>';
+  else if (type === 'hospice')       typeBadge = '<span class="badge" style="background:#FEE2E2;color:#991B1B">Hospice</span>';
+  else                               typeBadge = '<span class="badge badge-vf">Home Health</span>';
 
   const descParts = [];
-  if (type === 'drug_rehab')        descParts.push('SAMHSA-listed substance use treatment facility');
+  if (type === 'drug_rehab')         descParts.push('SAMHSA-listed substance use treatment facility');
   else if (type === 'mental_health') descParts.push('SAMHSA-listed mental health treatment facility');
-  else if (type === 'hospice')      descParts.push('Medicare-certified hospice facility');
-  else                              descParts.push('Medicare-certified home health agency');
+  else if (type === 'hospice')       descParts.push('Medicare-certified hospice facility');
+  else                               descParts.push('Medicare-certified home health agency');
   if (isRehab) {
     var pays = (provider.payment_options || []).filter(Boolean);
-    if (pays.includes('medicaid'))           descParts.push('accepts Medicaid');
-    else if (pays.includes('sliding_scale')) descParts.push('sliding-fee scale available');
+    if (pays.indexOf('medicaid') !== -1)            descParts.push('accepts Medicaid');
+    else if (pays.indexOf('sliding_scale') !== -1)  descParts.push('sliding-fee scale available');
     if ((provider.languages || []).indexOf('Spanish') !== -1) descParts.push('Spanish-language services');
   } else {
     if (ownership) descParts.push(ownership.charAt(0).toUpperCase() + ownership.slice(1).toLowerCase() + ' organization');
@@ -515,12 +514,11 @@ function renderListing(provider, index, type) {
   }
   const desc = descParts.join('. ') + '.';
 
-  // Rehab listings don't have CMS Medicare cert; show Medicaid badge if accepted, otherwise omit.
   const medicareBadge = isRehab
-    ? ((provider.payment_options || []).includes('medicaid') ? '<span class="badge badge-med">✓ Medicaid</span>' : '')
+    ? ((provider.payment_options || []).indexOf('medicaid') !== -1 ? '<span class="badge badge-med">✓ Medicaid</span>' : '')
     : '<span class="badge badge-med">✓ Medicare</span>';
   const statusLabel = isRehab
-    ? ((provider.payment_options || []).includes('medicaid') ? 'Medicaid Accepted' : 'SAMHSA Listed')
+    ? ((provider.payment_options || []).indexOf('medicaid') !== -1 ? 'Medicaid Accepted' : 'SAMHSA Listed')
     : 'Medicare Certified';
 
   return '<div class="listing" data-type="' + type + '" data-rating="' + (parseFloat(rating)||0) + '" data-zip="' + zip + '" data-services="' + tags.join(',') + '" data-ccn="' + ccn + '"><div class="listing-inner">' +
@@ -882,11 +880,10 @@ function updateResultsCount(count) {
 }
 
 function updateFilterCounts() {
-  // Update care type counts based on all loaded results
-  var hhCount     = allResults.filter(function(p){ return (p._type||p.provider_type) === 'home_health'; }).length;
-  var hospCount   = allResults.filter(function(p){ return (p._type||p.provider_type) === 'hospice'; }).length;
-  var rehabCount  = allResults.filter(function(p){ return (p._type||p.provider_type) === 'drug_rehab'; }).length;
-  var mhCount     = allResults.filter(function(p){ return (p._type||p.provider_type) === 'mental_health'; }).length;
+  var hhCount    = allResults.filter(function(p){ return (p._type||p.provider_type) === 'home_health'; }).length;
+  var hospCount  = allResults.filter(function(p){ return (p._type||p.provider_type) === 'hospice'; }).length;
+  var rehabCount = allResults.filter(function(p){ return (p._type||p.provider_type) === 'drug_rehab'; }).length;
+  var mhCount    = allResults.filter(function(p){ return (p._type||p.provider_type) === 'mental_health'; }).length;
   var el1 = document.querySelector('label[for="c1"]')?.parentElement?.querySelector('.sb-count');
   var el3 = document.querySelector('label[for="c3"]')?.parentElement?.querySelector('.sb-count');
   var el5 = document.querySelector('label[for="c5"]')?.parentElement?.querySelector('.sb-count');
@@ -947,8 +944,6 @@ function initSidebarFilters() {
     if (el) el.addEventListener('change', function() {
       var careTypes = getCheckedCareTypes();
       document.querySelectorAll('.tab').forEach(function(tab){ tab.classList.remove('active'); });
-      // Single-type selections highlight that tab and trigger a typed fetch.
-      // Multi-type selections fall back to "All".
       var matchTab = function(label) {
         document.querySelectorAll('.tab').forEach(function(t){ if(t.textContent.trim()===label) t.classList.add('active'); });
       };
@@ -1356,6 +1351,97 @@ initSidebarFilters();
     // Detect care type from query
     let careLabel = 'Care Providers';
     const lower = q.toLowerCase();
-    if (lower.includes('home health'))                { careLabel = 'Home Health Care';        currentCareType = 'home_health'; }
-    else if (lower.includes('hospice'))               { careLabel = 'Hospice Care';            currentCareType = 'hospice'; }
-    else if (/rehab|substance|addict|alc
+    if (lower.includes('home health'))                             { careLabel = 'Home Health Care';        currentCareType = 'home_health'; }
+    else if (lower.includes('hospice'))                            { careLabel = 'Hospice Care';            currentCareType = 'hospice'; }
+    else if (/rehab|substance|addict|alcohol|drug/.test(lower))    { careLabel = 'Drug & Alcohol Rehab';    currentCareType = 'drug_rehab'; }
+    else if (/mental health|psychiatric|behavioral|therapy|counseling/.test(lower))
+                                                                   { careLabel = 'Mental Health Treatment'; currentCareType = 'mental_health'; }
+    else                                                           { currentCareType = 'all'; }
+
+    // Update page title
+    document.title = careLabel + ' in ' + displayLoc + ' &mdash; Senova Search Results';
+
+    // Update results header
+    const countEl = document.querySelector('.results-count');
+    if (countEl) countEl.innerHTML = 'Searching for <strong>' + careLabel + '</strong> near <strong>' + displayLoc + '</strong>...';
+
+    // Update Medicaid banner
+    const medBanner = document.querySelector('.medicaid-banner');
+    if (medBanner && STATE_MEDICAID[state]) {
+      const sm = STATE_MEDICAID[state];
+      medBanner.innerHTML = '<span style="font-size:20px">&#128203;</span><div><strong>' + sm.name + '</strong> covers home health care through ' + sm.program + '. Most listings below accept Medicaid at no cost to you. <a href="/signup" style="color:var(--teal);font-weight:600;text-decoration:underline">Learn more &rarr;</a></div>';
+    }
+
+    // Highlight the matching tab
+    document.querySelectorAll('.tab').forEach(function(tab) {
+      tab.classList.remove('active');
+      const t = tab.textContent.trim();
+      if ((t === 'All' && currentCareType === 'all') ||
+          (t === 'Home Health' && currentCareType === 'home_health') ||
+          (t === 'Hospice' && currentCareType === 'hospice') ||
+          (t === 'Drug & Alcohol Rehab' && currentCareType === 'drug_rehab') ||
+          (t === 'Mental Health' && currentCareType === 'mental_health')) {
+        tab.classList.add('active');
+      }
+    });
+
+    // Set sidebar checkboxes to match care type
+    var c1 = document.getElementById('c1');
+    var c3 = document.getElementById('c3');
+    var c5 = document.getElementById('c5');
+    var c7 = document.getElementById('c7');
+    if (currentCareType === 'home_health')        { if(c1)c1.checked=true;  if(c3)c3.checked=false; if(c5)c5.checked=false; if(c7)c7.checked=false; }
+    else if (currentCareType === 'hospice')       { if(c1)c1.checked=false; if(c3)c3.checked=true;  if(c5)c5.checked=false; if(c7)c7.checked=false; }
+    else if (currentCareType === 'drug_rehab')    { if(c1)c1.checked=false; if(c3)c3.checked=false; if(c5)c5.checked=true;  if(c7)c7.checked=false; }
+    else if (currentCareType === 'mental_health') { if(c1)c1.checked=false; if(c3)c3.checked=false; if(c5)c5.checked=false; if(c7)c7.checked=true; }
+    else                                          { if(c1)c1.checked=true;  if(c3)c3.checked=true;  if(c5)c5.checked=true;  if(c7)c7.checked=true; }
+
+    // Tab click handlers
+    function setCareTypeCheckboxes(only) {
+      var c1 = document.getElementById('c1');
+      var c3 = document.getElementById('c3');
+      var c5 = document.getElementById('c5');
+      var c7 = document.getElementById('c7');
+      if (c1) c1.checked = only === 'all' || only === 'home_health';
+      if (c3) c3.checked = only === 'all' || only === 'hospice';
+      if (c5) c5.checked = only === 'all' || only === 'drug_rehab';
+      if (c7) c7.checked = only === 'all' || only === 'mental_health';
+    }
+    document.querySelectorAll('.tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+        this.classList.add('active');
+        const label = this.textContent.trim();
+        if (label === 'Home Health')              { currentCareType = 'home_health';   setCareTypeCheckboxes('home_health'); }
+        else if (label === 'Hospice')             { currentCareType = 'hospice';       setCareTypeCheckboxes('hospice'); }
+        else if (label === 'Drug & Alcohol Rehab'){ currentCareType = 'drug_rehab';    setCareTypeCheckboxes('drug_rehab'); }
+        else if (label === 'Mental Health')       { currentCareType = 'mental_health'; setCareTypeCheckboxes('mental_health'); }
+        else                                      { currentCareType = 'all';           setCareTypeCheckboxes('all'); }
+        currentPage = 1;
+        fetchProviders(currentState, currentZip, currentPage, currentCareType);
+      });
+    });
+
+    // FETCH REAL DATA
+    fetchProviders(state, zip, 1, currentCareType);
+
+  } else {
+    // No query - hide loading, show message
+    const loading = document.getElementById('loading-state');
+    if (loading) loading.innerHTML = '<p style="font-size:16px;color:var(--gray)">Enter a ZIP code, city, or state to search for care providers.</p>';
+  }
+})();
+
+/* ── SEARCH BAR FUNCTIONALITY ── */
+function doSearch() {
+  const q = document.querySelector('.nav-search input').value.trim();
+  if (!q) return;
+  window.location.href = '/search?q=' + encodeURIComponent(q);
+}
+document.querySelector('.nav-search input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doSearch();
+});
+</script>
+
+</body>
+</html>
