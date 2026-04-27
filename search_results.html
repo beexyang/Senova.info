@@ -569,6 +569,9 @@ let currentCareType = 'all';
 let currentPage = 1;
 const RESULTS_PER_PAGE = 10;
 let allResults = [];       // Store ALL fetched results for client-side filtering
+let categoryTotals = {     // Per-category totals from the API for sidebar counts.
+  home_health: 0, hospice: 0, drug_rehab: 0, mental_health: 0
+};
 let filteredResults = [];  // After filters applied
 let totalServerCount = 0;
 
@@ -880,18 +883,19 @@ function updateResultsCount(count) {
 }
 
 function updateFilterCounts() {
-  var hhCount    = allResults.filter(function(p){ return (p._type||p.provider_type) === 'home_health'; }).length;
-  var hospCount  = allResults.filter(function(p){ return (p._type||p.provider_type) === 'hospice'; }).length;
-  var rehabCount = allResults.filter(function(p){ return (p._type||p.provider_type) === 'drug_rehab'; }).length;
-  var mhCount    = allResults.filter(function(p){ return (p._type||p.provider_type) === 'mental_health'; }).length;
+  // Sidebar counts ALWAYS reflect the true database total per care type for
+  // the currently searched state+zip area, regardless of which other filters
+  // (Medicaid, stars, distance, etc.) the user has toggled, and regardless of
+  // which single tab they're currently viewing. Pulled from categoryTotals,
+  // which is populated by fetchProviders from the API's count=exact totals.
   var el1 = document.querySelector('label[for="c1"]')?.parentElement?.querySelector('.sb-count');
   var el3 = document.querySelector('label[for="c3"]')?.parentElement?.querySelector('.sb-count');
   var el5 = document.querySelector('label[for="c5"]')?.parentElement?.querySelector('.sb-count');
   var el7 = document.querySelector('label[for="c7"]')?.parentElement?.querySelector('.sb-count');
-  if (el1) el1.textContent = hhCount;
-  if (el3) el3.textContent = hospCount;
-  if (el5) el5.textContent = rehabCount;
-  if (el7) el7.textContent = mhCount;
+  if (el1) el1.textContent = categoryTotals.home_health;
+  if (el3) el3.textContent = categoryTotals.hospice;
+  if (el5) el5.textContent = categoryTotals.drug_rehab;
+  if (el7) el7.textContent = categoryTotals.mental_health;
 
   // Update rating counts
   var r5Count = allResults.filter(function(p){ var r=parseFloat(p.quality_of_patient_care_star_rating||0); return r>=5; }).length;
@@ -1059,45 +1063,55 @@ async function fetchProviders(state, zip, page, careType) {
     let dataSource = 'cached';
 
     // TRY 1: Our own secure cached API (Supabase backend)
-    // For careType='all' or any multi-type selection we fan out to all four
-    // care types in parallel so the sidebar checkboxes can filter cleanly
-    // client-side. Single-type selections do a single targeted fetch.
+    // We ALWAYS fetch all four care types in parallel so the sidebar's
+    // per-category counts stay accurate to the searched state+zip area
+    // regardless of which tab/checkbox is active. The selected type(s)
+    // get a full data fetch (limit=100); the others get limit=1 just
+    // to read the count=exact total. categoryTotals drives the sidebar.
     try {
-      const buildUrl = function(t) {
+      const buildUrl = function(t, lim) {
         const params = new URLSearchParams();
         if (state) params.set('state', state);
         if (zip) params.set('zip', zip);
         params.set('type', t);
         params.set('page', page);
-        params.set('limit', 100);
+        params.set('limit', lim);
         return API_BASE + '?' + params.toString();
       };
-      const fetchOne = async function(t) {
+      const fetchOne = async function(t, lim) {
         try {
-          const r = await fetch(buildUrl(t));
+          const r = await fetch(buildUrl(t, lim));
           if (!r.ok) return { rows: [], total: 0 };
           const j = await r.json();
-          if (!j.providers || j.providers.length === 0) return { rows: [], total: 0 };
-          return {
-            rows: j.providers.map(function(p) { return Object.assign({}, p, { _type: p.provider_type || t }); }),
-            total: j.total || j.providers.length
-          };
+          const rows = (j.providers || []).map(function(p) {
+            return Object.assign({}, p, { _type: p.provider_type || t });
+          });
+          return { rows: rows, total: typeof j.total === 'number' ? j.total : rows.length };
         } catch (_) { return { rows: [], total: 0 }; }
       };
 
-      if (careType && careType !== 'all') {
-        const r = await fetchOne(careType);
-        results = r.rows;
-        totalCount = r.total;
-        dataSource = 'cached';
-      } else {
-        // All / multi-select: fan out across all loaded care types in parallel
-        const types = ['home_health', 'hospice', 'drug_rehab', 'mental_health'];
-        const all = await Promise.all(types.map(fetchOne));
-        results = all.reduce(function(acc, r) { return acc.concat(r.rows); }, []);
-        totalCount = all.reduce(function(acc, r) { return acc + (r.total || 0); }, 0);
-        dataSource = 'cached';
-      }
+      const ALL_TYPES = ['home_health', 'hospice', 'drug_rehab', 'mental_health'];
+      const wantsAll = !careType || careType === 'all';
+      // For each type: full data (100) if it's the selected type or 'all',
+      // otherwise just enough rows to surface the total via count=exact.
+      const promises = ALL_TYPES.map(function(t) {
+        const lim = (wantsAll || careType === t) ? 100 : 1;
+        return fetchOne(t, lim).then(function(r) { return { type: t, rows: r.rows, total: r.total, lim: lim }; });
+      });
+      const settled = await Promise.all(promises);
+      // Update sidebar totals from authoritative API counts
+      categoryTotals = { home_health: 0, hospice: 0, drug_rehab: 0, mental_health: 0 };
+      settled.forEach(function(s) { categoryTotals[s.type] = s.total; });
+      // Build results list — only include rows for selected type(s).
+      // If a single type was requested, only return its rows. For 'all' we
+      // include every type's rows so client-side filters can narrow.
+      results = settled
+        .filter(function(s) { return wantsAll || s.type === careType; })
+        .reduce(function(acc, s) { return acc.concat(s.rows); }, []);
+      totalCount = wantsAll
+        ? settled.reduce(function(acc, s) { return acc + (s.total || 0); }, 0)
+        : (settled.find(function(s) { return s.type === careType; }) || { total: 0 }).total;
+      dataSource = 'cached';
     } catch(e) { /* Backend not available, fall through to CMS */ }
 
     // TRY 2: Direct CMS API fallback
