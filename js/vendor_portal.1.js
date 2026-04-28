@@ -10,7 +10,10 @@ let allLeads = [];
 let hasMembership = false;
 
 // ===== AUTH =====
-// Self-service password reset for vendors. Uses Supabase Auth recover.
+// Self-service password reset for vendors.
+// Uses our /api/forgot-password route which mints a Supabase recovery OTP
+// server-side and emails it via Resend with a senova.info URL — bypassing
+// Supabase's built-in mailer (whose link points at the project's Site URL).
 async function forgotPassword(ev) {
   if (ev && ev.preventDefault) ev.preventDefault();
   const prefilled = (document.getElementById('loginEmail') || {}).value || '';
@@ -21,15 +24,12 @@ async function forgotPassword(ev) {
     return;
   }
   try {
-    // Supabase honors redirect_to only as a query parameter, not as a body field.
-    // The URL must also be allowlisted in the Supabase project's auth Redirect URLs.
-    const redirect = window.location.origin + '/reset-password';
-    await fetch(SUPABASE_URL + '/auth/v1/recover?redirect_to=' + encodeURIComponent(redirect), {
+    await fetch('/api/forgot-password', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+      headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'senova' },
       body: JSON.stringify({ email: email })
     });
-  } catch (_) { /* swallowed */ }
+  } catch (_) { /* swallowed; we always show the same generic message */ }
   alert('If that email is registered, a password-reset link has been sent. Check your inbox (and spam folder).');
 }
 
