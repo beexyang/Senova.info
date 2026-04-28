@@ -319,7 +319,7 @@ async function adminLoginHandler(e) {
     }
 
     adminToken = data.access_token;
-    localStorage.setItem('admin_token', adminToken);
+    sessionStorage.setItem('admin_token', adminToken);
     document.getElementById('adminLogin').style.display = 'none';
     document.getElementById('mainLayout').style.display = 'flex';
     loadAllData();
@@ -331,15 +331,23 @@ async function adminLoginHandler(e) {
 }
 
 function adminLogout() {
-  localStorage.removeItem('admin_token');
+  sessionStorage.removeItem('admin_token');
   adminToken = null;
   document.getElementById('adminLogin').style.display = 'flex';
   document.getElementById('mainLayout').style.display = 'none';
 }
 
+// Delegated click handler for delete buttons — replaces inline onclick=
+// (which was a stored-XSS sink because user-supplied names landed in JS context).
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('[data-action="delete-record"]');
+  if (!btn) return;
+  deleteRecord(btn.dataset.type, btn.dataset.id, btn.dataset.auth, btn.dataset.name);
+});
+
 // Auto-login
 (async function checkAdmin() {
-  const t = localStorage.getItem('admin_token');
+  const t = sessionStorage.getItem('admin_token');
   if (!t) return;
   try {
     const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
@@ -435,8 +443,6 @@ function renderVendors(vendors) {
     const types = (v.care_types || []).join(', ') || '—';
     const authId = v.vendor_auth?.[0]?.auth_user_id || '';
     const nameLink = `<a href="/admin_vendor_profile.html?id=${esc(v.id)}" style="color:var(--teal);text-decoration:none;font-weight:600">${esc(v.business_name)}</a>`;
-    // For inline JS args we must escape both for HTML AND for being inside a single-quoted JS string.
-    const jsBn = String(v.business_name || '').replace(/[\\']/g, '\\$&').replace(/</g,'&lt;');
     return `<tr>
       <td>${nameLink}</td>
       <td>${esc(v.contact_name || '—')}<br><span style="font-size:12px;color:var(--gray)">${esc(v.email || '')}</span></td>
@@ -444,7 +450,11 @@ function renderVendors(vendors) {
       <td style="font-size:13px">${esc(types)}</td>
       <td><span class="badge badge-orange">Upsell</span></td>
       <td style="font-size:13px">${esc(date)}</td>
-      <td><button class="btn-delete" onclick="deleteRecord('vendor','${esc(v.id)}','${esc(authId)}','${jsBn}')">Delete</button></td>
+      <td><button class="btn-delete" data-action="delete-record"
+                  data-type="vendor"
+                  data-id="${esc(v.id)}"
+                  data-auth="${esc(authId)}"
+                  data-name="${esc(v.business_name || '')}">Delete</button></td>
     </tr>`;
   }).join('');
 }
@@ -467,7 +477,6 @@ function renderUsers(users, leads) {
     const nameHtml = leadId
       ? `<a href="/admin_lead_profile.html?id=${esc(leadId)}" style="color:var(--teal);text-decoration:none;font-weight:600">${esc(fullName)}</a>`
       : `<span style="font-weight:600">${esc(fullName)}</span>`;
-    const jsName = String(fullName).replace(/[\\']/g, '\\$&').replace(/</g,'&lt;');
     return `<tr>
       <td>${nameHtml}</td>
       <td>${esc(u.email)}</td>
@@ -475,7 +484,11 @@ function renderUsers(users, leads) {
       <td>${esc(u.city || '')}, ${esc(u.state || '')}</td>
       <td>${esc(u.care_for || '—')}</td>
       <td style="font-size:13px">${esc(date)}</td>
-      <td><button class="btn-delete" onclick="deleteRecord('user','${esc(u.id)}','${esc(authId)}','${jsName}')">Delete</button></td>
+      <td><button class="btn-delete" data-action="delete-record"
+                  data-type="user"
+                  data-id="${esc(u.id)}"
+                  data-auth="${esc(authId)}"
+                  data-name="${esc(fullName)}">Delete</button></td>
     </tr>`;
   }).join('');
 }
@@ -545,7 +558,7 @@ async function deleteRecord(type, id, authUserId, name) {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': adminToken ? ('Bearer ' + adminToken) : ''
-      },
+      , 'X-Requested-With': 'senova'},
       body: JSON.stringify({ type, id, auth_user_id: authUserId || null })
     });
     const data = await res.json();
@@ -568,6 +581,7 @@ async function approveImage(imageId, btn) {
       'Content-Type': 'application/json',
       'apikey': SUPABASE_ANON_KEY,
       'Authorization': `Bearer ${adminToken}`,
+      'X-Requested-With': 'senova',
       'Prefer': 'return=minimal'
     },
     body: JSON.stringify({ status: 'approved', reviewed_by: ADMIN_EMAIL, reviewed_at: new Date().toISOString() })

@@ -8,14 +8,17 @@
 // record server-side so callers can't impersonate other vendors or inject
 // arbitrary HTML into the admin email.
 const {
-  applyCors, verifyAuthenticated, verifyAdmin, isUuid, escapeHtml, bounded
+  applyCors, requireCsrfHeader,
+  verifyAuthenticated, verifyAdmin, isUuid, escapeHtml, bounded
 } = require('../lib/security');
+const { rateLimit } = require('../lib/ratelimit');
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || '';
 
 module.exports = async (req, res) => {
   if (applyCors(req, res, 'POST, OPTIONS')) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (requireCsrfHeader(req, res)) return;
 
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
@@ -30,6 +33,10 @@ module.exports = async (req, res) => {
   const admin = await verifyAdmin(req);
   const authedUser = admin ? null : await verifyAuthenticated(req);
   if (!admin && !authedUser) return res.status(401).json({ error: 'Unauthorized' });
+  // Rate-limit non-admin callers so a single vendor can't spam admin inbox.
+  if (!admin && rateLimit(req, 'notify-admin:' + authedUser.id, 5, 60_000)) {
+    return res.status(429).json({ error: 'Too many requests' });
+  }
 
   const sbHeaders = {
     'Content-Type': 'application/json',

@@ -3,7 +3,7 @@
 // SECURITY: input length caps, password minimum length, CORS restricted,
 // admin email moved to env var, generic error responses, escape user input
 // before interpolating into admin notification HTML.
-const { applyCors, isEmail, bounded } = require('../lib/security');
+const { applyCors, requireCsrfHeader, isEmail, bounded, isStrongPassword } = require('../lib/security');
 const { rateLimit } = require('../lib/ratelimit');
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || '';
 
@@ -14,6 +14,7 @@ const escHtml = (v) => v == null ? '' : String(v).replace(/[&<>"']/g, c => ({
 module.exports = async (req, res) => {
   if (applyCors(req, res, 'POST, OPTIONS')) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (requireCsrfHeader(req, res)) return;
   // 3 vendor signups per IP per 10 minutes.
   if (rateLimit(req, 'vendor-signup', 3, 600_000)) {
     return res.status(429).json({ error: 'Too many signup attempts. Please try again later.' });
@@ -50,8 +51,8 @@ module.exports = async (req, res) => {
     if (!email || !isEmail(email)) {
       return res.status(400).json({ error: 'A valid email is required' });
     }
-    if (!password || password.length < 8 || password.length > 200) {
-      return res.status(400).json({ error: 'Password must be 8-200 characters' });
+    if (!isStrongPassword(password)) {
+      return res.status(400).json({ error: 'Password must be at least 12 characters and not a common password.' });
     }
     if (!business_name) {
       return res.status(400).json({ error: 'Business name is required' });
@@ -77,8 +78,8 @@ module.exports = async (req, res) => {
     });
 
     if (!authRes.ok) {
-      const err = await authRes.json();
-      return res.status(400).json({ error: err.msg || 'Failed to create auth account' });
+      console.error('vendor-signup auth fail:', authRes.status);
+      return res.status(400).json({ error: 'Could not create vendor account. Please try again.' });
     }
 
     const authUser = await authRes.json();

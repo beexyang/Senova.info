@@ -6,13 +6,14 @@
 //     vendor_id they're paying for. Without this an attacker could open
 //     subscriptions billed against someone else's vendor account.
 //   * plan_name validated against an explicit whitelist.
-const { applyCors, verifyAuthenticated, isUuid } = require('../lib/security');
+const { applyCors, requireCsrfHeader, verifyAuthenticated, isUuid } = require('../lib/security');
 
 const ALLOWED_PLANS = new Set(['starter', 'growth', 'premium']);
 
 module.exports = async (req, res) => {
   if (applyCors(req, res, 'POST, OPTIONS')) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (requireCsrfHeader(req, res)) return;
 
   const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
   const SUPABASE_URL = process.env.SUPABASE_URL;

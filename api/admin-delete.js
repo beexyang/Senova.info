@@ -5,11 +5,12 @@
 // header containing a valid Supabase session token whose user email matches
 // the ADMIN_EMAIL env var. Without this check, ANY internet caller could
 // delete any user or vendor by ID (this was the prior behavior).
-const { applyCors, verifyAdmin, isUuid } = require('../lib/security');
+const { applyCors, requireCsrfHeader, verifyAdmin, isUuid } = require('../lib/security');
 
 module.exports = async (req, res) => {
   if (applyCors(req, res, 'POST, OPTIONS')) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (requireCsrfHeader(req, res)) return;
 
   const admin = await verifyAdmin(req);
   if (!admin) return res.status(401).json({ error: 'Unauthorized' });

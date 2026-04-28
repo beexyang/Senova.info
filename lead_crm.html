@@ -1258,7 +1258,7 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56aW5vcmh5b3hpZm10aHl2c2JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTI2MjMsImV4cCI6MjA5MDkyODYyM30._7RjAOyhOISw6Nh3qjt8cwJspQrGe2Zw2aBgWu8u4ro';
         // Admin pages need the admin's Supabase JWT (in localStorage). Without it,
         // RLS rejects the queries and the table is empty. Redirect to /admin if missing.
-        const ADMIN_TOKEN = localStorage.getItem('admin_token');
+        const ADMIN_TOKEN = sessionStorage.getItem('admin_token');
         if (!ADMIN_TOKEN) { location.replace('/admin'); }
         const SB_HEADERS = { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + (ADMIN_TOKEN || SUPABASE_ANON_KEY) };
 

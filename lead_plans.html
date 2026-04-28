@@ -301,7 +301,7 @@ async function subscribe(planName) {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': vt ? ('Bearer ' + vt) : ''
-      },
+      , 'X-Requested-With': 'senova'},
       body: JSON.stringify({
         vendor_id: vendorId,
         plan_name: planName

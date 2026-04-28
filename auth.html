@@ -667,7 +667,7 @@ async function handleSignUp() {
   try {
     const res = await fetch('/api/user-signup', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' , 'X-Requested-With': 'senova'},
       body: JSON.stringify({
         email: document.getElementById('su_email').value.trim(),
         password: document.getElementById('su_pass').value,
@@ -739,7 +739,7 @@ async function handleVendorSignUp() {
   try {
     const res = await fetch('/api/vendor-signup', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' , 'X-Requested-With': 'senova'},
       body: JSON.stringify({
         email: document.getElementById('vu_email').value.trim(),
         password: document.getElementById('vu_pass').value,

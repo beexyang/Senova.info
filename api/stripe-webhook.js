@@ -23,13 +23,39 @@ module.exports = async (req, res) => {
 
   let event;
   try {
-    // Get raw body for signature verification
-    const rawBody = await getRawBody(req);
+    // Cap body size to prevent memory abuse via spoofed proxies.
+    const rawBody = await getRawBody(req, { limit: '256kb', length: req.headers['content-length'] });
     const sig = req.headers['stripe-signature'];
     event = stripe.webhooks.constructEvent(rawBody, sig, STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     console.error('Webhook signature verification failed:', err.message);
-    return res.status(400).json({ error: `Webhook Error: ${err.message}` });
+    return res.status(400).json({ error: 'Webhook Error' });
+  }
+
+  // Idempotency: every Stripe event has a unique id; persist and short-circuit on replay.
+  try {
+    const seenRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/stripe_events?id=eq.${encodeURIComponent(event.id)}&select=id`,
+      { headers: { apikey: SUPABASE_SERVICE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_KEY}` } }
+    );
+    if (seenRes.ok) {
+      const seen = await seenRes.json();
+      if (Array.isArray(seen) && seen.length > 0) {
+        return res.status(200).json({ received: true, duplicate: true });
+      }
+    }
+    await fetch(`${SUPABASE_URL}/rest/v1/stripe_events`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_SERVICE_KEY,
+        Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ id: event.id, type: event.type })
+    });
+  } catch (e) {
+    console.error('stripe_events idempotency check failed:', e.message);
   }
 
   console.log('Stripe webhook received:', event.type);
@@ -273,7 +299,7 @@ module.exports = async (req, res) => {
     res.status(200).json({ received: true });
   } catch (error) {
     console.error('Webhook processing error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Server error' });
   }
 };
 
