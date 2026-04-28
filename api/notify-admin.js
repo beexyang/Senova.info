@@ -1,3 +1,10 @@
+// Resend sender — overrideable via RESEND_FROM env var. Defaults to
+// onboarding@resend.dev which Resend allows without domain verification
+// (works the moment RESEND_API_KEY is set). Set RESEND_FROM in Vercel
+// to 'Senova <hello@senova.info>' once the senova.info domain is
+// DNS-verified at https://resend.com/domains.
+function _resendFrom() { return process.env.RESEND_FROM || 'Senova <onboarding@resend.dev>'; }
+
 // POST /api/notify-admin
 // Creates an admin notification row and optionally sends an email.
 //
@@ -114,7 +121,7 @@ module.exports = async (req, res) => {
               'Authorization': 'Bearer ' + RESEND_API_KEY
             },
             body: JSON.stringify({
-              from: 'Senova <notifications@senova.info>',
+              from: _resendFrom(),
               to: [ADMIN_EMAIL],
               subject: 'Photo Upload: ' + vendorName + ' - Review Required',
               html: html
@@ -155,7 +162,7 @@ module.exports = async (req, res) => {
             'Authorization': 'Bearer ' + RESEND_API_KEY
           },
           body: JSON.stringify({
-            from: 'Senova <notifications@senova.info>',
+            from: _resendFrom(),
             to: [ADMIN_EMAIL],
             subject: title,
             html: '<h2>' + escapeHtml(title) + '</h2><p>' + escapeHtml(message)

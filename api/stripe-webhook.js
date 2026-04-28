@@ -1,3 +1,10 @@
+// Resend sender — overrideable via RESEND_FROM env var. Defaults to
+// onboarding@resend.dev which Resend allows without domain verification
+// (works the moment RESEND_API_KEY is set). Set RESEND_FROM in Vercel
+// to 'Senova <hello@senova.info>' once the senova.info domain is
+// DNS-verified at https://resend.com/domains.
+function _resendFrom() { return process.env.RESEND_FROM || 'Senova <onboarding@resend.dev>'; }
+
 // POST /api/stripe-webhook
 // Handles Stripe webhook events to activate/deactivate vendor memberships
 // Stripe sends: checkout.session.completed, invoice.paid, invoice.payment_failed,
@@ -171,7 +178,7 @@ module.exports = async (req, res) => {
                 'Authorization': `Bearer ${RESEND_API_KEY}`
               },
               body: JSON.stringify({
-                from: 'Senova <notifications@senova.info>',
+                from: _resendFrom(),
                 to: [process.env.ADMIN_EMAIL].filter(Boolean),
                 subject: `New Subscription: ${planName} plan - $${priceMonthly}/mo`,
                 html: `<h2>New Vendor Subscription</h2>
@@ -250,7 +257,7 @@ module.exports = async (req, res) => {
                     'Authorization': `Bearer ${RESEND_API_KEY}`
                   },
                   body: JSON.stringify({
-                    from: 'Senova <notifications@senova.info>',
+                    from: _resendFrom(),
                     to: [process.env.ADMIN_EMAIL].filter(Boolean),
                     subject: `Payment Failed: Vendor ${vendorId}`,
                     html: `<h2>Payment Failed</h2><p>Vendor ${vendorId} payment failed. Membership marked as past_due.</p>`
