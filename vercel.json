@@ -51,6 +51,10 @@
     {
       "source": "/how-to-apply",
       "destination": "/state_guide.html"
+    },
+    {
+      "source": "/contact-us",
+      "destination": "/contact_us.html"
     }
   ],
   "headers": [

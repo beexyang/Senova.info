@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contact Us & Our Mission | Senova</title>
+<meta name="description" content="Senova is built for families finding care for the people they love, and for the providers giving that care. Read our mission and reach our team."/>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; color: #1C2B3A; background: #fff; }
+a { text-decoration: none; color: inherit; }
+:root { --teal:#0D9488; --teal-dark:#0B7A6E; --coral:#F97316; --navy:#202124; --gray:#5F6368; --light-gray:#9CA3AF; --border:#E5E7EB; --light:#F0FDFA; }
+.nav { display:flex; align-items:center; justify-content:space-between; padding:14px 28px; background:#fff; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:50; }
+.nav-logo { font-family:'Poppins',sans-serif; font-weight:800; font-size:22px; color:var(--teal); }
+.nav-logo .v { color:var(--coral); }
+.nav-links a { font-size:14px; font-weight:500; color:var(--navy); margin-left:18px; }
+.nav-links a:hover { color:var(--teal); }
+.hero { background:linear-gradient(135deg,#0D9488 0%,#0F766E 100%); color:#fff; padding:80px 24px 60px; text-align:center; }
+.hero .label { display:inline-block; font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; background:rgba(255,255,255,0.15); padding:6px 12px; border-radius:999px; margin-bottom:18px; }
+.hero h1 { font-family:'Poppins',sans-serif; font-size:42px; font-weight:800; max-width:780px; margin:0 auto 18px; line-height:1.12; }
+.hero p { font-size:18px; max-width:680px; margin:0 auto; opacity:0.93; line-height:1.55; }
+.section { max-width:1080px; margin:0 auto; padding:64px 24px; }
+.eyebrow { font-size:13px; font-weight:600; color:var(--teal); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:10px; }
+.section-title { font-family:'Poppins',sans-serif; font-size:30px; font-weight:700; color:var(--navy); margin-bottom:18px; line-height:1.2; }
+.lead { font-size:17px; color:var(--gray); line-height:1.7; max-width:760px; }
+.lead strong { color:var(--navy); font-weight:600; }
+
+.story-grid { display:grid; grid-template-columns:1fr 1fr; gap:36px; margin-top:40px; }
+.story-card { background:#F8FAFC; border:1px solid var(--border); border-radius:14px; padding:28px; }
+.story-card h3 { font-family:'Poppins',sans-serif; font-size:20px; font-weight:700; margin-bottom:12px; color:var(--navy); }
+.story-card p { font-size:15px; color:var(--gray); line-height:1.65; }
+.story-card .icon { width:44px; height:44px; border-radius:10px; background:var(--light); display:inline-flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:14px; }
+
+.values { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:30px; }
+.val { background:#fff; border:1px solid var(--border); border-radius:12px; padding:22px; }
+.val h4 { font-family:'Poppins',sans-serif; font-size:16px; font-weight:700; margin-bottom:8px; color:var(--navy); }
+.val p { font-size:14px; color:var(--gray); line-height:1.6; }
+
+.contact-section { background:linear-gradient(135deg,#F0FDFA 0%,#ECFEFF 100%); padding:64px 24px; }
+.contact-grid { max-width:1080px; margin:0 auto; display:grid; grid-template-columns:1fr 1.2fr; gap:48px; align-items:start; }
+.contact-info h2 { font-family:'Poppins',sans-serif; font-size:30px; font-weight:700; margin-bottom:14px; color:var(--navy); line-height:1.2; }
+.contact-info p { font-size:16px; color:var(--gray); line-height:1.65; margin-bottom:20px; }
+.contact-info .item { display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; font-size:14px; color:var(--navy); }
+.contact-info .item .ic { font-size:18px; }
+.contact-info .item strong { display:block; font-weight:600; margin-bottom:2px; }
+
+.form-card { background:#fff; border:1px solid var(--border); border-radius:14px; padding:30px; box-shadow:0 6px 24px rgba(0,0,0,0.04); }
+.form-card h3 { font-family:'Poppins',sans-serif; font-size:20px; font-weight:700; margin-bottom:6px; }
+.form-card .form-sub { font-size:14px; color:var(--gray); margin-bottom:22px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.form-row.full { grid-template-columns:1fr; }
+.form-label { font-size:13px; font-weight:600; color:var(--navy); margin-bottom:6px; display:block; }
+.form-input, .form-select, .form-textarea {
+  width:100%; padding:11px 13px; border:1px solid var(--border); border-radius:8px;
+  font-family:inherit; font-size:14px; color:var(--navy); background:#fff;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline:none; border-color:var(--teal); box-shadow:0 0 0 3px rgba(13,148,136,0.12);
+}
+.form-textarea { min-height:130px; resize:vertical; }
+.btn-submit { width:100%; padding:13px; background:var(--teal); color:#fff; border:none; border-radius:8px; font-weight:600; font-size:15px; cursor:pointer; transition:background .15s; }
+.btn-submit:hover { background:var(--teal-dark); }
+.btn-submit:disabled { background:var(--light-gray); cursor:not-allowed; }
+.form-status { margin-top:14px; padding:12px; border-radius:8px; font-size:14px; display:none; }
+.form-status.success { display:block; background:#D1FAE5; color:#065F46; border:1px solid #6EE7B7; }
+.form-status.error   { display:block; background:#FEE2E2; color:#991B1B; border:1px solid #FCA5A5; }
+
+footer { background:#202124; color:#9CA3AF; padding:40px 24px; text-align:center; font-size:13px; }
+footer a { color:#fff; }
+@media (max-width:780px) {
+  .hero h1 { font-size:30px; }
+  .story-grid, .contact-grid { grid-template-columns:1fr; }
+  .values { grid-template-columns:1fr; }
+  .form-row { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-logo">Seno<span class="v">va</span></a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/search">Find Care</a>
+    <a href="/state-guide">State Guide</a>
+    <a href="/for-providers">For Providers</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="label">Our Mission</div>
+  <h1>We exist so families don't have to figure this out alone.</h1>
+  <p>Finding good care for someone you love is one of the hardest searches a person ever does. Senova exists to make that search short, honest, and free — and to put real, government-listed providers in front of the families who need them.</p>
+</section>
+
+<section class="section">
+  <div class="eyebrow">Why Senova</div>
+  <h2 class="section-title">Most people only search for care once or twice in their life — and they're scared, exhausted, and short on time.</h2>
+  <p class="lead">Maybe a parent just had a stroke. A spouse needs hospice. A teenager needs treatment. Whatever brought you here, you're probably tired of click-bait directories that bury providers behind paywalls, charge them to be listed, and feed you sales calls instead of answers. <strong>That's not what Senova is.</strong> Every facility in our directory comes from a federal source — CMS for home health and hospice, SAMHSA for substance use and mental health treatment — refreshed automatically. We don't sell rankings. We don't gate listings. We don't take payment to list a provider higher than another.</p>
+
+  <div class="story-grid">
+    <div class="story-card">
+      <div class="icon">👨‍👩‍👧</div>
+      <h3>For families</h3>
+      <p>Search by ZIP, filter by Medicaid, level of care, languages spoken, populations served — and call the providers directly. No middleman, no callback funnel, no pressure. Every provider's listing is tied to the exact data their state and federal regulators publish about them.</p>
+    </div>
+    <div class="story-card">
+      <div class="icon">🏥</div>
+      <h3>For providers</h3>
+      <p>If you're a CMS-listed home health or hospice agency, or a SAMHSA-listed treatment facility, you're already in our directory — for free. No ads, no pay-to-rank. Sign up for a provider account to manage your incoming leads and track who reached out.</p>
+    </div>
+  </div>
+</section>
+
+<section style="background:#F8FAFC; padding:64px 24px;">
+  <div class="section" style="padding:0;">
+    <div class="eyebrow">What we believe</div>
+    <h2 class="section-title">Three principles, every page on this site.</h2>
+    <div class="values">
+      <div class="val">
+        <h4>1. Source-of-truth data</h4>
+        <p>We list providers from official federal rosters (CMS, SAMHSA) and state agencies. If a federal source doesn't say a facility offers a service, we don't claim it does.</p>
+      </div>
+      <div class="val">
+        <h4>2. No pay-to-play</h4>
+        <p>We do not take money to rank a provider higher, hide a competitor, or fabricate "verified" badges. Trust is the only thing healthcare directories have to offer — we're not selling it.</p>
+      </div>
+      <div class="val">
+        <h4>3. Honest about limits</h4>
+        <p>We tell you when source data is missing, when a state's site is down, and when a question is better answered by your state's program directly. Senova doesn't pretend to be the whole healthcare system — we just point you at the right part of it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact-section">
+  <div class="contact-grid">
+    <div class="contact-info">
+      <div class="eyebrow">Contact us</div>
+      <h2>Tell us what you need — or what we can do better.</h2>
+      <p>Whether you're a family with a question, a provider who wants to update something we list, a journalist, or a partner who shares the mission — we'd like to hear from you. Real people read every message.</p>
+      <div class="item"><div class="ic">⚡</div><div><strong>Typical response time</strong>Within 1–2 business days.</div></div>
+      <div class="item"><div class="ic">🛡️</div><div><strong>Privacy</strong>We don't sell your contact info. Messages go to our team only.</div></div>
+      <div class="item"><div class="ic">🧭</div><div><strong>Looking for state-specific Medicaid help?</strong>Try our <a href="/state-guide" style="color:var(--teal);text-decoration:underline">State-by-State Guide</a> first — it links straight to your state's official program.</div></div>
+    </div>
+
+    <form class="form-card" id="contactForm" novalidate>
+      <h3>Send us a message</h3>
+      <div class="form-sub">All fields marked * are required.</div>
+
+      <div class="form-row">
+        <div>
+          <label class="form-label" for="cf_name">Your name *</label>
+          <input class="form-input" id="cf_name" name="name" type="text" maxlength="120" required />
+        </div>
+        <div>
+          <label class="form-label" for="cf_email">Email *</label>
+          <input class="form-input" id="cf_email" name="email" type="email" maxlength="254" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label class="form-label" for="cf_role">I am a…</label>
+          <select class="form-select" id="cf_role" name="role">
+            <option value="">Choose one (optional)</option>
+            <option value="family">Family member or caregiver</option>
+            <option value="provider">Healthcare provider</option>
+            <option value="press">Press / journalist</option>
+            <option value="partner">Potential partner</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" for="cf_subject">Subject</label>
+          <input class="form-input" id="cf_subject" name="subject" type="text" maxlength="200" placeholder="e.g. Update my listing"/>
+        </div>
+      </div>
+
+      <div class="form-row full">
+        <div>
+          <label class="form-label" for="cf_msg">Your message *</label>
+          <textarea class="form-textarea" id="cf_msg" name="message" maxlength="4000" required></textarea>
+        </div>
+      </div>
+
+      <button class="btn-submit" id="cf_submit" type="submit">Send message</button>
+      <div class="form-status" id="cf_status"></div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  &copy; 2026 Senova Inc. &middot; <a href="/">Home</a> &middot; <a href="/search">Find Care</a> &middot; <a href="/state-guide">State Guide</a> &middot; <a href="/for-providers">For Providers</a>
+</footer>
+
+<script>
+const form  = document.getElementById('contactForm');
+const btn   = document.getElementById('cf_submit');
+const stat  = document.getElementById('cf_status');
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  stat.className = 'form-status'; stat.textContent = '';
+  const data = {
+    name:    form.name.value.trim(),
+    email:   form.email.value.trim(),
+    role:    form.role.value || null,
+    subject: form.subject.value.trim(),
+    message: form.message.value.trim()
+  };
+  if (!data.name || !data.email || !data.message) {
+    stat.className = 'form-status error';
+    stat.textContent = 'Please fill in your name, email, and a message.';
+    return;
+  }
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    const r = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok) {
+      stat.className = 'form-status success';
+      stat.textContent = 'Thanks — your message is in. We’ll be in touch within 1–2 business days.';
+      form.reset();
+    } else {
+      stat.className = 'form-status error';
+      stat.textContent = j.error || 'Something went wrong. Please try again in a moment.';
+    }
+  } catch (err) {
+    stat.className = 'form-status error';
+    stat.textContent = 'Network error. Please try again in a moment.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Send message';
+  }
+});
+</script>
+</body>
+</html>
