@@ -25,18 +25,18 @@ async function load(){
     return;
   }
 
-  const [leadRes, actRes] = await Promise.all([
-    fetch(`${SUPABASE_URL}/rest/v1/leads?id=eq.${LEAD_ID}&select=*,users(id,email,first_name,last_name,phone,city,state,zip_code,service_zip,care_for,care_types,created_at),vendors(id,business_name,email,phone,city,state)`, { headers: H }),
-    fetch(`${SUPABASE_URL}/rest/v1/lead_activity?lead_id=eq.${LEAD_ID}&select=*&order=created_at.desc`, { headers: H })
-  ]);
-  const leads = leadRes.ok ? await leadRes.json() : [];
-  const activity = actRes.ok ? await actRes.json() : [];
-
-  if (!leads[0]){
+  const r = await fetch('/api/admin/lead?id=' + encodeURIComponent(LEAD_ID), { credentials: 'include' });
+  if (r.status === 401) { location.replace('/admin'); return; }
+  if (!r.ok) {
     document.getElementById('root').innerHTML = '<div class="card"><div class="empty">Lead not found.</div></div>';
     return;
   }
-  render(leads[0], activity);
+  const { lead, activity = [] } = await r.json();
+  if (!lead) {
+    document.getElementById('root').innerHTML = '<div class="card"><div class="empty">Lead not found.</div></div>';
+    return;
+  }
+  render(lead, activity);
 }
 
 function render(lead, activity){

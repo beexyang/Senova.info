@@ -17,22 +17,18 @@ async function load(){
     return;
   }
 
-  const [vRes, mRes, lRes, peRes] = await Promise.all([
-    fetch(`${SUPABASE_URL}/rest/v1/vendors?id=eq.${VENDOR_ID}&select=*`, { headers: H }),
-    fetch(`${SUPABASE_URL}/rest/v1/vendor_memberships?vendor_id=eq.${VENDOR_ID}&select=*`, { headers: H }),
-    fetch(`${SUPABASE_URL}/rest/v1/leads?vendor_id=eq.${VENDOR_ID}&select=*&order=received_at.desc`, { headers: H }),
-    fetch(`${SUPABASE_URL}/rest/v1/vendor_prospect_emails?vendor_id=eq.${VENDOR_ID}&select=*&order=sent_at.desc`, { headers: H })
-  ]);
-  const vendors = vRes.ok ? await vRes.json() : [];
-  const memberships = mRes.ok ? await mRes.json() : [];
-  const leads = lRes.ok ? await lRes.json() : [];
-  const prospectEmails = peRes.ok ? await peRes.json() : [];
-
-  if (!vendors[0]){
+  const r = await fetch('/api/admin/vendor?id=' + encodeURIComponent(VENDOR_ID), { credentials: 'include' });
+  if (r.status === 401) { location.replace('/admin'); return; }
+  if (!r.ok) {
     document.getElementById('root').innerHTML = '<div class="card"><div class="empty">Vendor not found.</div></div>';
     return;
   }
-  render(vendors[0], memberships[0]||null, leads, prospectEmails);
+  const { vendor, memberships = [], leads = [], prospect_emails: prospectEmails = [] } = await r.json();
+  if (!vendor) {
+    document.getElementById('root').innerHTML = '<div class="card"><div class="empty">Vendor not found.</div></div>';
+    return;
+  }
+  render(vendor, memberships[0]||null, leads, prospectEmails);
 }
 
 function monthStartCount(leads){
