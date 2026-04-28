@@ -665,7 +665,7 @@ async function handleSignUp() {
 
   // Send to API
   try {
-    const res = await fetch('/api/user-signup', {
+    const res = await fetch('/api/auth/user-signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' , 'X-Requested-With': 'senova'},
       body: JSON.stringify({
@@ -737,7 +737,7 @@ async function handleVendorSignUp() {
   const meals     = collectChecked('vu_meals_group');
 
   try {
-    const res = await fetch('/api/vendor-signup', {
+    const res = await fetch('/api/auth/vendor-signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' , 'X-Requested-With': 'senova'},
       body: JSON.stringify({

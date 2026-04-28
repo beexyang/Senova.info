@@ -1,6 +1,6 @@
 // reset_password page — completes the OTP-based recovery flow.
-// Reads { e, otp } from query string (set by /api/forgot-password email).
-// Submits { email, otp, password } to /api/reset-password.
+// Reads { e, otp } from query string (set by /api/auth/forgot-password email).
+// Submits { email, otp, password } to /api/auth/reset-password.
 
 (function () {
   const lead = document.getElementById('lead');
@@ -36,7 +36,7 @@
 
     submitBtn.disabled = true; submitBtn.textContent = 'Updating...';
     try {
-      const r = await fetch('/api/reset-password', {
+      const r = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'senova' },
         body: JSON.stringify({ email: email, otp: otp, password: pw })

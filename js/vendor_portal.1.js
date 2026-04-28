@@ -11,7 +11,7 @@ let hasMembership = false;
 
 // ===== AUTH =====
 // Self-service password reset for vendors.
-// Uses our /api/forgot-password route which mints a Supabase recovery OTP
+// Uses our /api/auth/forgot-password route which mints a Supabase recovery OTP
 // server-side and emails it via Resend with a senova.info URL — bypassing
 // Supabase's built-in mailer (whose link points at the project's Site URL).
 async function forgotPassword(ev) {
@@ -24,7 +24,7 @@ async function forgotPassword(ev) {
     return;
   }
   try {
-    await fetch('/api/forgot-password', {
+    await fetch('/api/auth/forgot-password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'senova' },
       body: JSON.stringify({ email: email })

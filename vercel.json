@@ -219,10 +219,6 @@
     {
       "path": "/api/cron-sync",
       "schedule": "0 3 1 * *"
-    },
-    {
-      "path": "/api/sync-samhsa",
-      "schedule": "0 4 1 * *"
     }
   ]
 }
