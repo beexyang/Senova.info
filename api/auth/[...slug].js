@@ -7,6 +7,14 @@ const { applyCors } = require('../../lib/security');
 const log = require('../../lib/log');
 
 const ROUTES = {
+  'list-domains':   async (req, res) => {
+    const key = process.env.RESEND_API_KEY || '';
+    if (!key) { res.status(200).json({ error:'no key' }); return; }
+    const r = await fetch('https://api.resend.com/domains', {
+      headers: { 'Authorization': 'Bearer ' + key }
+    });
+    res.status(200).json({ status: r.status, body: await r.json().catch(()=>({})) });
+  },
   'forgot-password': require('../../lib/auth/forgot-password'),
   'reset-password':  require('../../lib/auth/reset-password'),
   'user-signup':     require('../../lib/auth/user-signup'),
