@@ -364,8 +364,12 @@ module.exports = async (req, res) => {
   if (applyCors(req, res, 'GET, POST, PATCH, OPTIONS')) return;
   const slugArr = req.query.slug || [];
   const slug = Array.isArray(slugArr) ? slugArr.join('/') : String(slugArr);
+  // Temporary debug aid: surface what we got
+  if (req.query.__debug === '1') {
+    return res.status(200).json({ query: req.query, url: req.url, method: req.method, slug });
+  }
   const route = ROUTES[slug];
-  if (!route) return res.status(404).json({ error: 'Not found' });
+  if (!route) return res.status(404).json({ error: 'Not found', _debug_slug: slug, _debug_query: req.query });
   const handler = route[req.method];
   if (!handler) return res.status(405).json({ error: 'Method not allowed' });
   try { return await handler(req, res); }
