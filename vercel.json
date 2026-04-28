@@ -54,7 +54,7 @@
     },
     {
       "source": "/contact-us",
-      "destination": "/contact_us.html"
+      "destination": "/contact.html"
     }
   ],
   "headers": [
