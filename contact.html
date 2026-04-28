@@ -199,45 +199,30 @@ footer a { color:#fff; }
 
 <script>
 const form  = document.getElementById('contactForm');
-const btn   = document.getElementById('cf_submit');
 const stat  = document.getElementById('cf_status');
-form.addEventListener('submit', async (e) => {
+form.addEventListener('submit', (e) => {
   e.preventDefault();
   stat.className = 'form-status'; stat.textContent = '';
-  const data = {
-    name:    form.name.value.trim(),
-    email:   form.email.value.trim(),
-    role:    form.role.value || null,
-    subject: form.subject.value.trim(),
-    message: form.message.value.trim()
-  };
-  if (!data.name || !data.email || !data.message) {
+  const name    = form.name.value.trim();
+  const email   = form.email.value.trim();
+  const role    = form.role.value || '';
+  const subject = form.subject.value.trim();
+  const message = form.message.value.trim();
+  if (!name || !email || !message) {
     stat.className = 'form-status error';
     stat.textContent = 'Please fill in your name, email, and a message.';
     return;
   }
-  btn.disabled = true; btn.textContent = 'Sending…';
-  try {
-    const r = await fetch('/api/contact', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    const j = await r.json().catch(() => ({}));
-    if (r.ok) {
-      stat.className = 'form-status success';
-      stat.textContent = 'Thanks — your message is in. We’ll be in touch within 1–2 business days.';
-      form.reset();
-    } else {
-      stat.className = 'form-status error';
-      stat.textContent = j.error || 'Something went wrong. Please try again in a moment.';
-    }
-  } catch (err) {
-    stat.className = 'form-status error';
-    stat.textContent = 'Network error. Please try again in a moment.';
-  } finally {
-    btn.disabled = false; btn.textContent = 'Send message';
-  }
+  // Open the user's email client with a pre-filled message
+  const body = encodeURIComponent(
+    'From: ' + name + ' <' + email + '>' +
+    (role ? '\nI am a: ' + role : '') +
+    '\n\n' + message
+  );
+  const subj = encodeURIComponent(subject || 'Senova Contact Form');
+  window.location.href = 'mailto:hello@senova.info?subject=' + subj + '&body=' + body;
+  stat.className = 'form-status success';
+  stat.textContent = 'Opening your email app — finish sending from there. Or write us directly at hello@senova.info';
 });
 </script>
 </body>
