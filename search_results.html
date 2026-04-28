@@ -285,10 +285,6 @@ a{text-decoration:none;color:inherit}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
     Medicaid Accepted
   </div>
-  <div class="filter-pill" data-filter="open">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-    Open Now
-  </div>
   <div class="filter-pill" data-filter="stars">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
     4+ Stars
@@ -572,6 +568,8 @@ let allResults = [];       // Store ALL fetched results for client-side filterin
 let categoryTotals = {     // Per-category totals from the API for sidebar counts.
   home_health: 0, hospice: 0, drug_rehab: 0, mental_health: 0
 };
+let homeHealthRows = [];   // Full home_health rows for the searched area (always
+                           // fetched), used to compute accurate star + service counts.
 let filteredResults = [];  // After filters applied
 let totalServerCount = 0;
 
@@ -695,7 +693,9 @@ function applyFilters() {
     }
 
     // ── Rating filter ─────────────────────────────────
-    if (effectiveMinRating > 0) {
+    // Only applies to home_health vendors (CMS rates HH; SAMHSA + CMS hospice
+    // don't carry star ratings). Rows of other types pass through unchanged.
+    if (effectiveMinRating > 0 && (p._type || p.provider_type) === 'home_health') {
       const r = parseFloat(p.quality_of_patient_care_star_rating || 0);
       if (isNaN(r) || r < effectiveMinRating) return false;
     }
@@ -883,11 +883,8 @@ function updateResultsCount(count) {
 }
 
 function updateFilterCounts() {
-  // Sidebar counts ALWAYS reflect the true database total per care type for
-  // the currently searched state+zip area, regardless of which other filters
-  // (Medicaid, stars, distance, etc.) the user has toggled, and regardless of
-  // which single tab they're currently viewing. Pulled from categoryTotals,
-  // which is populated by fetchProviders from the API's count=exact totals.
+  // Care type counts: always show the true database total for the searched
+  // state+zip area (from API count=exact), regardless of other filters.
   var el1 = document.querySelector('label[for="c1"]')?.parentElement?.querySelector('.sb-count');
   var el3 = document.querySelector('label[for="c3"]')?.parentElement?.querySelector('.sb-count');
   var el5 = document.querySelector('label[for="c5"]')?.parentElement?.querySelector('.sb-count');
@@ -897,16 +894,57 @@ function updateFilterCounts() {
   if (el5) el5.textContent = categoryTotals.drug_rehab;
   if (el7) el7.textContent = categoryTotals.mental_health;
 
-  // Update rating counts
-  var r5Count = allResults.filter(function(p){ var r=parseFloat(p.quality_of_patient_care_star_rating||0); return r>=5; }).length;
-  var r4Count = allResults.filter(function(p){ var r=parseFloat(p.quality_of_patient_care_star_rating||0); return r>=4; }).length;
-  var r3Count = allResults.filter(function(p){ var r=parseFloat(p.quality_of_patient_care_star_rating||0); return r>=3; }).length;
+  // Star ratings + skilled-nursing/PT/HHA only apply to home_health vendors
+  // (CMS publishes ratings + service flags for home health agencies; SAMHSA
+  // and CMS hospice data don't carry these fields). So we hide those sidebar
+  // sections entirely unless the user has Home Health in their selection,
+  // and compute counts from the full homeHealthRows pull (NOT from
+  // allResults, which may be filtered to rehab/MH).
+  var hhVisible = !!document.getElementById('c1')?.checked;
+  var ratingHeading  = Array.from(document.querySelectorAll('.sidebar h4')).find(h => h.textContent.trim() === 'Quality Rating');
+  var servicesHeading = Array.from(document.querySelectorAll('.sidebar h4')).find(h => h.textContent.trim() === 'Services Needed');
+  var ratingSection   = ratingHeading?.parentElement;
+  var servicesSection = servicesHeading?.parentElement;
+  if (ratingSection)   ratingSection.style.display   = hhVisible ? '' : 'none';
+  if (servicesSection) servicesSection.style.display = hhVisible ? '' : 'none';
+
+  // Compute home-health-only counts from homeHealthRows.
+  var hh = homeHealthRows;
+  var rated = function(p){ var r=parseFloat(p.quality_of_patient_care_star_rating||0); return isNaN(r)?0:r; };
+  var r5Count = hh.filter(function(p){ return rated(p) >= 5; }).length;
+  var r4Count = hh.filter(function(p){ return rated(p) >= 4; }).length;
+  var r3Count = hh.filter(function(p){ return rated(p) >= 3; }).length;
   var er5 = document.querySelector('label[for="r5"]')?.parentElement?.querySelector('.sb-count');
   var er4 = document.querySelector('label[for="r4"]')?.parentElement?.querySelector('.sb-count');
   var er3 = document.querySelector('label[for="r3"]')?.parentElement?.querySelector('.sb-count');
   if (er5) er5.textContent = r5Count;
   if (er4) er4.textContent = r4Count;
   if (er3) er3.textContent = r3Count;
+
+  // Service counts (Skilled Nursing / Physical Therapy / Home Health Aide)
+  var nCount = hh.filter(function(p){ return p.offers_nursing_care_services === 'Yes'; }).length;
+  var ptCount= hh.filter(function(p){ return p.offers_physical_therapy_services === 'Yes'; }).length;
+  var aideCount = hh.filter(function(p){ return p.offers_home_health_aide_services === 'Yes'; }).length;
+  var s1 = document.querySelector('label[for="s1"]')?.parentElement;
+  var s2 = document.querySelector('label[for="s2"]')?.parentElement;
+  var s3el = document.querySelector('label[for="s3"]')?.parentElement;
+  // Add count chips if missing
+  function ensureCountChip(parent) {
+    if (!parent) return null;
+    var sp = parent.querySelector('.sb-count');
+    if (!sp) {
+      sp = document.createElement('span');
+      sp.className = 'sb-count';
+      parent.appendChild(sp);
+    }
+    return sp;
+  }
+  var sc1 = ensureCountChip(s1);
+  var sc2 = ensureCountChip(s2);
+  var sc3 = ensureCountChip(s3el);
+  if (sc1) sc1.textContent = nCount;
+  if (sc2) sc2.textContent = ptCount;
+  if (sc3) sc3.textContent = aideCount;
 }
 
 function resetFilters() {
@@ -1092,16 +1130,23 @@ async function fetchProviders(state, zip, page, careType) {
 
       const ALL_TYPES = ['home_health', 'hospice', 'drug_rehab', 'mental_health'];
       const wantsAll = !careType || careType === 'all';
-      // For each type: full data (100) if it's the selected type or 'all',
-      // otherwise just enough rows to surface the total via count=exact.
+      // We fetch full data (limit=100) for: (a) the selected care type, (b)
+      // 'all' (everything), and (c) home_health unconditionally — because the
+      // home-health-specific sub-filters (star rating, skilled nursing, etc.)
+      // need real rows to compute accurate counts even when the user is
+      // currently viewing a non-HH tab.
       const promises = ALL_TYPES.map(function(t) {
-        const lim = (wantsAll || careType === t) ? 100 : 1;
+        const lim = (wantsAll || careType === t || t === 'home_health') ? 100 : 1;
         return fetchOne(t, lim).then(function(r) { return { type: t, rows: r.rows, total: r.total, lim: lim }; });
       });
       const settled = await Promise.all(promises);
       // Update sidebar totals from authoritative API counts
       categoryTotals = { home_health: 0, hospice: 0, drug_rehab: 0, mental_health: 0 };
       settled.forEach(function(s) { categoryTotals[s.type] = s.total; });
+      // Cache full home_health rows separately so we can compute home-health
+      // sub-filter counts (stars, skilled nursing, etc.) regardless of view.
+      const hh = settled.find(function(s) { return s.type === 'home_health'; });
+      homeHealthRows = hh ? hh.rows : [];
       // Build results list — only include rows for selected type(s).
       // If a single type was requested, only return its rows. For 'all' we
       // include every type's rows so client-side filters can narrow.
