@@ -161,7 +161,7 @@ async function loadState(code, name) {
           <div class="resource-cat">${CATEGORY_LABEL[cat]}</div>
           <div class="resource-label">${escapeHtml(r.resource_label)}<span class="authority-pill ${r.authority}">${r.authority==='federal'?'Federal .gov':'State .gov'}</span></div>
           <div class="resource-desc">${escapeHtml(r.description||'')}</div>
-          <a class="go-btn" href="${escapeAttr(r.resource_url)}" target="_blank" rel="noopener">Visit official site →</a>
+          <a class="go-btn" href="${escapeAttr(r.resource_url)}" target="_blank" rel="noopener">${r.category==="how_to_apply"?"Apply Now":r.category==="behavioral_health"?"Get Help":"Get More Info"} →</a>
           ${checked ? `<div class="last-checked">Link last verified ${checked}</div>` : ''}
         </div>`;
     }
