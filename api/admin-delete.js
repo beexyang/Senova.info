@@ -12,7 +12,13 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   if (requireCsrfHeader(req, res)) return;
 
-  const admin = await verifyAdmin(req);
+  // Accept either a Bearer token (legacy) or the new httpOnly cookie session.
+  const { readAdminSession } = require('../lib/session');
+  let admin = await verifyAdmin(req);
+  if (!admin) {
+    const sess = await readAdminSession(req);
+    if (sess) admin = { email: sess.email };
+  }
   if (!admin) return res.status(401).json({ error: 'Unauthorized' });
 
   const SUPABASE_URL = process.env.SUPABASE_URL;

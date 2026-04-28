@@ -305,21 +305,16 @@ async function adminLoginHandler(e) {
   btn.textContent = 'Signing in...'; btn.disabled = true; err.style.display = 'none';
 
   try {
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+    const res = await fetch('/api/admin/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'senova' },
       body: JSON.stringify({ email, password: pass })
     });
-    if (!res.ok) throw new Error('Invalid credentials');
-    const data = await res.json();
-
-    // Check if this user is admin
-    if (data.user.email !== ADMIN_EMAIL) {
-      throw new Error('Not authorized');
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      throw new Error(j.error || 'Invalid credentials');
     }
-
-    adminToken = data.access_token;
-    sessionStorage.setItem('admin_token', adminToken);
     document.getElementById('adminLogin').style.display = 'none';
     document.getElementById('mainLayout').style.display = 'flex';
     loadAllData();
@@ -330,7 +325,9 @@ async function adminLoginHandler(e) {
   }
 }
 
-function adminLogout() {
+async function adminLogout() {
+  try { await fetch('/api/admin/logout', { method: 'POST', credentials: 'include',
+    headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'senova' } }); } catch (_) {}
   sessionStorage.removeItem('admin_token');
   adminToken = null;
   document.getElementById('adminLogin').style.display = 'flex';
@@ -345,42 +342,27 @@ document.addEventListener('click', function(e) {
   deleteRecord(btn.dataset.type, btn.dataset.id, btn.dataset.auth, btn.dataset.name);
 });
 
-// Auto-login
+// Auto-login: ask server if our httpOnly cookie session is still valid.
 (async function checkAdmin() {
-  const t = sessionStorage.getItem('admin_token');
-  if (!t) return;
   try {
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${t}` }
-    });
-    if (res.ok) {
-      const user = await res.json();
-      if (user.email === ADMIN_EMAIL) {
-        adminToken = t;
-        document.getElementById('adminLogin').style.display = 'none';
-        document.getElementById('mainLayout').style.display = 'flex';
-        loadAllData();
-      }
+    const r = await fetch('/api/admin/me', { credentials: 'include' });
+    if (r.ok) {
+      document.getElementById('adminLogin').style.display = 'none';
+      document.getElementById('mainLayout').style.display = 'flex';
+      loadAllData();
     }
-  } catch (e) {}
+  } catch (_) {}
 })();
 
 // ===== DATA LOADING =====
-function supa(path) {
-  return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${adminToken}` }
-  }).then(r => r.json());
-}
-
 async function loadAllData() {
-  const [vendors, users, leads, images, notifs, memberships] = await Promise.all([
-    supa('vendors?select=*,vendor_auth(auth_user_id)&order=created_at.desc'),
-    supa('users?select=*,user_auth(auth_user_id)&order=created_at.desc'),
-    supa('leads?select=*,vendors(business_name)&order=received_at.desc'),
-    supa('vendor_images?status=eq.pending&select=*,vendors(business_name)&order=uploaded_at.desc'),
-    supa('admin_notifications?select=*&order=created_at.desc&limit=50'),
-    supa('vendor_memberships?plan_status=eq.active&select=*')
-  ]);
+  const r = await fetch('/api/admin/dashboard', { credentials: 'include' });
+  if (!r.ok) {
+    document.getElementById('mainLayout').style.display = 'none';
+    document.getElementById('adminLogin').style.display = 'flex';
+    return;
+  }
+  const { vendors = [], users = [], leads = [], images = [], notifs = [], memberships = [] } = await r.json();
 
   // Stats
   document.getElementById('totalVendors').textContent = vendors.length || 0;
@@ -555,6 +537,7 @@ async function deleteRecord(type, id, authUserId, name) {
     // unauthenticated requests after the security hardening pass).
     const res = await fetch('/api/admin-delete', {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': adminToken ? ('Bearer ' + adminToken) : ''
