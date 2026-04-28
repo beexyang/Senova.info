@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>State-by-State Care & Medicaid Guide | Senova</title>
+<meta name="description" content="Find your state's official Medicaid, home health, hospice, substance use, and mental health programs. Senova links you directly to the government source for your state."/>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; color: #1C2B3A; background: #F8FAFC; }
+a { text-decoration: none; color: inherit; }
+:root { --teal:#0D9488; --teal-dark:#0B7A6E; --navy:#202124; --gray:#5F6368; --light-gray:#9CA3AF; --border:#E5E7EB; --light:#F0FDFA; --coral:#F97316; }
+.nav { display:flex; align-items:center; justify-content:space-between; padding:14px 28px; background:#fff; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:50; }
+.nav-logo { font-family:'Poppins',sans-serif; font-weight:800; font-size:22px; color:var(--teal); }
+.nav-links a { font-size:14px; font-weight:500; color:var(--navy); margin-left:18px; }
+.nav-links a:hover { color:var(--teal); }
+.hero { background:linear-gradient(135deg,#0D9488 0%,#0F766E 100%); color:#fff; padding:60px 24px 50px; text-align:center; }
+.hero h1 { font-family:'Poppins',sans-serif; font-size:38px; font-weight:800; max-width:760px; margin:0 auto 16px; line-height:1.15; }
+.hero p { font-size:17px; max-width:680px; margin:0 auto; opacity:0.92; line-height:1.55; }
+.container { max-width:1100px; margin:0 auto; padding:40px 24px; }
+.section-label { font-size:13px; font-weight:600; color:var(--teal); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; }
+.section-title { font-family:'Poppins',sans-serif; font-size:26px; font-weight:700; color:var(--navy); margin-bottom:22px; }
+.state-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; }
+.state-card { background:#fff; border:1px solid var(--border); border-radius:10px; padding:14px 12px; text-align:center; cursor:pointer; transition:all .15s; font-weight:600; font-size:14px; color:var(--navy); }
+.state-card:hover { border-color:var(--teal); background:var(--light); transform:translateY(-1px); box-shadow:0 4px 12px rgba(13,148,136,0.10); }
+.state-card.active { background:var(--teal); border-color:var(--teal); color:#fff; }
+.state-card .code { display:block; font-size:12px; font-weight:500; color:var(--light-gray); margin-bottom:4px; }
+.state-card.active .code { color:rgba(255,255,255,0.85); }
+.resource-panel { display:none; margin-top:32px; background:#fff; border:1px solid var(--border); border-radius:14px; padding:28px; box-shadow:0 4px 24px rgba(0,0,0,0.04); }
+.resource-panel.show { display:block; }
+.panel-title { font-family:'Poppins',sans-serif; font-size:22px; font-weight:700; color:var(--navy); margin-bottom:6px; }
+.panel-sub { color:var(--gray); font-size:14px; margin-bottom:24px; }
+.resource-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+.resource-card { background:#F8FAFC; border:1px solid var(--border); border-radius:10px; padding:18px; transition:all .15s; }
+.resource-card:hover { border-color:var(--teal); background:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
+.resource-cat { font-size:11px; font-weight:600; color:var(--teal); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px; }
+.resource-label { font-weight:600; font-size:15px; color:var(--navy); margin-bottom:6px; line-height:1.3; }
+.resource-desc { font-size:13px; color:var(--gray); line-height:1.5; margin-bottom:12px; }
+.authority-pill { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; margin-left:6px; vertical-align:middle; }
+.authority-pill.federal { background:#DBEAFE; color:#1E40AF; }
+.authority-pill.state { background:#FEF3C7; color:#92400E; }
+.dead-link { background:#FEE2E2; color:#991B1B; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; }
+.go-btn { display:inline-flex; align-items:center; gap:6px; background:var(--teal); color:#fff; padding:8px 14px; border-radius:8px; font-weight:600; font-size:14px; }
+.go-btn:hover { background:var(--teal-dark); }
+.disclaimer { background:var(--light); border:1px solid #99F6E4; border-radius:10px; padding:14px 16px; margin-top:24px; font-size:13px; color:#0F766E; line-height:1.55; }
+.last-checked { font-size:11px; color:var(--light-gray); margin-top:8px; }
+.loading { text-align:center; padding:40px; color:var(--gray); }
+@media (max-width:600px) { .hero h1 { font-size:28px; } .container { padding:24px 14px; } }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-logo">Senova</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/search">Find Care</a>
+    <a href="/for-providers">For Providers</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1 id="hero-h1">Your State's Official Care & Medicaid Resources</h1>
+  <p id="hero-p">Senova doesn't replace your state. We point you straight to the official government program for Medicaid, home health, hospice, substance use, and mental health in your state.</p>
+</section>
+
+<div class="container">
+  <div class="section-label">Pick your state</div>
+  <h2 class="section-title">All 50 states + DC</h2>
+  <div class="state-grid" id="state-grid"></div>
+
+  <div class="resource-panel" id="resource-panel">
+    <div class="panel-title" id="panel-title"></div>
+    <div class="panel-sub" id="panel-sub">Direct links to your state's official program. Senova doesn't run these — your state does.</div>
+    <div class="resource-grid" id="resource-grid">
+      <div class="loading">Loading official resources…</div>
+    </div>
+    <div class="disclaimer">
+      <strong>Important:</strong> The links below go to <strong>federal (.gov) and state (.gov) websites</strong>. Senova doesn't process Medicaid applications, run treatment programs, or store your personal info on the destination sites. We just route you to the right authority. Every link is automatically re-verified once a month — if a state moves a page, we replace it.
+    </div>
+  </div>
+</div>
+
+<script>
+const STATES = [
+  ["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],
+  ["CO","Colorado"],["CT","Connecticut"],["DE","Delaware"],["DC","D.C."],["FL","Florida"],
+  ["GA","Georgia"],["HI","Hawaii"],["ID","Idaho"],["IL","Illinois"],["IN","Indiana"],
+  ["IA","Iowa"],["KS","Kansas"],["KY","Kentucky"],["LA","Louisiana"],["ME","Maine"],
+  ["MD","Maryland"],["MA","Massachusetts"],["MI","Michigan"],["MN","Minnesota"],["MS","Mississippi"],
+  ["MO","Missouri"],["MT","Montana"],["NE","Nebraska"],["NV","Nevada"],["NH","New Hampshire"],
+  ["NJ","New Jersey"],["NM","New Mexico"],["NY","New York"],["NC","North Carolina"],["ND","North Dakota"],
+  ["OH","Ohio"],["OK","Oklahoma"],["OR","Oregon"],["PA","Pennsylvania"],["RI","Rhode Island"],
+  ["SC","South Carolina"],["SD","South Dakota"],["TN","Tennessee"],["TX","Texas"],["UT","Utah"],
+  ["VT","Vermont"],["VA","Virginia"],["WA","Washington"],["WV","West Virginia"],["WI","Wisconsin"],
+  ["WY","Wyoming"]
+];
+
+const SUPABASE_URL = 'https://nzinorhyoxifmthyvsbb.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56aW5vcmh5b3hpZm10aHl2c2JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTI2MjMsImV4cCI6MjA5MDkyODYyM30._7RjAOyhOISw6Nh3qjt8cwJspQrGe2Zw2aBgWu8u4ro';
+
+const CATEGORY_LABEL = {
+  medicaid_hcbs: 'Medicaid · Home Health · Hospice',
+  behavioral_health: 'Substance Use & Mental Health',
+  how_to_apply: 'How to Apply for Medicaid'
+};
+const CATEGORY_ORDER = ['medicaid_hcbs','behavioral_health','how_to_apply'];
+
+function renderStateGrid(active) {
+  const g = document.getElementById('state-grid');
+  g.innerHTML = STATES.map(([code,name]) =>
+    `<div class="state-card ${active===code?'active':''}" data-code="${code}" data-name="${name}">
+        <span class="code">${code}</span>${name}
+     </div>`).join('');
+  g.querySelectorAll('.state-card').forEach(el => {
+    el.addEventListener('click', () => loadState(el.dataset.code, el.dataset.name));
+  });
+}
+
+function fmtDate(iso) {
+  if (!iso) return null;
+  try { return new Date(iso).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}); } catch(_) { return null; }
+}
+
+async function loadState(code, name) {
+  history.replaceState(null,'','/state-guide?state='+code);
+  document.getElementById('hero-h1').textContent = name + "'s Care & Medicaid Resources";
+  document.getElementById('panel-title').textContent = name;
+  document.querySelectorAll('.state-card').forEach(el => el.classList.toggle('active', el.dataset.code===code));
+  document.getElementById('resource-panel').classList.add('show');
+  document.getElementById('resource-grid').innerHTML = '<div class="loading">Loading official resources…</div>';
+  document.getElementById('resource-panel').scrollIntoView({behavior:'smooth', block:'start'});
+
+  const url = SUPABASE_URL + '/rest/v1/state_resources?state_code=eq.' + code +
+              '&is_alive=eq.true&select=*&order=category.asc,authority.desc';
+  let resources = [];
+  try {
+    const r = await fetch(url, { headers: { apikey: SUPABASE_ANON, Authorization: 'Bearer ' + SUPABASE_ANON } });
+    if (r.ok) resources = await r.json();
+  } catch(e) {}
+
+  if (!resources.length) {
+    document.getElementById('resource-grid').innerHTML = '<div class="loading">No verified resources found for this state right now. Try the federal Medicaid.gov page directly: <a href="https://www.medicaid.gov/state-overviews" target="_blank" rel="noopener">medicaid.gov/state-overviews</a></div>';
+    return;
+  }
+
+  const byCategory = {};
+  resources.forEach(r => { (byCategory[r.category] = byCategory[r.category] || []).push(r); });
+
+  let html = '';
+  for (const cat of CATEGORY_ORDER) {
+    const list = byCategory[cat] || [];
+    if (!list.length) continue;
+    for (const r of list) {
+      const checked = fmtDate(r.last_verified_at);
+      html += `
+        <div class="resource-card">
+          <div class="resource-cat">${CATEGORY_LABEL[cat]}</div>
+          <div class="resource-label">${escapeHtml(r.resource_label)}<span class="authority-pill ${r.authority}">${r.authority==='federal'?'Federal .gov':'State .gov'}</span></div>
+          <div class="resource-desc">${escapeHtml(r.description||'')}</div>
+          <a class="go-btn" href="${escapeAttr(r.resource_url)}" target="_blank" rel="noopener">Visit official site →</a>
+          ${checked ? `<div class="last-checked">Link last verified ${checked}</div>` : ''}
+        </div>`;
+    }
+  }
+  document.getElementById('resource-grid').innerHTML = html;
+}
+
+function escapeHtml(s) {
+  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s) { return escapeHtml(s); }
+
+// Boot
+renderStateGrid(null);
+const params = new URLSearchParams(location.search);
+const sc = (params.get('state')||'').toUpperCase();
+const match = STATES.find(([c]) => c===sc);
+if (match) loadState(match[0], match[1]);
+
+// "How to Apply" anchor — scroll to grid + show how-to-apply on click of any state
+if (location.pathname.endsWith('/how-to-apply')) {
+  document.getElementById('hero-h1').textContent = 'How to Apply for Medicaid in Your State';
+  document.getElementById('hero-p').textContent  = 'Pick your state — we redirect you straight to the official Medicaid application process for that state.';
+}
+</script>
+</body>
+</html>
