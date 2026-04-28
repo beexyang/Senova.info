@@ -21,10 +21,13 @@ async function forgotPassword(ev) {
     return;
   }
   try {
-    await fetch(SUPABASE_URL + '/auth/v1/recover', {
+    // Supabase honors redirect_to only as a query parameter, not as a body field.
+    // The URL must also be allowlisted in the Supabase project's auth Redirect URLs.
+    const redirect = window.location.origin + '/reset-password';
+    await fetch(SUPABASE_URL + '/auth/v1/recover?redirect_to=' + encodeURIComponent(redirect), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
-      body: JSON.stringify({ email: email, redirect_to: window.location.origin + '/reset-password' })
+      body: JSON.stringify({ email: email })
     });
   } catch (_) { /* swallowed */ }
   alert('If that email is registered, a password-reset link has been sent. Check your inbox (and spam folder).');
