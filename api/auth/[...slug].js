@@ -15,7 +15,9 @@ const ROUTES = {
 
 module.exports = async (req, res) => {
   if (applyCors(req, res, 'POST, OPTIONS')) return;
-  const slugArr = req.query.slug || [];
+  // Vercel can expose the catch-all under different key names depending on
+  // its parser version (req.query.slug vs req.query['[...slug]']). Try both.
+  const slugArr = req.query.slug || req.query['...slug'] || req.query['[...slug]'] || [];
   const slug = Array.isArray(slugArr) ? slugArr.join('/') : String(slugArr);
   const handler = ROUTES[slug];
   if (!handler) return res.status(404).json({ error: 'Not found' });
